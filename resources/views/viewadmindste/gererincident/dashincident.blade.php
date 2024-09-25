@@ -164,7 +164,7 @@
 @section("js")
 <script type="text/javascript">
            
-    function paramprojet(format) 
+    function paramincident(format) 
     {
         var form = document.createElement('form');
         form.method = 'POST';
