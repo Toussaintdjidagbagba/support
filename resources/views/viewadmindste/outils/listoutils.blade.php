@@ -38,7 +38,6 @@
                                 </div>
                             </div>
                         </form>
-
                     </div>
                     <div class="body">
                         <div class="table-responsive" data-pattern="priority-columns">

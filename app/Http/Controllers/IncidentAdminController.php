@@ -21,15 +21,32 @@ use Illuminate\Support\Facades\Validator;
 class IncidentAdminController extends Controller
 {
 
-    public static function getincident()
+    public static function getincident(Request $request)
     {
         if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
-            $list = Incident::orderBy('incidents.created_at', 'desc')->paginate(100);
+            $lists = Incident::query()->orderBy('incidents.created_at', 'desc');
+            if ($request->has('q') != "" && $request->has('q') != null) {
+                $recherche = htmlspecialchars(trim($request->q));
+                $list = $lists->where('Module', 'like', '%' . $recherche . '%')
+                    ->orWhere('DateEmission', 'like', '%' . $recherche . '%')
+                    ->orWhere('etat', 'like', '%' . $recherche . '%')
+                    // ->orWhere('hierarchie', 'like', '%' . $recherche . '%')
+                    ->paginate(100);
+            }
+            $list = $lists->paginate(100);
         } else {
             // Afficher les incidents reçu
-            $list = Incident::where("affecter", session("utilisateur")->affecter)->orderBy('incidents.created_at', 'desc')->paginate(100);
+            $lists = Incident::query()->where("affecter", session("utilisateur")->affecter)->orderBy('incidents.created_at', 'desc');
+            if ($request->has('q') != "" && $request->has('q') != null) {
+                $recherche = htmlspecialchars(trim($request->q));
+                $list = $lists->where('Module', 'like', '%' . $recherche . '%')
+                    ->orWhere('DateEmission', 'like', '%' . $recherche . '%')
+                    ->orWhere('etat', 'like', '%' . $recherche . '%')
+                    // ->orWhere('hierarchie', 'like', '%' . $recherche . '%')
+                    ->paginate(100);
+            }
+            $list = $lists->paginate(100);
         }
-
         return view('viewadmindste.gererincident.dashincident', compact('list'));
     }
 
@@ -42,55 +59,57 @@ class IncidentAdminController extends Controller
 
                 $messages = [
                     'module.required' => 'Veuillez saisire le module.',
-                    'desc.required' => 'La description est requise.',
                     'cat.required' => 'La catégorie est requis.',
                     'hiera.required' => 'L\'hiérachie est requis.',
                 ];
                 $validator = Validator::make($request->all(), [
                     'module' => 'required',
-                    'acheteur' => 'required',
-                    'desc' => 'required',
                     'cat' => 'required',
                     'hiera' => 'required',
                 ], $messages);
 
                 if ($validator->fails()) {
-                    return Back()->with('error', $validator->errors()->messages(), $request->all());
-                }
-
-                $add = new Incident();
-                $add->Service = session("utilisateur")->Service;
-                $add->Emetteur =  session("utilisateur")->idUser;
-                $add->DateEmission = date("d-m-Y H:i:s");
-                $add->Module = htmlspecialchars(trim($request->module));
-                $add->description = htmlspecialchars(trim($request->desc));
-                $add->cat = htmlspecialchars(trim($request->cat));
-                $add->hierarchie = htmlspecialchars(trim($request->hiera));
-                $add->etat = "En attente";
-                if ($request->hasFile('piece')) {
-                    $namefile = "incident" . date('is') . "." . $request->file('piece')->getClientOriginalExtension();
-                    $upload = "documents/incident/";
-                    $request->file('piece')->move($upload, $namefile);
-                    $add->piece = $upload . $namefile;
+                    $errors = $validator->errors()->all();
+                    $errorString = implode(' ', $errors);
+                    flash("Erreur : " . $errorString)->error();
+                    return Back();
                 } else {
-                    $add->piece = "";
+                    $add = new Incident();
+                    $add->Service = session("utilisateur")->Service;
+                    $add->Emetteur =  session("utilisateur")->idUser;
+                    $add->DateEmission = date("d-m-Y H:i:s");
+                    $add->Module = htmlspecialchars(trim($request->module));
+                    $add->description = htmlspecialchars(trim($request->desc));
+                    $add->cat = htmlspecialchars(trim($request->cat));
+                    $add->hierarchie = htmlspecialchars(trim($request->hiera));
+                    $add->etat = 0;
+                    if ($request->hasFile('piece')) {
+                        $namefile = "incident" . date('is') . "." . $request->file('piece')->getClientOriginalExtension();
+                        $upload = "documents/incident/";
+                        $request->file('piece')->move($upload, $namefile);
+                        $add->piece = $upload . $namefile;
+                    } else {
+                        $add->piece = "";
+                    }
+                    $add->save();
+
+                    // Sauvegarde de la trace
+                    TraceController::setTrace("Vous avez enregistré un incident." . $add->id, session("utilisateur")->idUser);
+
+                    $message = "";
+
+                    //SendMail::senddeclaration(session("utilisateur")->mail, "Moi", compact("message"));
+
+                    flash("Vous avez enregistré un incident avec succès. ")->success();
+                    return Back();
                 }
-                $add->save();
-
-                // Sauvegarde de la trace
-                TraceController::setTrace("Vous avez enregistré un incident." . $add->id, session("utilisateur")->idUser);
-
-                $message = "";
-
-                //SendMail::senddeclaration(session("utilisateur")->mail, "Moi", compact("message"));
-
-                flash("L'utilisateur est enregistré avec succès. ")->success();
-                return Back()->with('success', "Vous avez enregistré un incident avec succès.");
             }
         } catch (QueryException $qe) {
-            return Back()->with('error', "Une erreur ses produites :" . $qe->getMessage());
+            flash("Une erreur ses produites  : " . $qe->getMessage())->error();
+            return Back();
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            flash("Une erreur ses produites  : " . $e->getMessage())->error();
+            return Back();
         }
     }
 
@@ -100,14 +119,21 @@ class IncidentAdminController extends Controller
             if (!in_array("delete_incie", session("auto_action"))) {
                 return view("vendor.error.649");
             } else {
-                $occurence = json_encode(Incident::where('id', request('id'))->first());
-                $addt = new Trace();
-                $addt->libelle = "Incident supprimé : " . $occurence;
-                $addt->action = session("utilisateur")->idUser;
-                $addt->save();
-                Incident::where('id', request('id'))->delete();
-                $info = "Incident est supprimé avec succès.";
-                flash($info);
+
+                $incident = Incident::find(request('id'));
+                if ($incident) {
+                    $occurence = json_encode(Incident::where('id', request('id'))->first());
+                    $addt = new Trace();
+                    $addt->libelle = "Incident supprimé : " . $occurence;
+                    $addt->action = session("utilisateur")->idUser;
+                    $addt->save();
+                    Incident::where('id', request('id'))->delete();
+                    $info = "Incident est supprimé avec succès.";
+                    flash($info);
+                } else {
+                    $info = "Incident introuvable.";
+                    flash($info);
+                }
                 return Back();
             }
         } catch (\Exception $e) {
@@ -201,15 +227,23 @@ class IncidentAdminController extends Controller
             } else {
                 date_default_timezone_set('Africa/Porto-Novo');
 
-                $request->validate([
-                    'etat' => 'required',
-                    'obs' => 'required',
-                    'contenumail' => 'required',
-                ], [
+                $messages = [
                     'etat.required' => 'Le champ état est requis.',
                     'obs.required' => 'Le champ observation est requis.',
                     'contenumail.required' => 'Le champ contenu mail est requis.',
-                ]);
+                ];
+                $validator = Validator::make($request->all(), [
+                    'etat' => 'required',
+                    'obs' => 'required',
+                    'contenumail' => 'required',
+                ], $messages);
+
+                if ($validator->fails()) {
+                    $errors = $validator->errors()->all();
+                    $errorString = implode(' ', $errors);
+                    flash("Erreur : " . $errorString)->error();
+                    return Back();
+                }
 
                 // Sauvegarder l'action
                 $addAction = new Gestionincident();
@@ -228,7 +262,6 @@ class IncidentAdminController extends Controller
                         "DateResolue" => date("Y-m-d H:i:s"),
                     ]
                 );
-
 
                 $mod = Incident::where('id', request('idincidentetat'))->first()->Module;
                 flash("L'état : " . $mod . " est modifiée avec succès. ")->success();

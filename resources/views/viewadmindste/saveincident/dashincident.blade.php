@@ -22,12 +22,22 @@
                     <div class="header">
                         <h2>
                             Liste des incidents
-
                             <button type="button"
                                 style="margin-right: 30px; float: right; padding-right: 30px; padding-left: 30px;"
                                 class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal"
                                 data-target="#add">Ajouter</button>
                         </h2>
+                        <form action="{{ route('GI') }}" method="get" role="form">
+                            <div class="input-group">
+                                <div class="form-line">
+                                    <input type="search" name="q" id="searchForm" placeholder="Mot clé..."
+                                        class="form-control">
+                                </div>
+                                <div class="input-group-addon">
+                                    <button type="submit" class="btn btn-info btn-md"> Rechercher</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                     <div class="body">
                         <div class="table-responsive" data-pattern="priority-columns">
@@ -48,29 +58,30 @@
                                 <tbody>
                                     @forelse($list as $inc)
                                         <tr>
-                                            <th><span class="co-name">{{ $inc->DateEmission }}</span></th>
+                                            <th>
+                                                <span
+                                                    class="co-name">{{ App\Providers\InterfaceServiceProvider::formatDate($inc->DateEmission) }}
+                                                </span>
+                                            </th>
                                             <td>{{ $inc->Module }}</td>
-                                            <td>{{ $inc->description }}</td>
+                                            <td>{{ $inc->description ?? '---' }}</td>
                                             <td>{{ App\Providers\InterfaceServiceProvider::LibelleHier($inc->hierarchie) }}
                                             </td>
                                             <td>{{ App\Providers\InterfaceServiceProvider::LibelleCat($inc->cat) }}</td>
-                                            <td>{{ date('h:i:s', strtotime('-1 hours ' . date('h:i:s', strtotime('+' . App\Providers\InterfaceServiceProvider::TempsCat($inc->cat) . ' hours ' . date('h:i:s', strtotime($inc->created_at))) - strtotime(date('h:i:s'))))) }}
+                                            <td>{{ App\Providers\InterfaceServiceProvider::TempsCats($inc->cat, $inc->created_at) }}
                                             </td>
                                             <td>{{ App\Providers\InterfaceServiceProvider::libetat($inc->etat) }}
                                             </td>
-                                            <td>
-                                                <span class="co-name">
-                                                    @if ($inc->avis == '' || $inc->avis == null)
-                                                        <a class="btn bg-blue btn-circle waves-effect waves-circle waves-float"
-                                                            onclick="getid({{ $inc->id }})"
-                                                            data-id="getid({{ $inc->id }})" data-color="deep-orange"
-                                                            data-toggle="modal" data-target="#avis"><i
-                                                                class="material-icons">grade</i></a>
-                                                    @else
-                                                        {{ $inc->avis }}
-                                                    @endif
-                                                </span>
-                                                </span>
+                                            <td class="d-flex justify-content-between align-items-center">
+                                                @if ($inc->avis == '' || $inc->avis == null)
+                                                    <a class="btn bg-blue btn-circle btn-xs ml-2 item-center"
+                                                        onclick="getid({{ $inc->id }})"
+                                                        data-id="getid({{ $inc->id }})" data-color="deep-orange"
+                                                        data-toggle="modal" data-target="#avis"><i
+                                                            class="material-icons">grade</i></a>
+                                                @else
+                                                    {{ $inc->avis }}
+                                                @endif
                                             </td>
                                             <td>
                                                 @if ($inc->statut != 1)
@@ -84,10 +95,11 @@
                                                     @endif
 
                                                     @if (in_array('delete_incident', session('auto_action')))
-                                                        <button type="button" title="Supprimer"
-                                                            class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"><a
-                                                                href="{{ route('DI', $inc->id) }}" style="color:white;"><i
-                                                                    class="material-icons">delete_sweep</i></a> </button>
+                                                        <button type="button" title="Supprimer" style="color:white;"
+                                                            onclick="Delete(event,'{{ route('DI', $inc->id) }}')"
+                                                            class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"><i
+                                                                class="material-icons">delete_sweep</i>
+                                                        </button>
                                                     @endif
                                                 @endif
                                             </td>
@@ -182,6 +194,47 @@
             } catch (error) {
                 document.getElementById("datacomment").innerHTML =
                     '<div class="alert alert-danger alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong> Une erreur est survenir. Veuillez connectez le service informatique. </strong></div>';
+            }
+        }
+
+        async function Delete(event, url) {
+            event.preventDefault();
+            const {
+                isConfirmed
+            } = await Swal.fire({
+                title: "Êtes-vous sûr de vouloir supprimer cet incident?",
+                text: "Cette action est irréversible!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Oui, supprimer",
+                cancelButtonText: "Annuler",
+                customClass: {
+                    confirmButton: 'bg-confirm',
+                    cancelButton: 'bg-cancel'
+                }
+            });
+
+            if (isConfirmed) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'get',
+                        headers: {
+                            'Access-Control-Allow-Credentials': true,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    if (response.status == 200) {
+                        Swal.fire("Succès", "Incident supprimé avec succès", "success").then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        throw new Error('Erreur lors de la suppression');
+                    }
+                } catch (error) {
+                    Swal.fire("Erreur", "La suppression a échoué" + error);
+                }
             }
         }
     </script>
