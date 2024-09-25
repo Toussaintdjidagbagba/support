@@ -146,6 +146,7 @@ Route::group([
 	Route::post('/deleteoutil', 'App\Http\Controllers\OutilController@setdeleteoutil')->name('DO');
 	Route::post('/definitionetatoutil', 'App\Http\Controllers\OutilController@setdefinitionetatoutil')->name('DEO');
 	Route::post('/export-pdf-detail', 'App\Http\Controllers\OutilController@exportPDFDetail')->name('export-pdf-detail');
+	
 
 
 	//////////////////////////////////** Maintenance préventive **/////////////////////////////////////

@@ -15,9 +15,19 @@ use Illuminate\Support\Facades\Validator;
 
 class OutilController extends Controller
 {
-    public function list()
+    public function list(Request $request)
     {
-        $list = Outil::orderBy("categorie", "asc")->get();
+        $lists = Outil::query()->orderBy("categorie", "asc");
+        if ($request->has('q') != "" && $request->has('q') != null) {
+            $recherche = htmlspecialchars(trim($request->q));
+            $list = $lists->where('reference', 'like', '%' . $recherche . '%')
+                ->orWhere('dateacquisition', 'like', '%' . $recherche . '%')
+                ->orWhere('nameoutils', 'like', '%' . $recherche . '%')
+                // ->orWhere('categorie', 'like', '%' . $recherche . '%')
+                ->paginate(10);
+            return view('viewadmindste.outils.listoutils', compact('list'));
+        }
+        $list = $lists->paginate(10);
         return view('viewadmindste.outils.listoutils', compact('list'));
     }
 
