@@ -170,7 +170,7 @@ Route::group([
 	Route::get('/commentaire', 'App\Http\Controllers\MaintenanceController@validecommentaire')->name('CMU');
 
 	//////////////////////////////////** Les Exports **//////////////////////////
-	Route::post('export-incident', [IncidentAdminController::class, 'exportincident'])->name('projet.incident');
+	Route::post('export-incident', [IncidentAdminController::class, 'exportincident'])->name('incident.export');
 
 
 
