@@ -7,44 +7,48 @@
 
 @section('content')
 
-    <div class="container-fluid">
-        <div class="block-header">
-            @include('flash::message')
-            <h2>
-                Incidents
-                <small></small>
-            </h2>
-        </div>
-        <div class="row clearfix">
+	<div class="container-fluid">
+            <div class="block-header">
+                @include('flash::message')
+                <h2>
+                    Incidents
+                    <small></small>
+                </h2>
+            </div>
+            <div class="row clearfix">
+                
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+                        <div class="header">
+                            <h2>
+                                Liste des incidents déclarés
 
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="card">
-                    <div class="header">
-                        <h2>
-                            Liste des incidents déclarés
+                                <button type="button" style="margin-right: 30px; float: right; padding-right: 30px; padding-left: 30px;" class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal" data-target="#add">Ajouter</button>    
+                       		</h2>
 
-                            <button type="button"
-                                style="margin-right: 30px; float: right; padding-right: 30px; padding-left: 30px;"
-                                class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal"
-                                data-target="#add">Ajouter</button>
-
-                            <button onClick="javascript:window.open('{{ route('EEID') }}', '');"
-                                style=" float: right;margin-right: 30px;" type="button" title="EXCEL"
-                                class="btn btn-primary btn-xs  margin-bottom-10 waves-effect waves-light">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                    <path fill="currentColor"
-                                        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6m1.8 18H14l-2-3.4l-2 3.4H8.2l2.9-4.5L8.2 11H10l2 3.4l2-3.4h1.8l-2.9 4.5l2.9 4.5M13 9V3.5L18.5 9H13Z" />
-                                </svg>
-                            </button>
-                        </h2>
-                    </div>
-                    <div class="body">
-                        <div class="table-responsive" data-pattern="priority-columns">
-                            <table id="tech-companies-1" class="table table-small-font table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Date Emission</th>
-                                        <th data-priority="1">Modules</th>
+                            <ul class="header-dropdown m-r--5">
+                                <li class="dropdown">
+                                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                        <i class="material-icons">more_vert</i>
+                                    </a>
+                                    <ul class="dropdown-menu pull-right">
+                                        <li>
+                                            <a href="javascript:void(0);" id="incidentexp" onclick="paramincident('xlsx')" >Exporter en Excel</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" onclick="paramincident('pdf')">Exporter en PDF</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="body">
+                        	<div class="table-responsive" data-pattern="priority-columns">
+								<table id="tech-companies-1" class="table table-small-font table-bordered table-striped">
+									<thead>
+									<tr>
+										<th>Date Emission</th>
+										<th data-priority="1">Modules</th>
                                         <th data-priority="3">Hiérachisation</th>
                                         <th data-priority="3">Emetteur</th>
                                         <th data-priority="3">Modifier Etat</th>
@@ -152,13 +156,36 @@
                         </script>
                     </div>
                 </div>
+                
             </div>
-
         </div>
-    </div>
-
+        
 @endsection
-@section('js')
+@section("js")
+<script type="text/javascript">
+           
+    function paramprojet(format) 
+    {
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route("incident.export") }}';
+
+        var inputFormat = document.createElement('input');
+        inputFormat.type = 'hidden';
+        inputFormat.name = 'format';
+        inputFormat.value = format;
+        form.appendChild(inputFormat);
+
+        var csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        form.appendChild(csrfToken);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
 @endsection
 
 @section('model')

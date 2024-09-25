@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\IncidentAdminController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -167,6 +168,12 @@ Route::group([
 	Route::post('/deletemaintenances', 'App\Http\Controllers\MaintenanceController@setdeletegmaintenance')->name('DMU');
 	Route::post('/updatedefinitionmaintenances', 'App\Http\Controllers\MaintenanceController@setupdatedefinitionmaintenances')->name('SUMU');
 	Route::get('/commentaire', 'App\Http\Controllers\MaintenanceController@validecommentaire')->name('CMU');
+
+	//////////////////////////////////** Les Exports **//////////////////////////
+	Route::post('export-incident', [IncidentAdminController::class, 'exportincident'])->name('projet.incident');
+
+
+
 
 });
 	
