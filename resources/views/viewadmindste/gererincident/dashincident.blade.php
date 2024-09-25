@@ -1,10 +1,8 @@
 @extends('templatedste._temp')
 
 @section('css')
-
     <!-- Bootstrap Select Css -->
     <link href="cssdste/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
-
 @endsection
 
 @section('content')
@@ -55,102 +53,107 @@
                                         <th data-priority="3">Emetteur</th>
                                         <th data-priority="3">Modifier Etat</th>
                                         <th data-priority="3">Date de résolution</th>
-                                        <th data-priority="3">Affecter</th> 
-										<th data-priority="6">Actions</th>
-									</tr>
-									</thead>
-									<tbody>
-                                        @forelse($list as $inc)
+                                        <th data-priority="3">Affecter</th>
+                                        <th data-priority="6">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($list as $inc)
                                         <tr>
-                                            <th><span class="co-name">{{$inc->DateEmission}}</span></th>
-                                            <td>{{$inc->Module}}</td>
-                                            <td>{{App\Providers\InterfaceServiceProvider::LibelleHier($inc->hierarchie)}}</td>
-                                            
-                                            <td>{{App\Providers\InterfaceServiceProvider::LibelleUser($inc->Emetteur)}}</td>
-                                            <td> {{App\Providers\InterfaceServiceProvider::libetat($inc->etat)}}
-                                                @if(in_array("update_etat", session("auto_action")))
-                                                    <button class="btn bg-deep-orange waves-effect btn-circle btn-xs identifyingeqp" 
-                                                    style="padding-top: 10px; float: right;" 
-                                                    data-target="#etatincident" 
-                                                    data-color="deep-orange" 
-                                                    data-toggle="modal" 
-                                                    title="Etat"
-                                                    onClick="getetat({{$inc->id}})">
+                                            <th><span class="co-name">{{ $inc->DateEmission }}</span></th>
+                                            <td>{{ $inc->Module }}</td>
+                                            <td>{{ App\Providers\InterfaceServiceProvider::LibelleHier($inc->hierarchie) }}
+                                            </td>
+
+                                            <td>{{ App\Providers\InterfaceServiceProvider::LibelleUser($inc->Emetteur) }}
+                                            </td>
+                                            <td> {{ App\Providers\InterfaceServiceProvider::libetat($inc->etat) }}
+                                                @if (in_array('update_etat', session('auto_action')))
+                                                    <button
+                                                        class="btn bg-deep-orange waves-effect btn-circle btn-xs identifyingeqp"
+                                                        style="padding-top: 10px; float: right;" data-target="#etatincident"
+                                                        data-color="deep-orange" data-toggle="modal" title="Etat"
+                                                        onClick="getetat({{ $inc->id }})">
                                                         <i class="material-icons">edit</i>
                                                     </button>
                                                 @endif
-                                                
+
                                             </td>
-                                            <td>{{$inc->DateResolue}}</td>
-                                            <td> {{App\Providers\InterfaceServiceProvider::LibelleUser($inc->affecter)}}
-                                                @if(in_array("affec_incie", session("auto_action")))
+                                            <td>{{ $inc->DateResolue }}</td>
+                                            <td> {{ App\Providers\InterfaceServiceProvider::LibelleUser($inc->affecter) }}
+                                                @if (in_array('affec_incie', session('auto_action')))
                                                     <button class="btn bg-deep-orange waves-effect btn-circle btn-xs sendjs"
-                                                     style="padding-top: 10px; float: right;" 
-                                                     data-target="#affecteincident" 
-                                                     data-color="deep-orange" 
-                                                     data-toggle="modal" 
-                                                     onClick="getaffectation({{$inc->id}})" 
-                                                     title="Affectation">
-                                                            <i class="material-icons">send</i>
+                                                        style="padding-top: 10px; float: right;"
+                                                        data-target="#affecteincident" data-color="deep-orange"
+                                                        data-toggle="modal" onClick="getaffectation({{ $inc->id }})"
+                                                        title="Affectation">
+                                                        <i class="material-icons">send</i>
                                                     </button>
                                                 @endif
                                             </td>
 
                                             <td>
-                                                @if($inc->piece != "")
-                                            @if(in_array("viewdoc_incie", session("auto_action")))
-                                            <button type="button" onClick="javascript:window.open('{{ $inc->piece }}', '');" title="Visualiser"  class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                <i class="material-icons">visibility</i>
-                                            </button>
-                                            @endif
+                                                @if ($inc->piece != '')
+                                                    @if (in_array('viewdoc_incie', session('auto_action')))
+                                                        <button type="button"
+                                                            onClick="javascript:window.open('{{ $inc->piece }}', '');"
+                                                            title="Visualiser"
+                                                            class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
+                                                            <i class="material-icons">visibility</i>
+                                                        </button>
+                                                    @endif
                                                 @endif
 
-                                            @if(in_array("update_incie", session("auto_action")))
-                                            <button type="button" title="Modifier"  class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                <a href="{{ route('MTIA', $inc->id)}}" style="color:white;"> <i class="material-icons">system_update_alt</i></a> 
-                                            </button>
-                                            @endif
+                                                @if (in_array('update_incie', session('auto_action')))
+                                                    <button type="button" title="Modifier"
+                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
+                                                        <a href="{{ route('MTIA', $inc->id) }}" style="color:white;"> <i
+                                                                class="material-icons">system_update_alt</i></a>
+                                                    </button>
+                                                @endif
 
-                                            @if( $inc->etat != null)
-                                            @if(in_array("delete_incie", session("auto_action")))
-                                            <button type="button" title="Supprimer"  class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"><a href="{{ route('DIA', $inc->id) }}" style="color:white;"><i class="material-icons">delete_sweep</i></a> </button>
-                                            @endif
-                                            @endif
+                                                @if ($inc->etat != null)
+                                                    @if (in_array('delete_incie', session('auto_action')))
+                                                        <button type="button" title="Supprimer"
+                                                            class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"><a
+                                                                href="{{ route('DIA', $inc->id) }}" style="color:white;"><i
+                                                                    class="material-icons">delete_sweep</i></a> </button>
+                                                    @endif
+                                                @endif
 
                                             </td>
                                         </tr>
-                                        @empty
+                                    @empty
                                         <tr>
-                                            <td colspan="8"><center>Pas d'incident enregistrer!!!</center> </td>
+                                            <td colspan="8">
+                                                <center>Pas d'incident enregistrer!!!</center>
+                                            </td>
                                         </tr>
-                                        @endforelse
-                                    </tbody>
-								</table>
-                                {{$list->links()}}
-							</div> 
-                            @php
-                                $sers = App\Providers\InterfaceServiceProvider::alladminandsuperadmin();
-                            @endphp
-                            
-                            <script>
-
-                                function getetat(id) {
-                                    document.getElementById('idincidentetat').value = id;
-                                }
-
-                                function getaffectation(id) {
-
-                                    serv = <?php echo $sers ?>;
-                                    options = '<select type="text" class="form-control" name="tech" id="tech">';
-                                    for(var item in serv)
-                                        options += '<option value="'+serv[item].idUser+'">'+serv[item].nom+' '+serv[item].prenom+'</option>';
-                                    options += '</select>';
-                                    document.getElementById('idaffecteincident').value = id;
-                                    document.getElementById('selecttech').innerHTML = options;
-                                }
-
-                            </script>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                            {{ $list->links() }}
                         </div>
+                        @php
+                            $sers = App\Providers\InterfaceServiceProvider::alladminandsuperadmin();
+                        @endphp
+                        <script>
+                            function getetat(id) {
+                                document.getElementById('idincidentetat').value = id;
+                            }
+
+                            function getaffectation(id) {
+
+                                serv = <?php echo $sers; ?>;
+                                options = '<select type="text" class="form-control" name="tech" id="tech">';
+                                for (var item in serv)
+                                    options += '<option value="' + serv[item].idUser + '">' + serv[item].nom + ' ' + serv[item].prenom +
+                                    '</option>';
+                                options += '</select>';
+                                document.getElementById('idaffecteincident').value = id;
+                                document.getElementById('selecttech').innerHTML = options;
+                            }
+                        </script>
                     </div>
                 </div>
                 
@@ -185,96 +188,102 @@
 </script>
 @endsection
 
-@section("model")
-
-<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Enregistrer un incident : </h4>
-			</div>
-            <form method="post" action="{{ route('GIS') }}" enctype="multipart/form-data">
-			<div class="modal-body">
-					<input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                    <div class="row clearfix">
-                        <div class="col-md-6">
-                             	<label for="mod">Module</label>
+@section('model')
+    <div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Enregistrer un incident : </h4>
+                </div>
+                <form method="post" action="{{ route('GIS') }}" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                        <div class="row clearfix">
+                            <div class="col-md-6">
+                                <label for="mod">Module</label>
                                 <div class="form-group">
-                                <div class="form-line">
-                                    <input type="text" id="mod" name="module" class="form-control" placeholder="" required>
+                                    <div class="form-line">
+                                        <input type="text" id="mod" name="module" class="form-control"
+                                            placeholder="" required>
+                                    </div>
                                 </div>
-                                </div>
-                        </div>
-                        <div class="col-md-6">
+                            </div>
+                            <div class="col-md-6">
                                 <label for="cat">Catégorie</label>
                                 <div class="form-group">
-                                @php
-                                    $cats = App\Providers\InterfaceServiceProvider::AllCat();
-                                @endphp
-                                <div class="form-line">
-                                    <select type="text" id="cat" name="cat" class="form-control" required>
-                                        <option></option>
-                                        @foreach($cats as $cat)
-                                            <option value="{{ $cat->id }}">{{ $cat->libelle }}</option>
-                                        @endforeach
-                                    </select>
+                                    @php
+                                        $cats = App\Providers\InterfaceServiceProvider::AllCat();
+                                    @endphp
+                                    <div class="form-line">
+                                        <select type="text" id="cat" name="cat" class="form-control"
+                                            required>
+                                            <option></option>
+                                            @foreach ($cats as $cat)
+                                                <option value="{{ $cat->id }}">{{ $cat->libelle }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
-                        
-                    </div>
-                    <div class="row clearfix">
-                        <div class="col-md-6">
-                        	<label for="hiera">Hiérarchisation</label>
-                           <div class="form-group">
-                            <div class="form-line">
-                                @php
-                                    $hies = App\Providers\InterfaceServiceProvider::AllHie();
-                                @endphp
-                                <select type="text" id="hiera" name="hiera" class="form-control" placeholder="" required>
-                                    <option></option>
-                                    @foreach($hies as $hie)
-                                        <option value="{{ $hie->id }}">{{ $hie->libelle }}</option>
-                                    @endforeach
-                                </select>
+                        <div class="row clearfix">
+                            <div class="col-md-6">
+                                <label for="hiera">Hiérarchisation</label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @php
+                                            $hies = App\Providers\InterfaceServiceProvider::AllHie();
+                                        @endphp
+                                        <select type="text" id="hiera" name="hiera" class="form-control"
+                                            placeholder="" required>
+                                            <option></option>
+                                            @foreach ($hies as $hie)
+                                                <option value="{{ $hie->id }}">{{ $hie->libelle }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                           </div>
-                        </div>
-                        <div class="col-md-6">
+                            <div class="col-md-6">
                                 <label for="piece">Pièce jointe</label>
                                 <div class="form-group">
-                                <div class="form-line">
-                                    <input type="file" id="piece" name="piece" accept=".pdf" class="form-control" placeholder="">
+                                    <div class="form-line">
+                                        <input type="file" id="piece" name="piece" accept=".pdf"
+                                            class="form-control" placeholder="">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row clearfix">
-                        <div class="col-md-12">
+                        <div class="row clearfix">
+                            <div class="col-md-12">
                                 <label for="desc">Description</label>
                                 <div class="form-group">
-                                <div class="form-line">
-                                    <textarea type="text" id="desc" name="desc" class="form-control"></textarea>
+                                    <div class="form-line">
+                                        <textarea type="text" id="desc" name="desc" class="form-control"></textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default btn-sm waves-effect waves-light" data-dismiss="modal">FERMER</button>
-				<button type="submit" class="btn bg-deep-orange waves-effect">AJOUTER</button>
-			</div>
-            </form>
-		</div>
-	</div>
-</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-sm waves-effect waves-light"
+                            data-dismiss="modal">FERMER</button>
+                        <button type="submit" class="btn bg-deep-orange waves-effect">AJOUTER</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="etatincident" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Changer d'Etat : </h4>
                 </div>
                 <form method="post" action="{{ route('CEI') }}">
@@ -287,8 +296,8 @@
                                 <div class="form-group">
                                     <div class="form-line">
                                         <select type="text" class="form-control" name="etat" id="etat">
-                                            @php( $etats = App\Providers\InterfaceServiceProvider::alletats() )
-                                            @foreach($etats as $etat)
+                                            @php($etats = App\Providers\InterfaceServiceProvider::alletats())
+                                            @foreach ($etats as $etat)
                                                 <option value="{{ $etat->id }}">{{ $etat->libelle }}</option>
                                             @endforeach
                                         </select>
@@ -314,7 +323,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default btn-sm waves-effect waves-light" data-dismiss="modal">FERMER</button>
+                        <button type="button" class="btn btn-default btn-sm waves-effect waves-light"
+                            data-dismiss="modal">FERMER</button>
                         <button type="submit" class="btn bg-deep-orange waves-effect">CHANGER</button>
                     </div>
                 </form>
@@ -326,34 +336,34 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Affectation d'incident : </h4>
                 </div>
                 <form method="post" action="{{ route('AII') }}">
                     <div class="modal-body">
-                     <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                    <input type="hidden" id="idaffecteincident" name="idaffecteincident" />
-                     <div class="row clearfix">
-                        <div class="col-md-12">
-                            <label for="tech">Technicien : </label>
-                            <div class="form-group">
-                                <div class="form-line" id="selecttech">
-                                    
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                        <input type="hidden" id="idaffecteincident" name="idaffecteincident" />
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <label for="tech">Technicien : </label>
+                                <div class="form-group">
+                                    <div class="form-line" id="selecttech">
+
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
 
                     </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default btn-sm waves-effect waves-light" data-dismiss="modal">FERMER</button>
-                    <button type="submit" class="btn bg-deep-orange waves-effect">AFFECTER</button>
-                </div>
-            </form>'
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-sm waves-effect waves-light"
+                            data-dismiss="modal">FERMER</button>
+                        <button type="submit" class="btn bg-deep-orange waves-effect">AFFECTER</button>
+                    </div>
+                </form>'
             </div>
         </div>
     </div>
-
-
 @endsection
