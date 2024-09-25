@@ -27,7 +27,7 @@
                                 style="margin-right: 30px; float: right; padding-right: 30px; padding-left: 30px;"
                                 class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal"
                                 data-target="#add">Ajouter</button>
-                        </h2>
+                        </h2><br><br>
                         <form action="{{ route('GIA') }}" method="get" role="form">
                             <div class="input-group">
                                 <div class="form-line">
