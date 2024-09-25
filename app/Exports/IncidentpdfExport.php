@@ -3,10 +3,10 @@
 namespace App\Exports;
 
 use App\Providers\InterfaceServiceProvider;
-use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Concerns\FromView;
+use Illuminate\Support\Facades\Storage;
+use Dompdf\Dompdf;
 
-class IncidentExport implements FromView
+class IncidentpdfExport
 {
     protected $list;
 
@@ -15,9 +15,10 @@ class IncidentExport implements FromView
         $this->list = $list;
     }
 
-    public function view(): View
+    public function generatePdf()
     {
-       
+        
+
         $list = $this->list->map(function ($incident) {
             return [
                 'DateEmission' => $incident->DateEmission, 
@@ -28,8 +29,18 @@ class IncidentExport implements FromView
                 'DateResolue' => $incident->DateResolue, 
             ];
         });
-        return view('viewadmindste.export.expincident', [
-            'list' => $list,
-        ]);
+        
+
+        $pdf = new Dompdf();
+        $pdf->loadHtml(view('viewadmindste.export.expincidentpdf', ['list' => $list])->render());
+        $pdf->setPaper('A4', 'landscape');
+        $pdf->render();
+
+        $filePath = 'exports/incident_export.pdf';
+        Storage::put($filePath, $pdf->output());
+
+        return $filePath;
     }
 }
+
+

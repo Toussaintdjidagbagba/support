@@ -13,9 +13,12 @@ use App\Models\Gestionincident;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportExcel;
+use App\Exports\IncidentExport;
+use App\Exports\IncidentpdfExport;
 use App\Providers\InterfaceServiceProvider;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class IncidentAdminController extends Controller
@@ -331,4 +334,39 @@ class IncidentAdminController extends Controller
             return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
         }
     }
+
+    //incident export
+	public function exportincident(Request $request)
+	{
+		try {
+
+            if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
+                $list = Incident::orderBy('incidents.created_at', 'desc')->paginate(100);
+            } else {
+                // Afficher les incidents reçu
+                $list = Incident::where("affecter", session("utilisateur")->affecter)->orderBy('incidents.created_at', 'desc')->paginate(100);
+            }
+
+            
+
+			$format = $request->format;
+	
+			// Générer le fichier en fonction du format demandé
+			switch ($format) {
+				case 'pdf':
+					$pdfExporter = new IncidentpdfExport($list);
+					$filePath = $pdfExporter->generatePdf();
+					$pdfContent = Storage::get($filePath);
+	
+					return response($pdfContent, 200)
+							->header('Content-Type', 'application/pdf')
+							->header('Content-Disposition', 'attachment; filename="IncidentExport.pdf"');
+				case 'xlsx':
+				default:
+					return Excel::download(new IncidentExport($list), 'IncidentExport.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+			}
+		} catch (\Exception $e) {
+			return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
+		}
+	}
 }
