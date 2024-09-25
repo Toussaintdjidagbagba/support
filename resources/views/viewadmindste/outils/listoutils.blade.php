@@ -25,8 +25,25 @@
                             <button type="button"
                                 style="margin-right: 30px; float: right; padding-right: 30px; padding-left: 30px;"
                                 class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal"
-                                data-target="#add">Ajouter</button>
+                                data-target="#add">Ajouter
+                            </button>
+                            <br>
                         </h2>
+                        <ul class="header-dropdown m-r--5">
+                            <li class="dropdown">
+                                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    <i class="material-icons">more_vert</i>
+                                </a>
+                                <ul class="dropdown-menu pull-right">
+                                    <li>
+                                        <a href="javascript:void(0);" id="outilsexp" onclick="paramoutils('xlsx')" >Exporter en Excel</a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);" onclick="paramoutils('pdf')">Exporter en PDF</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul><br><br>
                         <form action="{{ route('GO') }}" method="get" role="form">
                             <div class="input-group">
                                 <div class="form-line">
@@ -651,6 +668,28 @@
             } catch (error) {
                 document.getElementById("infoetat").innerHTML = error;
             }
+        }
+
+        function paramoutils(format) 
+        {
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("outils.export") }}';
+
+            var inputFormat = document.createElement('input');
+            inputFormat.type = 'hidden';
+            inputFormat.name = 'format';
+            inputFormat.value = format;
+            form.appendChild(inputFormat);
+
+            var csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+
+            document.body.appendChild(form);
+            form.submit();
         }
     </script>
 

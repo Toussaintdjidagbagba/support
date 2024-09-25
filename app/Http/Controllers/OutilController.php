@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\OutilsExport;
+use App\Exports\OutilspdfExport;
 use Illuminate\Http\Request;
 use App\Models\Outil;
 use App\Models\Trace;
@@ -11,7 +13,9 @@ use App\Providers\InterfaceServiceProvider;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OutilController extends Controller
 {
@@ -429,4 +433,33 @@ class OutilController extends Controller
             return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
         }
     }
+
+
+    //outils export
+	public function exportoutils(Request $request)
+	{
+		try {
+
+            $list = Outil::orderBy("categorie", "asc")->get();
+           
+			$format = $request->format;
+	
+			// Générer le fichier en fonction du format demandé
+			switch ($format) {
+				case 'pdf':
+					$pdfExporter = new OutilspdfExport($list);
+					$filePath = $pdfExporter->generatePdf();
+					$pdfContent = Storage::get($filePath);
+	
+					return response($pdfContent, 200)
+							->header('Content-Type', 'application/pdf')
+							->header('Content-Disposition', 'attachment; filename="OutilsExport.pdf"');
+				case 'xlsx':
+				default:
+					return Excel::download(new OutilsExport($list), 'OutilsExport.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+			}
+		} catch (\Exception $e) {
+			return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
+		}
+	}
 }

@@ -302,7 +302,6 @@ class IncidentAdminController extends Controller
         }
     }
 
-
     //incident export
 	public function exportincident(Request $request)
 	{

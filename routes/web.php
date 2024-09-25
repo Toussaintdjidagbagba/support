@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\CategorieOutilsController;
 use App\Http\Controllers\IncidentAdminController;
+use App\Http\Controllers\OutilController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -172,6 +175,7 @@ Route::group([
 
 	//////////////////////////////////** Les Exports **//////////////////////////
 	Route::post('export-incident', [IncidentAdminController::class, 'exportincident'])->name('incident.export');
+	Route::post('export-outils', [OutilController::class, 'exportoutils'])->name('outils.export');
 
 
 

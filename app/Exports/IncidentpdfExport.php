@@ -3,11 +3,8 @@
 namespace App\Exports;
 
 use App\Providers\InterfaceServiceProvider;
-use Carbon\Carbon;
-use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 use Dompdf\Dompdf;
-use Dompdf\Options;
 
 class IncidentpdfExport
 {
@@ -24,12 +21,12 @@ class IncidentpdfExport
 
         $list = $this->list->map(function ($incident) {
             return [
-                'DateEmission' => $incident->DateEmission, // Assurez-vous que ce champ existe
-                'Module' => $incident->Module, // Assurez-vous que ce champ existe
-                'hierachie' => InterfaceServiceProvider::LibelleHier($incident->hierarchie), // Ajustez selon votre logique
-                'emetteur' => InterfaceServiceProvider::LibelleUser($incident->Emetteur), // Ajustez selon votre logique
-                'etat' => InterfaceServiceProvider::libetat($incident->etat), // Ajustez selon votre logique
-                'DateResolue' => $incident->DateResolue, // Assurez-vous que ce champ existe
+                'DateEmission' => $incident->DateEmission, 
+                'Module' => $incident->Module, 
+                'hierachie' => InterfaceServiceProvider::LibelleHier($incident->hierarchie), 
+                'emetteur' => InterfaceServiceProvider::LibelleUser($incident->Emetteur), 
+                'etat' => InterfaceServiceProvider::libetat($incident->etat), 
+                'DateResolue' => $incident->DateResolue, 
             ];
         });
         
