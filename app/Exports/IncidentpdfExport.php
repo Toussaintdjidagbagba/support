@@ -21,12 +21,12 @@ class IncidentpdfExport
 
         $list = $this->list->map(function ($incident) {
             return [
-                'DateEmission' => $incident->DateEmission, 
+                'DateEmission' => InterfaceServiceProvider::formatDate($incident->DateEmission), 
                 'Module' => $incident->Module, 
                 'hierachie' => InterfaceServiceProvider::LibelleHier($incident->hierarchie), 
                 'emetteur' => InterfaceServiceProvider::LibelleUser($incident->Emetteur), 
-                'etat' => InterfaceServiceProvider::libetat($incident->etat), 
-                'DateResolue' => $incident->DateResolue, 
+                'etat' => InterfaceServiceProvider::libetat($incident->etat),
+                'DateResolue' => InterfaceServiceProvider::formatDate($incident->DateResolue), 
             ];
         });
         
@@ -42,5 +42,3 @@ class IncidentpdfExport
         return $filePath;
     }
 }
-
-
