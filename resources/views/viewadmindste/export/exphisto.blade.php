@@ -20,7 +20,7 @@
     <tbody>
         @foreach ($data as $hist)
         <tr>
-            <td style="vertical-align:middle; text-align: left; width: 180px; height:50px;"><b>{{ $hist->created_at ?? '___' }}</b></td>
+            <td style="vertical-align:middle; text-align: left; width: 180px; height:50px;"><b>{{ App\Providers\InterfaceServiceProvider::Dateformat($hist->created_at )?? '___' }}</b></td>
             <td style="vertical-align:middle; text-align: left; width: 551px; height:50px;">{{ $hist->libelle ?? '___' }}</td>
             <td style="vertical-align:middle; text-align: left; width: 200px; height:30px;">{{ $hist->nom . ' ' . $hist->prenom  ?? '___' }}</td>
         </tr>
