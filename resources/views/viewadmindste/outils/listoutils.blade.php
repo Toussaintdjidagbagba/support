@@ -31,12 +31,14 @@
                         </h2>
                         <ul class="header-dropdown m-r--5">
                             <li class="dropdown">
-                                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                    aria-haspopup="true" aria-expanded="false">
                                     <i class="material-icons">more_vert</i>
                                 </a>
                                 <ul class="dropdown-menu pull-right">
                                     <li>
-                                        <a href="javascript:void(0);" id="outilsexp" onclick="paramoutils('xlsx')" >Exporter en Excel</a>
+                                        <a href="javascript:void(0);" id="outilsexp" onclick="paramoutils('xlsx')">Exporter
+                                            en Excel</a>
                                     </li>
                                     <li>
                                         <a href="javascript:void(0);" onclick="paramoutils('pdf')">Exporter en PDF</a>
@@ -55,7 +57,6 @@
                                 </div>
                             </div>
                         </form>
-
                     </div>
                     <div class="body">
                         <div class="table-responsive" data-pattern="priority-columns">
@@ -144,10 +145,10 @@
                                                 @endif
 
                                                 @if (in_array('delete_outil', session('auto_action')))
-                                                    <button type="button" title="Supprimer"
+                                                    <button type="button" title="Supprimer",
+                                                        onclick="Delete(event, '{{ route('DIA', $out->id) }}','{{ $out->nameoutils }}')"
                                                         class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        data-toggle="modal" data-target="#deleteoutil"
-                                                        onclick="setdeleteoutils({{ $out->id }}, '{{ $out->nameoutils }}')">
+                                                        >
                                                         <i class="material-icons">delete_sweep</i></a> </button>
                                                 @endif
 
@@ -670,11 +671,10 @@
             }
         }
 
-        function paramoutils(format) 
-        {
+        function paramoutils(format) {
             var form = document.createElement('form');
             form.method = 'POST';
-            form.action = '{{ route("outils.export") }}';
+            form.action = '{{ route('outils.export') }}';
 
             var inputFormat = document.createElement('input');
             inputFormat.type = 'hidden';
@@ -690,6 +690,47 @@
 
             document.body.appendChild(form);
             form.submit();
+        }
+
+        async function Delete(event, url, libelle) {
+            event.preventDefault();
+            const {
+                isConfirmed
+            } = await Swal.fire({
+                title: 'Êtes-vous sûr de vouloir supprimer l\'outil <span class="text-danger">' + libelle + '</span> ?',
+                text: "Cette action est irréversible!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Oui, supprimer",
+                cancelButtonText: "Annuler",
+                customClass: {
+                    confirmButton: 'bg-confirm',
+                    cancelButton: 'bg-cancel'
+                }
+            });
+
+            if (isConfirmed) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'get',
+                        headers: {
+                            'Access-Control-Allow-Credentials': true,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    if (response.status == 200) {
+                        Swal.fire("Succès", "Incident supprimé avec succès", "success").then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        throw new Error('Erreur lors de la suppression');
+                    }
+                } catch (error) {
+                    Swal.fire("Erreur", "La suppression a échoué" + error);
+                }
+            }
         }
     </script>
 

@@ -3,9 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use DB;
 use Carbon\Carbon;
 use App\Models\Incident;
+use Illuminate\Support\Facades\DB;
 
 class InterfaceServiceProvider extends ServiceProvider
 {
@@ -32,8 +32,14 @@ class InterfaceServiceProvider extends ServiceProvider
         if($lib)
             return $lib->libelle;
         else
-            return "";
+            return 'En attente';
         //return DB::table('settings')->where("id", $id)->get();
+    }
+
+    public static function formatDate($date)
+    {
+        $dates = Carbon::parse($date)->locale('fr')->translatedFormat('d F Y \à H\h i\m');
+        return $dates;
     }
 
     public static function allutilisateurs(){
@@ -371,7 +377,7 @@ class InterfaceServiceProvider extends ServiceProvider
         if (isset($user->nom))
             return $user->nom.' '.$user->prenom;
         else
-            return "";
+            return "En attente";
     }
 
     public static function LibelleCategorie($id)
@@ -413,6 +419,33 @@ class InterfaceServiceProvider extends ServiceProvider
     public static function TempsCat($id)
     {
         return DB::table('categories')->where('id', $id)->first()->tmpCat;
+    }
+
+    public static function TempsCats($id, $created_at)
+    {
+        $delai = DB::table('categories')->where('id', $id)->first()->tmpCat; //recuperation du délai
+        $valeurDelai = (int)$delai;
+        $uniteDelai = 'h';
+
+        $secondesDelai = $valeurDelai * 3600;
+
+        $timestampEmission = strtotime($created_at); //je convertir la date de création en timestamp
+        $timestampLimite = $timestampEmission + $secondesDelai; // je calculer la date limite
+
+        $timestampNow = time();
+
+        // Calculer le temps restant
+        $tempsRestant = $timestampLimite - $timestampNow;
+
+        if ($tempsRestant > 0) {
+            $heuresRestantes = floor($tempsRestant / 3600);
+            $minutesRestantes = floor(($tempsRestant % 3600) / 60);
+            $secondesRestantes = $tempsRestant % 60;
+            $tempsRestantFormate = sprintf('%02d h %02d m %02d s', $heuresRestantes, $minutesRestantes, $secondesRestantes);
+        } else {
+            $tempsRestantFormate = "Temps écoulé";
+        }
+        return $tempsRestantFormate;
     }
 
     public static function AllHie()
