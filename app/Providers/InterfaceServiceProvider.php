@@ -42,6 +42,12 @@ class InterfaceServiceProvider extends ServiceProvider
         return $dates;
     }
 
+    public static function Dateformat($date)
+    {
+        $dates = Carbon::parse($date)->locale('fr')->translatedFormat('d F Y');
+        return $dates;
+    }
+
     public static function allutilisateurs(){
         return DB::table('utilisateurs')->get();
     }
@@ -71,7 +77,7 @@ class InterfaceServiceProvider extends ServiceProvider
         $maintenance = DB::table('maintenances')->where('id', $id)->first();
 
         if (isset($maintenance->id)) {
-            return $maintenance->periodedebut.' au '.$maintenance->periodefin;
+            return InterfaceServiceProvider::Dateformat($maintenance->periodedebut) . ' au ' . InterfaceServiceProvider::Dateformat($maintenance->periodefin);
         }else{
             return '';
         }

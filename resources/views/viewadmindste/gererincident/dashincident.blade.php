@@ -139,7 +139,7 @@
                                                 @endif
                                             </td>
 
-                                            <td>
+                                            <td class="d-flex justify-content-between align-items-center">
                                                 @if ($inc->piece != '')
                                                     @if (in_array('viewdoc_incie', session('auto_action')))
                                                         <button type="button"

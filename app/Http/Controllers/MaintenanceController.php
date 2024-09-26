@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportExcel;
 use App\Exports\ExportMaintenance;
+use App\Models\Service;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -22,20 +23,20 @@ class MaintenanceController extends Controller
 {
     public function list()
     {
-    	$list = Maintenance::all();
-    	return view('viewadmindste.maintenance.list', compact('list'));
+        $list = Maintenance::all();
+        $service = Service::all();
+        return view('viewadmindste.maintenance.list', compact('list', 'service'));
     }
 
     public function addmaintenance(Request $request)
     {
         if (!in_array("prog_maint", session("auto_action"))) {
             return view("vendor.error.649");
-        }else{
+        } else {
             try {
                 if (isset(DB::table('maintenances')->where('periodedebut', $request->pdm)->where('periodefin', $request->pfm)->first()->id)) {
                     return "Cette période de maintenance existe déjà!! ";
                 } else {
-
                     $messages = [
                         'pdm.required' => 'La période de début est requis.',
                         'pfm.required' => 'La période de fin est requise.',
@@ -48,7 +49,10 @@ class MaintenanceController extends Controller
                     ], $messages);
 
                     if ($validator->fails()) {
-                        return Back()->with('error', $validator->errors()->messages(), $request->all());
+                        $errors = $validator->errors()->all();
+                        $errorString = implode(' ', $errors);
+                        flash("Erreur : " . $errorString)->error();
+                        return $errorString;
                     }
                     $add = new Maintenance();
                     $add->periodedebut =  $request->pdm; // Période fin
@@ -57,19 +61,21 @@ class MaintenanceController extends Controller
                     $add->action = session("utilisateur")->idUser;
                     $add->save();
 
-                    $message = "Vous avez programmer une maintenance pour la période du " . $request->pdm . " au " . $request->pfm . " .";
+                    $message = "Vous avez programmer une maintenance pour la période du " . InterfaceServiceProvider::Dateformat($request->pdm) . " au " . InterfaceServiceProvider::Dateformat($request->pfm) . " .";
 
                     TraceController::setTrace($message, session("utilisateur")->idUser);
-
+                    flash("Succès : " . $message)->success();
                     // Envoie de message au utilisateur
-
-
                     return $message;
                 }
             } catch (QueryException $qe) {
-                return Back()->with('error', "Une erreur ses produites :" . $qe->getMessage());
+                $errorString = "Une erreur ses produites" .  $qe->getMessage();
+                flash("Erreur : " . $errorString)->error();
+                return $errorString;
             } catch (\Exception $e) {
-                return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+                $errorString = "Une erreur ses produites" .  $e->getMessage();
+                flash("Erreur : " . $errorString)->error();
+                return $errorString;
             }
         }
     }
@@ -81,7 +87,7 @@ class MaintenanceController extends Controller
                 return view("vendor.error.649");
             } else {
                 $maintenanceexitant = Maintenance::where('id', request('id'))->first();
-                $lib = $maintenanceexitant->periodedebut . " " . $maintenanceexitant->periodefin;
+                $lib = $maintenanceexitant->periodedebut . " au " . $maintenanceexitant->periodefin;
                 $occurence = json_encode(Maintenance::where('id', request('id'))->first());
 
                 TraceController::setTrace("Data existant : " . $occurence, session("utilisateur")->idUser);
@@ -97,30 +103,43 @@ class MaintenanceController extends Controller
                 ]);
 
                 $info = "Changement d'état effectif sur la maintenance de la période de " . $lib . " avec succès.";
+                flash("Succès : " . $message)->success();
                 return $info;
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
         }
     }
-
+    // setdeletemaintenance
     public function setdeletemaintenance(Request $request)
     {
         try {
             if (!in_array("delete_maint_prog", session("auto_action"))) {
                 return view("vendor.error.649");
             } else {
-                $lib = Maintenance::where('id', request('id'))->first()->periodedebut . " " . Maintenance::where('id', request('id'))->first()->periodefin;
-                $occurence = json_encode(Maintenance::where('id', request('id'))->first());
+                $maintenance = Maintenance::find($request->id);
+                if ($maintenance) {
+                    $lib = Maintenance::where('id', $request->id)->first()->periodedebut . " au " . Maintenance::where('id', $request->id)->first()->periodefin;
+                    $occurence = json_encode(Maintenance::where('id', $request->id)->first());
 
-                TraceController::setTrace("Data delete M : " . $occurence, session("utilisateur")->idUser);
+                    TraceController::setTrace("Data delete M : " . $occurence, session("utilisateur")->idUser);
 
-                Maintenance::where('id', request('id'))->delete();
-                $info = "Vous avez supprimé la mainteance de la période du " . $lib . " avec succès.";
-                return $info;
+                    Maintenance::where('id', $request->id)->delete();
+                    $info = "Vous avez supprimé la mainteance de la période du " . $lib . " avec succès.";
+                    flash($info)->success();
+                    return  $info;
+                } else {
+                    $info = "Maintenance introuvable.";
+                    flash($info)->error();
+                    return $info;
+                }
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            $info = "Une erreur ses produites :" . $e->getMessage();
+            flash($info)->error();
+            return $info;
         }
     }
 
@@ -152,22 +171,33 @@ class MaintenanceController extends Controller
 
                 return $message;
             }
+        } catch (QueryException $qe) {
+            $errorString = "Une erreur ses produites" .  $qe->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
         }
     }
 
-    public function listesordinateurs(Request $request){
+    public function listesordinateurs(Request $request)
+    {
         try {
             $list = Gestionmaintenance::where("maintenance", $request->id)->get();
             $periode = $request->id;
-            return view('viewadmindste.maintenance.listordinateur', compact('list', 'periode'));
+            $existe = $list->count();
+            return view('viewadmindste.maintenance.listordinateur', compact('list', 'periode', 'existe'));
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return Back();
         }
     }
 
-    public function listordinateurmaintenance(Request $request){
+    public function listordinateurmaintenance(Request $request)
+    {
         try {
             $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")->where("outils.user", session("utilisateur")->idUser)->get();
             return view('viewadmindste.maintenance.listmaintenance', compact('list'));
@@ -213,25 +243,37 @@ class MaintenanceController extends Controller
         }
     }
 
-    public function setdeletegmaintenance(Request $request){
+    public function setdeletegmaintenance(Request $request)
+    {
         try {
             if (!in_array("delete_maint_admin", session("auto_action"))) {
                 return view("vendor.error.649");
             } else {
-                $occurence = json_encode(Gestionmaintenance::where('id', request('id'))->first());
+                $existe = Gestionmaintenance::find($request->id);
+                if ($existe) {
+                    $occurence = json_encode(Gestionmaintenance::where('id', $request->id)->first());
 
-                TraceController::setTrace("Data delete GM : " . $occurence, session("utilisateur")->idUser);
+                    TraceController::setTrace("Data delete GM : " . $occurence, session("utilisateur")->idUser);
 
-                Gestionmaintenance::where('id', request('id'))->delete();
-                $info = "Suppression effectué avec succès.";
-                return $info;
+                    Gestionmaintenance::where('id', $request->id)->delete();
+                    $info = "Suppression effectué avec succès.";
+                    flash($info)->success();
+                    return $info;
+                } else {
+                    $info = "Maintenance introuvable.";
+                    flash($info)->error();
+                    return $info;
+                }
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
         }
     }
 
-    public function setupdatedefinitionmaintenances(Request $request){
+    public function setupdatedefinitionmaintenances(Request $request)
+    {
         try {
             if (!in_array("update_maint_admin", session("auto_action"))) {
                 return view("vendor.error.649");
@@ -251,7 +293,7 @@ class MaintenanceController extends Controller
                     "detailjson" => $request->maint
                 ]);
 
-                $message = "Vous avez modifiée les informations de la période du " . $periode->periodedebut . " au " . $periode->periodefin . " sur l'ordinateur " . $ordinateur->nameoutils . ".";
+                $message = "Vous avez modifiée les informations de la période du " . InterfaceServiceProvider::Dateformat($periode->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($periode->periodefin) . " sur l'ordinateur " . $ordinateur->nameoutils . ".";
                 TraceController::setTrace($message, session("utilisateur")->idUser);
 
                 return $message;
@@ -261,7 +303,8 @@ class MaintenanceController extends Controller
         }
     }
 
-    public function validecommentaire(Request $request){
+    public function validecommentaire(Request $request)
+    {
 
         try {
             Gestionmaintenance::where('id', $request->anormalieid)->update(
@@ -276,10 +319,10 @@ class MaintenanceController extends Controller
         } catch (\Exception $e) {
             return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
         }
-        
     }
 
-    public function exportexcel(Request $request){
+    public function exportexcel(Request $request)
+    {
         try {
             $list = Gestionmaintenance::where("maintenance", $request->id)->get();
             $periode = $request->id;
@@ -307,7 +350,8 @@ class MaintenanceController extends Controller
         }
     }
 
-    public function getexportmaintenancepdf(Request $request){
+    public function getexportmaintenancepdf(Request $request)
+    {
         try {
             $id = $request->id;
 

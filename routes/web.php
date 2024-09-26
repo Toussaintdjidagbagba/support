@@ -155,8 +155,8 @@ Route::group([
 	//////////////////////////////////** Maintenance préventive **/////////////////////////////////////
 	Route::get('/listmaintenance', 'App\Http\Controllers\MaintenanceController@list')->name('GMPC');
 	Route::post('/programmermaintenance', 'App\Http\Controllers\MaintenanceController@addmaintenance')->name('SMPC');
-	Route::post('/definitionetatmaintenance', 'App\Http\Controllers\MaintenanceController@setdefinitionetatmaintenance')->name('DEPC');
 	Route::post('/deletemaintenance', 'App\Http\Controllers\MaintenanceController@setdeletemaintenance')->name('DPC');
+	Route::post('/definitionetatmaintenance', 'App\Http\Controllers\MaintenanceController@setdefinitionetatmaintenance')->name('DEPC');
 	Route::post('/updatemaintenance', 'App\Http\Controllers\MaintenanceController@setupdatemaintenance')->name('UPC');
 	Route::get('/detailmaintenances', 'App\Http\Controllers\MaintenanceController@listesordinateurs')->name('GMDPC');
 	Route::get('/exportmaintenances', 'App\Http\Controllers\MaintenanceController@exportexcel')->name('EMPC');

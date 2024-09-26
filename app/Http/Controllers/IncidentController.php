@@ -145,7 +145,9 @@ class IncidentController extends Controller
                 return Back();
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            $info = "Une erreur ses produites :" . $e->getMessage();
+            flash($info);
+            return Back();
         }
     }
 
