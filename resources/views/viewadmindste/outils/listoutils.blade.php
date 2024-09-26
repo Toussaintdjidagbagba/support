@@ -879,11 +879,22 @@
                             <div class="table-responsive" data-pattern="priority-columns">
                                 <table id="tech-companies-1" class="table table-small-font table-bordered table-striped">
                                     <thead>
-                                        <button type="button" style="float: right;"
-                                            class="btn bg-deep-orange waves-effect">
-                                            <i class="material-icons">cloud_download</i>
+                                   
+
+                                        <button type="button" class="btn btn-default waves-effect dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: right;">
+                                            EXPORTER
+                                            <span class="caret"></span>
                                         </button>
-                                        <br><br>
+                                        <ul class="dropdown-menu pull-right" style=" position: relative; top: 68px; left:100px;">
+                                            <li>
+                                                <a href="javascript:void(0);" id="histoexp" onclick="paramhisto('xlsx')" >Excel</a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" onclick="paramhisto('pdf')">PDF</a>
+                                            </li>
+                                        </ul>
+                                       
+                                        <br><br><br>
                                         <tr>
                                             <th data-priority="1">Date</th>
                                             <th data-priority="1">Traces</th>
