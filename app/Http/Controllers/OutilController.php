@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\HistoExport;
+use App\Exports\OutilhistopdfExport;
 use App\Exports\OutilsExport;
 use App\Exports\OutilspdfExport;
 use Illuminate\Http\Request;
@@ -16,6 +18,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
+
 
 class OutilController extends Controller
 {
@@ -33,6 +36,7 @@ class OutilController extends Controller
         }
         $list = $lists->paginate(10);
         return view('viewadmindste.outils.listoutils', compact('list'));
+       
     }
 
     public function getallchamp(Request $request)
@@ -191,7 +195,10 @@ class OutilController extends Controller
             if (!in_array("hist_outil", session("auto_action"))) {
                 return view("vendor.error.649");
             } else {
-                return json_encode(["data" => DB::table('traces')->join('utilisateurs', "utilisateurs.idUser", "=", "traces.action")->select('nom', 'prenom', 'libelle', 'traces.created_at as created_at')->where('type', "outil")->where("idsec", $request->id)->get()]);
+                return json_encode(["data" => DB::table('traces')
+                ->join('utilisateurs', "utilisateurs.idUser", "=", "traces.action")
+                ->select('nom', 'prenom', 'libelle', 'traces.created_at as created_at')
+                ->where('type', "outil")->where("idsec", $request->id)->get()]);
             }
         } catch (\Exception $e) {
             return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
@@ -462,4 +469,41 @@ class OutilController extends Controller
 			return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
 		}
 	}
+
+
+	//export outils historique
+	public function expoutilhisto(Request $request)
+	{
+		try 
+        {
+            $data = DB::table('traces')
+                    ->join('utilisateurs', 'utilisateurs.idUser', '=', 'traces.action') // Correction ici
+                    ->join('outils', 'outils.id', '=', 'traces.idsec') // Si vous voulez inclure la table 'outils'
+                    ->select('nom', 'prenom', 'libelle', 'traces.created_at as created_at', 'outils.nameoutils')
+                    ->where('traces.type', 'outil')
+                    ->where('traces.idsec', $request->idhisto)
+                    ->get();
+             
+            $format = $request->format;
+	
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new OutilhistopdfExport($data);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+                
+                    return response($pdfContent, 200)
+                    ->header('Content-Type', 'application/pdf')
+                    ->header('Content-Disposition', 'attachment; filename="HistoriqueOutilsExport.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new HistoExport($data), 'HistoriqueOutilsExport.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+
+		} catch (\Exception $e) {
+			return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
+		}
+	}
+
 }

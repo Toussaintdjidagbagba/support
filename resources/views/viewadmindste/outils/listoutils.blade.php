@@ -424,6 +424,7 @@
         }
 
         async function gethistorique(id, outil) {
+            
             document.getElementById('infohistoriqueoutils').innerHTML = "L'historique de " + outil + " : ";
             try {
                 let response = await fetch("{{ route('GHO') }}?id=" + id, {
@@ -450,6 +451,8 @@
                         '<tr> <td colspan="2"><center> Aucune action effectuée sur cet outil. </center> </td> </tr>';
                     else
                         document.getElementById('contenuhist').innerHTML = contenu;
+                        document.getElementById('idhist').value = id;
+
                 } else {
                     return "";
                 }
@@ -728,10 +731,68 @@
                         throw new Error('Erreur lors de la suppression');
                     }
                 } catch (error) {
-                    Swal.fire("Erreur", "La suppression a échoué" + error);
+                    Swal.fire("Erreur", "La suppression a échouée" + error);
                 }
             }
         }
+
+        function paramhisto(format) 
+        {
+            var idhisto = document.getElementById('idhist').value;
+       
+            var form = document.createElement('form');
+            form.method = 'GET'; 
+            form.action = '{{ route("outilshisto.export") }}';
+
+            var inputId = document.createElement('input');
+            inputId.type = 'hidden';
+            inputId.name = 'idhisto';
+            inputId.value = idhisto; 
+            form.appendChild(inputId);
+
+            var inputFormat = document.createElement('input');
+            inputFormat.type = 'hidden';
+            inputFormat.name = 'format';
+            inputFormat.value = format;
+            form.appendChild(inputFormat);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+
+        // function paramhisto(format) 
+        // {
+        //     var idhisto = document.getElementById('idhist').value;
+        //     // console.log(idhisto);
+
+        //     var form = document.createElement('form');
+        //     form.method = 'POST';
+        //     form.action = '{{ route("outilshisto.export") }}';
+
+        //     var inputId = document.createElement('input');
+        //     inputId.type = 'hidden';
+        //     inputId.name = 'idhisto';
+        //     inputId.value = idhisto; 
+        //     form.appendChild(inputId);
+
+          
+        //     var inputFormat = document.createElement('input');
+        //     inputFormat.type = 'hidden';
+        //     inputFormat.name = 'format';
+        //     inputFormat.value = format;
+        //     form.appendChild(inputFormat);
+        //     form.appendChild(idhisto);
+
+        //     var csrfToken = document.createElement('input');
+        //     csrfToken.type = 'hidden';
+        //     csrfToken.name = '_token';
+        //     csrfToken.value = '{{ csrf_token() }}';
+        //     form.appendChild(csrfToken);
+
+        //     document.body.appendChild(form);
+        //     form.submit();
+        // }
     </script>
 
 @endsection
@@ -920,11 +981,22 @@
                             <div class="table-responsive" data-pattern="priority-columns">
                                 <table id="tech-companies-1" class="table table-small-font table-bordered table-striped">
                                     <thead>
-                                        <button type="button" style="float: right;"
-                                            class="btn bg-deep-orange waves-effect">
-                                            <i class="material-icons">cloud_download</i>
+                                   
+                                        <button type="button" class="btn btn-default waves-effect dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: right;">
+                                            EXPORTER
+                                            <span class="caret"></span>
                                         </button>
-                                        <br><br>
+                                        <input type="hidden" id="idhist">
+                                        <ul class="dropdown-menu pull-right" style=" position: relative; top: 68px; left:100px;">
+                                            <li>
+                                                <a href="javascript:void(0);" id="histoexp" onclick="paramhisto('xlsx')" >Excel</a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" onclick="paramhisto('pdf')">PDF</a>
+                                            </li>
+                                        </ul>
+                                       
+                                        <br><br><br>
                                         <tr>
                                             <th data-priority="1">Date</th>
                                             <th data-priority="1">Traces</th>
