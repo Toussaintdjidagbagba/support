@@ -346,9 +346,7 @@ class IncidentAdminController extends Controller
                 // Afficher les incidents reçu
                 $list = Incident::where("affecter", session("utilisateur")->affecter)->orderBy('incidents.created_at', 'desc')->paginate(100);
             }
-
             
-
 			$format = $request->format;
 	
 			// Générer le fichier en fonction du format demandé

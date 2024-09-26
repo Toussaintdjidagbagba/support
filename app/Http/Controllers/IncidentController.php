@@ -202,4 +202,5 @@ class IncidentController extends Controller
             return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
         }
     }
+
 }
