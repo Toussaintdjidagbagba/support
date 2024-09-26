@@ -176,6 +176,9 @@ Route::group([
 	//////////////////////////////////** Les Exports **//////////////////////////
 	Route::post('export-incident', [IncidentAdminController::class, 'exportincident'])->name('incident.export');
 	Route::post('export-outils', [OutilController::class, 'exportoutils'])->name('outils.export');
+	//Route::post('export-outilshisto', [OutilController::class, 'expoutilhisto'])->name('outilshisto.export');
+	Route::get('/outilshisto/export', 'App\Http\Controllers\OutilController@expoutilhisto')->name('outilshisto.export');
+
 
 
 
