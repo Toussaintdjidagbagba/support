@@ -728,7 +728,7 @@
                         throw new Error('Erreur lors de la suppression');
                     }
                 } catch (error) {
-                    Swal.fire("Erreur", "La suppression a échoué" + error);
+                    Swal.fire("Erreur", "La suppression a échouée" + error);
                 }
             }
         }
