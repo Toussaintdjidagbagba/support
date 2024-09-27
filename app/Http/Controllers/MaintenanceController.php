@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportExcel;
 use App\Exports\ExportMaintenance;
+use App\Exports\MaintPreventiveExport;
 use App\Models\ActionOutil;
 use App\Models\Service;
 use Illuminate\Database\QueryException;
@@ -200,7 +201,11 @@ class MaintenanceController extends Controller
     public function listordinateurmaintenance(Request $request)
     {
         try {
-            $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")->where("outils.user", session("utilisateur")->idUser)->get();
+            $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
+                ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
+                ->where("outils.user", session("utilisateur")->idUser)
+                ->get();
+
             return view('viewadmindste.maintenance.listmaintenance', compact('list'));
         } catch (\Exception $e) {
             return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
@@ -363,6 +368,40 @@ class MaintenanceController extends Controller
             dd($periode);
         } catch (\Exception $e) {
             return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+        }
+    }
+
+    //export maintenance preventive
+    public function expmaintpre(Request $request)
+    {
+        try {
+
+            $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
+                ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
+                ->where("outils.user", session("utilisateur")->idUser)
+                ->where("gestionmaintenances.id", $request->idmprev)
+                ->get();
+
+            //dd($list);       
+
+            $format = $request->format;
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new MaintPreventiveExport($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="MaintenancePreventive.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new MaintPreventiveExport($list), 'MaintenancePreventive.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
         }
     }
 }

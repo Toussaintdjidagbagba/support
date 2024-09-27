@@ -6,22 +6,22 @@ use Illuminate\Support\Facades\Storage;
 use Dompdf\Dompdf;
 
 
-class OutilhistopdfExport
+class MaintPreventiveExport
 {
-    protected $data;
+    protected $list;
     
-    public function __construct($data)
+    public function __construct($list)
     {
-        $this->data = $data;
+        $this->list = $list;
         
     }
 
     public function generatePdf()
     {
-        $data = $this->data;
+        $list = $this->list;
 
         $pdf = new Dompdf();
-        $pdf->loadHtml(view('viewadmindste.export.exphistopdf', compact('data'))->render());
+        $pdf->loadHtml(view('viewadmindste.export.expmaintprev', compact('list'))->render());
         $pdf->render();
 
         $filePath = 'exports/HistorOutils_export.pdf';

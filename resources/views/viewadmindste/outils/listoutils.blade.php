@@ -205,7 +205,8 @@
                                                                                 @if (count($actions) != 0)
                                                                                     @for ($i = 0; $i < count($actions); $i++)
                                                                                         <span
-                                                                                            class="alert alert-info alert-block pull-left" style="font-weight: bold">
+                                                                                            class="alert alert-info alert-block pull-left"
+                                                                                            style="font-weight: bold">
                                                                                             {{ $actions[$i]->libelle ?? 'Aucune liste disponible' }}
                                                                                         </span>
                                                                                     @endfor
