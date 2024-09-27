@@ -415,6 +415,23 @@
                 }
             }
         }
+
+        async function selecteOutils(params) {
+            var selectedOutilsId = params;
+            console.log(selectedOutilsId);
+
+            // Masquer toutes les listes d'actions
+            document.querySelectorAll('.actions-list').forEach(function(list) {
+                list.classList.add('hidden');
+            });
+
+            // Afficher la liste d'actions correspondant a l'outils sélectionné
+            var selectedActionsList = document.querySelector('.actions-list[data-outils-id="' + selectedOutilsId +
+                '"]');
+            if (selectedActionsList) {
+                selectedActionsList.classList.remove('hidden');
+            }
+        }
     </script>
 @endsection
 
@@ -462,7 +479,8 @@
                                     @php
                                         $allordinateur = App\Providers\InterfaceServiceProvider::getordinateur();
                                     @endphp
-                                    <select type="text" id="ordinateur" name="ordinateur" class="form-control">
+                                    <select id="ordinateur" onchange="selecteOutils(this.value)" name="ordinateur"
+                                        class="form-control">
                                         <option value="0">Sélectionner un outil</option>
                                         @foreach ($allordinateur as $ordinateur)
                                             <option value="{{ $ordinateur->id }}"> {{ $ordinateur->nameoutils }}
@@ -497,9 +515,10 @@
                             </div>
                         </div>
                     </div>
-
+                    <!-- Affichage des actions basées sur l'outils sélectionné -->
                     <div class="row clearfix">
-                        <div class="col-md-6">
+                        
+                        <div class="col-md-6 actions-list hidden" data-outils-id="2">
                             <input type="checkbox" id="sft" name="maint" value="sft"
                                 class="filled-in chk-col-brown" />
                             <label for="sft">Suppression des fichiers temporaire</label> <br>
@@ -522,7 +541,7 @@
                                 class="filled-in chk-col-brown" />
                             <label for="atv">Antivirus</label> <br>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 actions-list hidden" data-outils-id="6">
                             <input type="checkbox" id="duc" name="maint" value="duc"
                                 class="filled-in chk-col-brown" />
                             <label for="duc">Dépoussièrer Unité Centrale</label> <br>
