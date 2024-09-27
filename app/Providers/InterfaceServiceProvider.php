@@ -95,6 +95,15 @@ class InterfaceServiceProvider extends ServiceProvider
     public static function LibService($id){
         return DB::table('services')->where('id', $id)->first()->libelle;
     }
+
+    public static function recupactionsoutils($id)
+    {
+        $actions =  DB::table('action_outils')->where('Outils', $id)->get();
+        if ($actions != "" && $actions != null) {
+            return $actions;
+        }
+        return $actions = "";
+    }
     
     public static function destinataire(){
         $alluser = DB::table('utilisateurs')->select('mail as mailR')->where('activereceiveincident', 0)->get();

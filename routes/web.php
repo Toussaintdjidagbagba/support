@@ -139,6 +139,7 @@ Route::group([
 	Route::get('/listoutils', 'App\Http\Controllers\OutilController@list')->name('GO');
 	Route::get('/getchampcat', 'App\Http\Controllers\OutilController@getallchamp')->name('GCCO');
 	Route::post('/outil', 'App\Http\Controllers\OutilController@add')->name('AO');
+	Route::post('/outil/actions', 'App\Http\Controllers\OutilController@addactionsoutils')->name('AAO');
 	Route::post('/affectation', 'App\Http\Controllers\OutilController@affectUserInOutil')->name('PAOU');
 	Route::get('/getallusers', 'App\Http\Controllers\OutilController@getalluserssys')->name('GAUS');
 	Route::post('/reaffectation', 'App\Http\Controllers\OutilController@reaffecteruser')->name('RAOU');

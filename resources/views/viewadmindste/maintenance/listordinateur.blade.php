@@ -416,19 +416,21 @@
             }
         }
 
-        async function selecteOutils(params) {
+        async function selecteOutils(event,params) {
+            event.preventDefault();
             var selectedOutilsId = params;
             console.log(selectedOutilsId);
-
+            
             // Masquer toutes les listes d'actions
             document.querySelectorAll('.actions-list').forEach(function(list) {
                 list.classList.add('hidden');
             });
-
+            
             // Afficher la liste d'actions correspondant a l'outils sélectionné
             var selectedActionsList = document.querySelector('.actions-list[data-outils-id="' + selectedOutilsId +
-                '"]');
+            '"]');
             if (selectedActionsList) {
+                console.log(selectedActionsList);
                 selectedActionsList.classList.remove('hidden');
             }
         }
@@ -479,7 +481,7 @@
                                     @php
                                         $allordinateur = App\Providers\InterfaceServiceProvider::getordinateur();
                                     @endphp
-                                    <select id="ordinateur" onchange="selecteOutils(this.value)" name="ordinateur"
+                                    <select id="ordinateur" onchange="selecteOutils(event,this.value)" name="ordinateur"
                                         class="form-control">
                                         <option value="0">Sélectionner un outil</option>
                                         @foreach ($allordinateur as $ordinateur)
@@ -517,31 +519,13 @@
                     </div>
                     <!-- Affichage des actions basées sur l'outils sélectionné -->
                     <div class="row clearfix">
-                        
-                        <div class="col-md-6 actions-list hidden" data-outils-id="2">
-                            <input type="checkbox" id="sft" name="maint" value="sft"
-                                class="filled-in chk-col-brown" />
-                            <label for="sft">Suppression des fichiers temporaire</label> <br>
-                            <input type="checkbox" id="mjw" name="maint" value="mjw"
-                                class="filled-in chk-col-brown" />
-                            <label for="mjw">Mise à jour Windows</label> <br>
-                            <input type="checkbox" id="dfg" name="maint" value="dfg"
-                                class="filled-in chk-col-brown" />
-                            <label for="dfg">Défragmentation</label> <br>
-                            <input type="checkbox" id="rdd" name="maint" value="rdd"
-                                class="filled-in chk-col-brown" />
-                            <label for="rdd">Réparation des disques</label> <br>
-                            <input type="checkbox" id="edd" name="maint" value="edd"
-                                class="filled-in chk-col-brown" />
-                            <label for="edd">Etat de disque</label> <br>
-                            <input type="checkbox" id="epdd" name="maint" value="epdd"
-                                class="filled-in chk-col-brown" />
-                            <label for="epdd">Espace de disque</label> <br>
-                            <input type="checkbox" id="atv" value="atv" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="atv">Antivirus</label> <br>
-                        </div>
+                        @php
+                            $allordinateur = App\Providers\InterfaceServiceProvider::getordinateur();
+                        @endphp
                         <div class="col-md-6 actions-list hidden" data-outils-id="6">
+                            
+                        </div>
+                        <div class="col-md-6 actions-list hidden" data-outils-id="2">
                             <input type="checkbox" id="duc" name="maint" value="duc"
                                 class="filled-in chk-col-brown" />
                             <label for="duc">Dépoussièrer Unité Centrale</label> <br>

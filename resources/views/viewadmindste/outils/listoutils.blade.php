@@ -135,6 +135,102 @@
                                                         <i class="material-icons">book</i></a>
                                                     </button>
                                                 @endif
+                                                @if (in_array('caract_outil', session('auto_action')))
+                                                    <button type="button" title="Ajouter action"
+                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
+                                                        data-toggle="modal" data-target="#action{{ $out->id }}"> <i
+                                                            class="material-icons">add</i></a>
+                                                    </button>
+                                                    <div class="modal fade" id="action{{ $out->id }}" tabindex="-1"
+                                                        role="dialog" aria-labelledby="myModalLabel{{ $out->id }}">
+                                                        <div class="modal-dialog" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <button type="button" class="close"
+                                                                        data-dismiss="modal" aria-label="Close"><span
+                                                                            aria-hidden="true">&times;</span></button>
+                                                                    <h4 class="modal-title"
+                                                                        id="myModalLabel{{ $out->id }}">Ajout
+                                                                        d'action a l'outils : {{ $out->nameoutils }}</h4>
+                                                                </div>
+                                                                <div class="modal-body">
+
+                                                                    <label id="infoaction{{ $out->id }}"></label>
+                                                                    <form method="post" role="form"
+                                                                        id="formaction{{ $out->id }}">
+                                                                        <input type="hidden"
+                                                                            id="_token{{ $out->id }}" name="_token"
+                                                                            value="{{ csrf_token() }}" />
+                                                                        <input type="hidden" name="idoutils"
+                                                                            id="idoutils{{ $out->id }}"
+                                                                            value="{{ $out->id }}">
+                                                                        <div class="row clearfix">
+                                                                            <div class="col-md-6">
+                                                                                <label
+                                                                                    for="libelleaction{{ $out->id }}">Libellé
+                                                                                    action</label>
+                                                                                <div class="form-group">
+                                                                                    <div class="form-line">
+                                                                                        <input type="text"
+                                                                                            id="libelleaction{{ $out->id }}"
+                                                                                            name="libelleaction"
+                                                                                            class="form-control"
+                                                                                            placeholder="">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <label
+                                                                                    for="codeaction{{ $out->id }}">Code
+                                                                                    action </label>
+                                                                                <div class="form-group">
+                                                                                    <div class="form-line">
+                                                                                        <input type="text"
+                                                                                            id="codeaction{{ $out->id }}"
+                                                                                            name="codeaction"
+                                                                                            class="form-control"
+                                                                                            placeholder="">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row clearfix">
+                                                                            @php
+                                                                                $actions = App\Providers\InterfaceServiceProvider::recupactionsoutils(
+                                                                                    $out->id,
+                                                                                );
+                                                                            @endphp
+                                                                            Les actions de l'outils actuel
+                                                                            <div class="col-md-12">
+                                                                                @if (count($actions) != 0)
+                                                                                    @for ($i = 0; $i < count($actions); $i++)
+                                                                                        <span
+                                                                                            class="alert alert-info alert-block pull-left" style="font-weight: bold">
+                                                                                            {{ $actions[$i]->libelle ?? 'Aucune liste disponible' }}
+                                                                                        </span>
+                                                                                    @endfor
+                                                                                @else
+                                                                                    <span class="pull-left ml-2">
+                                                                                        Aucune action disponible pour cet
+                                                                                        outil.
+                                                                                    </span>
+                                                                                @endif
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button"
+                                                                        class="btn btn-default btn-sm waves-effect waves-light"
+                                                                        data-dismiss="modal">FERMER</button>
+                                                                    <button onclick="valideaction(event)"
+                                                                        data-Id="{{ $out->id }}"
+                                                                        class="btn bg-deep-orange waves-effect">AJOUTER</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
                                                 @if (in_array('update_caract_outil', session('auto_action')))
                                                     <button type="button" title="Modifier"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
@@ -147,8 +243,7 @@
                                                 @if (in_array('delete_outil', session('auto_action')))
                                                     <button type="button" title="Supprimer",
                                                         onclick="Delete(event, '{{ route('DIA', $out->id) }}','{{ $out->nameoutils }}')"
-                                                        class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        >
+                                                        class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
                                                         <i class="material-icons">delete_sweep</i></a> </button>
                                                 @endif
 
@@ -424,7 +519,7 @@
         }
 
         async function gethistorique(id, outil) {
-            
+
             document.getElementById('infohistoriqueoutils').innerHTML = "L'historique de " + outil + " : ";
             try {
                 let response = await fetch("{{ route('GHO') }}?id=" + id, {
@@ -451,7 +546,7 @@
                         '<tr> <td colspan="2"><center> Aucune action effectuée sur cet outil. </center> </td> </tr>';
                     else
                         document.getElementById('contenuhist').innerHTML = contenu;
-                        document.getElementById('idhist').value = id;
+                    document.getElementById('idhist').value = id;
 
                 } else {
                     return "";
@@ -700,7 +795,8 @@
             const {
                 isConfirmed
             } = await Swal.fire({
-                title: 'Êtes-vous sûr de vouloir supprimer l\'outil <span class="text-danger">' + libelle + '</span> ?',
+                title: 'Êtes-vous sûr de vouloir supprimer l\'outil <span class="text-danger">' + libelle +
+                    '</span> ?',
                 text: "Cette action est irréversible!",
                 icon: "warning",
                 showCancelButton: true,
@@ -736,18 +832,17 @@
             }
         }
 
-        function paramhisto(format) 
-        {
+        function paramhisto(format) {
             var idhisto = document.getElementById('idhist').value;
-       
+
             var form = document.createElement('form');
-            form.method = 'GET'; 
-            form.action = '{{ route("outilshisto.export") }}';
+            form.method = 'GET';
+            form.action = '{{ route('outilshisto.export') }}';
 
             var inputId = document.createElement('input');
             inputId.type = 'hidden';
             inputId.name = 'idhisto';
-            inputId.value = idhisto; 
+            inputId.value = idhisto;
             form.appendChild(inputId);
 
             var inputFormat = document.createElement('input');
@@ -760,39 +855,66 @@
             form.submit();
         }
 
+        async function valideaction(event) {
+            event.preventDefault();
 
-        // function paramhisto(format) 
-        // {
-        //     var idhisto = document.getElementById('idhist').value;
-        //     // console.log(idhisto);
+            var target = event.currentTarget;
+            var idOutils = target.getAttribute('data-Id') ?? "";
 
-        //     var form = document.createElement('form');
-        //     form.method = 'POST';
-        //     form.action = '{{ route("outilshisto.export") }}';
+            let infoAction = document.getElementById('infoaction' + idOutils);
+            var token = document.getElementById("_token" + idOutils).value;
+            let lib = document.getElementById('libelleaction' + idOutils).value;
+            let code = document.getElementById('codeaction' + idOutils).value;
 
-        //     var inputId = document.createElement('input');
-        //     inputId.type = 'hidden';
-        //     inputId.name = 'idhisto';
-        //     inputId.value = idhisto; 
-        //     form.appendChild(inputId);
+            let erreurs = "";
+            if (lib === "") {
+                erreurs += "Veillez renseigner le champs  Libelle Action !\n";
+            }
+            if (code === "") {
+                erreurs += "Veillez renseigner le champs Code Action\n !";
+            }
 
-          
-        //     var inputFormat = document.createElement('input');
-        //     inputFormat.type = 'hidden';
-        //     inputFormat.name = 'format';
-        //     inputFormat.value = format;
-        //     form.appendChild(inputFormat);
-        //     form.appendChild(idhisto);
+            if (erreurs !== "") {
+                infoAction.innerHTML =
+                    "<div class='alert alert-danger alert-block'>" + erreurs + ".. \n</div>";
+            } else {
+                infoAction.innerHTML = "";
 
-        //     var csrfToken = document.createElement('input');
-        //     csrfToken.type = 'hidden';
-        //     csrfToken.name = '_token';
-        //     csrfToken.value = '{{ csrf_token() }}';
-        //     form.appendChild(csrfToken);
+                try {
 
-        //     document.body.appendChild(form);
-        //     form.submit();
-        // }
+                    data = {
+                        _token: token,
+                        idOutils: idOutils,
+                        libelleaction: lib,
+                        codeaction: code,
+                    };
+                    const response = await fetch("{{ route('AAO') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Access-Control-Allow-Credentials': true,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.status == 200) {
+                        message = await response.text();
+                        infoAction.innerHTML =
+                            '<div class="alert alert-success alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>' +
+                            message + '</strong></div>';
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 3000);
+                    } else {
+                        throw new Error('Erreur lors de l\'ajout de l\'action : ' + data['libelleaction']);
+                    }
+                } catch (error) {
+                    infoAction.innerHTML =
+                        "<div class='alert alert-danger alert-block'>" + error + ".. \n</div>";
+                }
+            }
+        }
     </script>
 
 @endsection
@@ -981,21 +1103,25 @@
                             <div class="table-responsive" data-pattern="priority-columns">
                                 <table id="tech-companies-1" class="table table-small-font table-bordered table-striped">
                                     <thead>
-                                   
-                                        <button type="button" class="btn btn-default waves-effect dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: right;">
+
+                                        <button type="button" class="btn btn-default waves-effect dropdown-toggle"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            style="float: right;">
                                             EXPORTER
                                             <span class="caret"></span>
                                         </button>
                                         <input type="hidden" id="idhist">
-                                        <ul class="dropdown-menu pull-right" style=" position: relative; top: 68px; left:100px;">
+                                        <ul class="dropdown-menu pull-right"
+                                            style=" position: relative; top: 68px; left:100px;">
                                             <li>
-                                                <a href="javascript:void(0);" id="histoexp" onclick="paramhisto('xlsx')" >Excel</a>
+                                                <a href="javascript:void(0);" id="histoexp"
+                                                    onclick="paramhisto('xlsx')">Excel</a>
                                             </li>
                                             <li>
                                                 <a href="javascript:void(0);" onclick="paramhisto('pdf')">PDF</a>
                                             </li>
                                         </ul>
-                                       
+
                                         <br><br><br>
                                         <tr>
                                             <th data-priority="1">Date</th>
