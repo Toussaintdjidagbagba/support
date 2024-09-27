@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportExcel;
 use App\Exports\ExportMaintenance;
+use App\Exports\MaintPreventiveExport;
 use App\Models\Service;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -199,7 +200,11 @@ class MaintenanceController extends Controller
     public function listordinateurmaintenance(Request $request)
     {
         try {
-            $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")->where("outils.user", session("utilisateur")->idUser)->get();
+            $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
+                    ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
+                    ->where("outils.user", session("utilisateur")->idUser)
+                    ->get();
+               
             return view('viewadmindste.maintenance.listmaintenance', compact('list'));
         } catch (\Exception $e) {
             return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
@@ -370,32 +375,30 @@ class MaintenanceController extends Controller
 	{
 		try 
         {
-            $data = DB::table('traces')
-                    ->join('utilisateurs', 'utilisateurs.idUser', '=', 'traces.action') // Correction ici
-                    ->join('outils', 'outils.id', '=', 'traces.idsec') // Si vous voulez inclure la table 'outils'
-                    ->select('nom', 'prenom', 'libelle', 'traces.created_at as created_at', 'outils.nameoutils')
-                    ->where('traces.type', 'outil')
-                    ->where('traces.idsec', $request->idhisto)
-                    ->get();
 
             $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
+                    ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
                     ->where("outils.user", session("utilisateur")->idUser)
+                    ->where("gestionmaintenances.id",$request->idmprev)
                     ->get(); 
+
+            //dd($list);       
+
             $format = $request->format;
 	
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new OutilhistopdfExport($data);
+                    $pdfExporter = new MaintPreventiveExport($list);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
                 
                     return response($pdfContent, 200)
                     ->header('Content-Type', 'application/pdf')
-                    ->header('Content-Disposition', 'attachment; filename="HistoriqueOutilsExport.pdf"');
+                    ->header('Content-Disposition', 'attachment; filename="MaintenancePreventive.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new HistoExport($data), 'HistoriqueOutilsExport.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new MaintPreventiveExport($list), 'MaintenancePreventive.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
 
 		} catch (\Exception $e) {

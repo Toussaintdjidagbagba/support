@@ -760,39 +760,6 @@
             form.submit();
         }
 
-
-        // function paramhisto(format) 
-        // {
-        //     var idhisto = document.getElementById('idhist').value;
-        //     // console.log(idhisto);
-
-        //     var form = document.createElement('form');
-        //     form.method = 'POST';
-        //     form.action = '{{ route("outilshisto.export") }}';
-
-        //     var inputId = document.createElement('input');
-        //     inputId.type = 'hidden';
-        //     inputId.name = 'idhisto';
-        //     inputId.value = idhisto; 
-        //     form.appendChild(inputId);
-
-          
-        //     var inputFormat = document.createElement('input');
-        //     inputFormat.type = 'hidden';
-        //     inputFormat.name = 'format';
-        //     inputFormat.value = format;
-        //     form.appendChild(inputFormat);
-        //     form.appendChild(idhisto);
-
-        //     var csrfToken = document.createElement('input');
-        //     csrfToken.type = 'hidden';
-        //     csrfToken.name = '_token';
-        //     csrfToken.value = '{{ csrf_token() }}';
-        //     form.appendChild(csrfToken);
-
-        //     document.body.appendChild(form);
-        //     form.submit();
-        // }
     </script>
 
 @endsection

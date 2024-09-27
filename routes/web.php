@@ -181,7 +181,9 @@ Route::group([
 	
 	Route::get('/outilshisto/export', 'App\Http\Controllers\OutilController@expoutilhisto')->name('outilshisto.export');
 
-	Route::post('export-maintenancepreventive', [MaintenanceController::class, 'expmaintpre'])->name('export.mainte');
+	// Route::post('export-maintenancepreventive', [MaintenanceController::class, 'expmaintpre'])->name('export.mainte');
+	Route::get('export-maintenancepreventive', [MaintenanceController::class, 'expmaintpre'])->name('export.mainte');
+
 
 
 
