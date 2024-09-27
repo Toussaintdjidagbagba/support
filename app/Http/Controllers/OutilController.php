@@ -119,6 +119,23 @@ class OutilController extends Controller
         }
     }
 
+    public function listactionsoutils(Request $request)
+    {
+        $lists = InterfaceServiceProvider::recupactionsoutils($request->id);
+        return $lists;
+    }
+
+    public function libelleactionsoutils(Request $request)
+    {
+        $codes = $request->query('codes');
+        $outilsId = $request->query('outilsId');
+        $codesArray = explode(',', $codes);
+        $libelles = ActionOutil::whereIn('code', $codesArray)
+            ->where('Outils', $outilsId)
+            ->get(['code', 'libelle']);
+        return response()->json($libelles);
+    }
+
     public function addactionsoutils(Request $request)
     {
         if (!in_array("add_outil", session("auto_action"))) {

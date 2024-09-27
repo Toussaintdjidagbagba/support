@@ -88,7 +88,7 @@
                                                     <button type="button" title="Modifier"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#update"
-                                                        onclick="setupdatemaintenance({{ $maint->id }}, '{{ $maint->detailjson }}', '{{ App\Providers\InterfaceServiceProvider::periodeMaintenance($maint->maintenance) }}', '{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}', '{{ $maint->etat }}', '{{ $maint->commentaireinf }}')">
+                                                        onclick="setupdatemaintenance({{ $maint->id }}, '{{ $maint->detailjson }}', '{{ App\Providers\InterfaceServiceProvider::periodeMaintenance($maint->maintenance) }}', '{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}', '{{ $maint->etat }}', '{{ $maint->commentaireinf }}','{{$maint->outil}}')">
                                                         <i class="material-icons">system_update_alt</i>
                                                     </button>
                                                 @endif
@@ -265,45 +265,93 @@
                 document.getElementById("dbkpe").checked = true;
         }
 
-        async function setupdatemaintenance(id, maint, periode, outil, etat, commentaire) {
+        async function setupdatemaintenance(id, maint, periode, outil, etat, commentaire, outilsId) {
             document.getElementById('idupdate').value = id;
             document.getElementById('uobs').value = commentaire;
-            tab = maint.split("|");
-            if (tab.includes("sft"))
-                document.getElementById("usft").checked = true;
-            if (tab.includes("mjw"))
-                document.getElementById("umjw").checked = true;
-            if (tab.includes("dfg"))
-                document.getElementById("udfg").checked = true;
-            if (tab.includes("rdd"))
-                document.getElementById("urdd").checked = true;
-            if (tab.includes("edd"))
-                document.getElementById("uedd").checked = true;
-            if (tab.includes("epdd"))
-                document.getElementById("uepdd").checked = true;
-            if (tab.includes("atv"))
-                document.getElementById("uatv").checked = true;
-            if (tab.includes("duc"))
-                document.getElementById("uduc").checked = true;
-            if (tab.includes("dram"))
-                document.getElementById("udram").checked = true;
-            if (tab.includes("dcs"))
-                document.getElementById("udcs").checked = true;
-            if (tab.includes("decr"))
-                document.getElementById("udecr").checked = true;
-            if (tab.includes("bkpi"))
-                document.getElementById("ubkpi").checked = true;
-            if (tab.includes("bkpe"))
-                document.getElementById("ubkpe").checked = true;
+            console.log(outilsId);
 
-            document.getElementById('uperiode').innerHTML = 'Période : ' + periode;
+            let tab = maint.split("|").filter(Boolean);
 
-            document.getElementById('uordinateur').innerHTML = 'Ordinateur : ' + outil;
+            const selectedActionsList = document.querySelector('.actions-select-list');
+            let lists = "";
+            if (tab.length > 0) {
+                try {
+                    const response = await fetch(`{{ route('LAO') }}?codes=${tab.join(',')}&outilsId=${outilsId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Access-Control-Allow-Credentials': true
+                        }
+                    });
 
-            document.getElementById('uetat').innerHTML =
-                '<select type="text" id="uuetat" name="etat" class="form-control"> <option> ' + etat +
-                ' </option> <option> Excellent </option><option> Bien </option><option> Passable </option> <option> Médiocre </option> </select>';
+                    const data = await response.json();
+                    
+                    if (data.length > 0) {
+                        let lists = "";
+                        data.forEach(function(currentline) {
+                            lists += `
+                    <input type="checkbox" id="${currentline.code}" name="maint" value="${currentline.code}" class="filled-in chk-col-brown" checked />
+                    <label for="${currentline.code}">${currentline.libelle}</label><br>`;
+                        });
+
+                        const selectedActionsList = document.querySelector('.actions-select-list');
+                        if (selectedActionsList) {
+                            selectedActionsList.innerHTML = lists;
+                        }
+
+                    }
+                } catch (error) {
+
+                }
+                document.getElementById('uperiode').innerHTML = 'Période : ' + periode;
+
+                document.getElementById('uordinateur').innerHTML = 'Ordinateur : ' + outilsId;
+
+                document.getElementById('uetat').innerHTML =
+                    '<select type="text" id="uuetat" name="etat" class="form-control"> <option> ' + etat +
+                    ' </option> <option> Excellent </option><option> Bien </option><option> Passable </option> <option> Médiocre </option> </select>';
+            }
         }
+
+        // async function setupdatemaintenance(id, maint, periode, outil, etat, commentaire) {
+        //     document.getElementById('idupdate').value = id;
+        //     document.getElementById('uobs').value = commentaire;
+        //     tab = maint.split("|");
+        //     if (tab.includes("sft"))
+        //         document.getElementById("usft").checked = true;
+        //     if (tab.includes("mjw"))
+        //         document.getElementById("umjw").checked = true;
+        //     if (tab.includes("dfg"))
+        //         document.getElementById("udfg").checked = true;
+        //     if (tab.includes("rdd"))
+        //         document.getElementById("urdd").checked = true;
+        //     if (tab.includes("edd"))
+        //         document.getElementById("uedd").checked = true;
+        //     if (tab.includes("epdd"))
+        //         document.getElementById("uepdd").checked = true;
+        //     if (tab.includes("atv"))
+        //         document.getElementById("uatv").checked = true;
+        //     if (tab.includes("duc"))
+        //         document.getElementById("uduc").checked = true;
+        //     if (tab.includes("dram"))
+        //         document.getElementById("udram").checked = true;
+        //     if (tab.includes("dcs"))
+        //         document.getElementById("udcs").checked = true;
+        //     if (tab.includes("decr"))
+        //         document.getElementById("udecr").checked = true;
+        //     if (tab.includes("bkpi"))
+        //         document.getElementById("ubkpi").checked = true;
+        //     if (tab.includes("bkpe"))
+        //         document.getElementById("ubkpe").checked = true;
+
+        //     document.getElementById('uperiode').innerHTML = 'Période : ' + periode;
+
+        //     document.getElementById('uordinateur').innerHTML = 'Ordinateur : ' + outil;
+
+        //     document.getElementById('uetat').innerHTML =
+        //         '<select type="text" id="uuetat" name="etat" class="form-control"> <option> ' + etat +
+        //         ' </option> <option> Excellent </option><option> Bien </option><option> Passable </option> <option> Médiocre </option> </select>';
+        // }
 
         async function valideupdatemaintenance() {
 
@@ -416,22 +464,41 @@
             }
         }
 
-        async function selecteOutils(event,params) {
+        async function selecteOutils(event, outilsId) {
             event.preventDefault();
-            var selectedOutilsId = params;
-            console.log(selectedOutilsId);
-            
+
             // Masquer toutes les listes d'actions
             document.querySelectorAll('.actions-list').forEach(function(list) {
                 list.classList.add('hidden');
             });
-            
-            // Afficher la liste d'actions correspondant a l'outils sélectionné
-            var selectedActionsList = document.querySelector('.actions-list[data-outils-id="' + selectedOutilsId +
-            '"]');
-            if (selectedActionsList) {
-                console.log(selectedActionsList);
-                selectedActionsList.classList.remove('hidden');
+            try {
+                const response = await fetch("{{ route('LAOS') }}?id=" + outilsId, {
+                    method: 'get',
+                    headers: {
+                        'Access-Control-Allow-Credentials': true,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+                const data = await response.json();
+                if (data.length > 0) {
+                    let lists = "";
+                    data.forEach(function(currentline) {
+                        lists +=
+                            `<input type="checkbox" id="${currentline['code']}" name="maint" value="${currentline['code']}" class="filled-in chk-col-brown" />`;
+                        lists +=
+                            `<label for="${currentline['code']}">${currentline['libelle']}</label><br>`;
+                    });
+                    // Afficher les actions dans l'élément .actions-list
+                    const selectedActionsList = document.querySelector('.actions-list');
+                    if (selectedActionsList) {
+                        selectedActionsList.innerHTML = lists;
+                        selectedActionsList.classList.remove('hidden');
+                    }
+                }
+
+            } catch (error) {
+                throw new Error('Erreur lors de la selection des actions');
             }
         }
     </script>
@@ -452,100 +519,78 @@
                 </div>
 
                 <div class="modal-body">
-                    <input type="hidden" id="_token" name="_token" value="{{ csrf_token() }}" />
-                    <label id="infomaintenance"></label>
-                    <div class="row clearfix" id="other">
-                        <div class="col-md-6">
-                            <label for="periode">Période :</label>
-                            <div class="form-group">
-                                <div class="form-line">
-                                    @php
-                                        $allperiode = App\Providers\InterfaceServiceProvider::getallperiode();
-                                    @endphp
-                                    <select type="text" id="periode" name="periode" class="form-control">
-                                        @forelse ($allperiode as $itemPeriode)
-                                            <option value="{{ $itemPeriode->id }}"
-                                                @if ($itemPeriode->id == $periode) @selected(true) @else @disabled(true) @endif>
-                                                {{ App\Providers\InterfaceServiceProvider::periodeMaintenance($itemPeriode->id) }}
-                                            </option>
-                                        @empty
-                                        @endforelse
-                                    </select>
+                    <form role="form" method="post">
+                        <input type="hidden" id="_token" name="_token" value="{{ csrf_token() }}" />
+                        <label id="infomaintenance"></label>
+                        <div class="row clearfix" id="other">
+                            <div class="col-md-6">
+                                <label for="periode">Période :</label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @php
+                                            $allperiode = App\Providers\InterfaceServiceProvider::getallperiode();
+                                        @endphp
+                                        <select type="text" id="periode" name="periode" class="form-control">
+                                            @forelse ($allperiode as $itemPeriode)
+                                                <option value="{{ $itemPeriode->id }}"
+                                                    @if ($itemPeriode->id == $periode) @selected(true) @else @disabled(true) @endif>
+                                                    {{ App\Providers\InterfaceServiceProvider::periodeMaintenance($itemPeriode->id) }}
+                                                </option>
+                                            @empty
+                                            @endforelse
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="ordinateur">Outils :</label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @php
+                                            $allordinateur = App\Providers\InterfaceServiceProvider::getordinateur();
+                                        @endphp
+                                        <select id="ordinateur" onchange="selecteOutils(event,this.value)"
+                                            name="ordinateur" class="form-control">
+                                            <option value="0">Sélectionner un outil</option>
+                                            @foreach ($allordinateur as $ordinateur)
+                                                <option value="{{ $ordinateur->id }}"> {{ $ordinateur->nameoutils }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <label for="ordinateur">Outils :</label>
-                            <div class="form-group">
-                                <div class="form-line">
-                                    @php
-                                        $allordinateur = App\Providers\InterfaceServiceProvider::getordinateur();
-                                    @endphp
-                                    <select id="ordinateur" onchange="selecteOutils(event,this.value)" name="ordinateur"
-                                        class="form-control">
-                                        <option value="0">Sélectionner un outil</option>
-                                        @foreach ($allordinateur as $ordinateur)
-                                            <option value="{{ $ordinateur->id }}"> {{ $ordinateur->nameoutils }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                        <div class="row clearfix">
+                            <div class="col-md-6">
+                                <label for="etat">Etat :</label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <select type="text" id="etat" name="etat" class="form-control">
+                                            <option> Excellent </option>
+                                            <option> Bien </option>
+                                            <option> Passable </option>
+                                            <option> Médiocre </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="obs">Observation :</label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <input type="text" id="obs" name="obs" class="form-control"
+                                            placeholder="">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row clearfix">
-                        <div class="col-md-6">
-                            <label for="etat">Etat :</label>
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <select type="text" id="etat" name="etat" class="form-control">
-                                        <option> Excellent </option>
-                                        <option> Bien </option>
-                                        <option> Passable </option>
-                                        <option> Médiocre </option>
-                                    </select>
-                                </div>
+                        <!-- Affichage des actions basées sur l'outil sélectionné -->
+                        <div class="row clearfix">
+                            <div class="col-md-6 actions-list hidden">
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <label for="obs">Observation :</label>
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <input type="text" id="obs" name="obs" class="form-control"
-                                        placeholder="">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Affichage des actions basées sur l'outils sélectionné -->
-                    <div class="row clearfix">
-                        @php
-                            $allordinateur = App\Providers\InterfaceServiceProvider::getordinateur();
-                        @endphp
-                        <div class="col-md-6 actions-list hidden" data-outils-id="6">
-                            
-                        </div>
-                        <div class="col-md-6 actions-list hidden" data-outils-id="2">
-                            <input type="checkbox" id="duc" name="maint" value="duc"
-                                class="filled-in chk-col-brown" />
-                            <label for="duc">Dépoussièrer Unité Centrale</label> <br>
-                            <input type="checkbox" id="dram" name="maint" value="dram"
-                                class="filled-in chk-col-brown" />
-                            <label for="dram">Dépoussièrer RAM</label> <br>
-                            <input type="checkbox" id="dcs" value="dcs" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="dcs">Dépoussièrer Clavier/Souris</label> <br>
-                            <input type="checkbox" id="decr" value="decr" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="decr">Dépoussièrer Ecran</label> <br>
-                            <input type="checkbox" id="bkpi" value="bkpi" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="bkpi">Backup interne </label> <br>
-                            <input type="checkbox" id="bkpe" value="bkpe" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="bkpe">Backup externe </label> <br>
-                        </div>
-                    </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default btn-sm waves-effect waves-light"
@@ -685,51 +730,9 @@
                     </div>
 
                     <div class="row clearfix">
-                        <div class="col-md-6">
-                            <input type="checkbox" id="usft" name="umaint" value="sft"
-                                class="filled-in chk-col-brown" />
-                            <label for="usft">Suppression des fichiers temporaire</label> <br>
-                            <input type="checkbox" id="umjw" name="umaint" value="mjw"
-                                class="filled-in chk-col-brown" />
-                            <label for="umjw">Mise à jour Windows</label> <br>
-                            <input type="checkbox" id="udfg" name="umaint" value="dfg"
-                                class="filled-in chk-col-brown" />
-                            <label for="udfg">Défragmentation</label> <br>
-                            <input type="checkbox" id="urdd" name="umaint" value="rdd"
-                                class="filled-in chk-col-brown" />
-                            <label for="urdd">Réparation des disques</label> <br>
-                            <input type="checkbox" id="uedd" name="umaint" value="edd"
-                                class="filled-in chk-col-brown" />
-                            <label for="uedd">Etat de disque</label> <br>
-                            <input type="checkbox" id="uepdd" name="umaint" value="epdd"
-                                class="filled-in chk-col-brown" />
-                            <label for="uepdd">Espace de disque</label> <br>
-                            <input type="checkbox" id="uatv" value="atv" name="umaint"
-                                class="filled-in chk-col-brown" />
-                            <label for="uatv">Antivirus</label> <br>
-                        </div>
-                        <div class="col-md-6">
-                            <input type="checkbox" id="uduc" name="umaint" value="duc"
-                                class="filled-in chk-col-brown" />
-                            <label for="uduc">Dépoussièrer Unité Centrale</label> <br>
-                            <input type="checkbox" id="udram" name="umaint" value="dram"
-                                class="filled-in chk-col-brown" />
-                            <label for="udram">Dépoussièrer RAM</label> <br>
-                            <input type="checkbox" id="udcs" value="dcs" name="umaint"
-                                class="filled-in chk-col-brown" />
-                            <label for="udcs">Dépoussièrer Clavier/Souris</label> <br>
-                            <input type="checkbox" id="udecr" value="decr" name="umaint"
-                                class="filled-in chk-col-brown" />
-                            <label for="udecr">Dépoussièrer Ecran</label> <br>
-                            <input type="checkbox" id="ubkpi" value="bkpi" name="umaint"
-                                class="filled-in chk-col-brown" />
-                            <label for="ubkpi">Backup interne </label> <br>
-                            <input type="checkbox" id="ubkpe" value="bkpe" name="umaint"
-                                class="filled-in chk-col-brown" />
-                            <label for="ubkpe">Backup externe </label> <br>
+                        <div class="col-md-6 actions-select-list">
                         </div>
                     </div>
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default btn-sm waves-effect waves-light"

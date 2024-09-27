@@ -140,6 +140,8 @@ Route::group([
 	//////////////////////////////////** OUtils **////////////////////////////////////////////////////////////////
 	Route::get('/listoutils', 'App\Http\Controllers\OutilController@list')->name('GO');
 	Route::get('/getchampcat', 'App\Http\Controllers\OutilController@getallchamp')->name('GCCO');
+	Route::get('/actions/outils', 'App\Http\Controllers\OutilController@listactionsoutils')->name('LAOS');
+	Route::get('/actions/libelle/outils', 'App\Http\Controllers\OutilController@libelleactionsoutils')->name('LAO');
 	Route::post('/outil', 'App\Http\Controllers\OutilController@add')->name('AO');
 	Route::post('/outil/actions', 'App\Http\Controllers\OutilController@addactionsoutils')->name('AAO');
 	Route::post('/affectation', 'App\Http\Controllers\OutilController@affectUserInOutil')->name('PAOU');
