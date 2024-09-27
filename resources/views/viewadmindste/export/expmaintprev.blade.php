@@ -105,7 +105,7 @@
         <table class="description-table">
             <thead>
                 <tr>
-                    <th colspan="2">Observation</th>
+                    <th colspan="2">Observations</th>
                 </tr>
             </thead>
             <tbody>
