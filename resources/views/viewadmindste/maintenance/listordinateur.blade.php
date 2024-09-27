@@ -415,6 +415,13 @@
                 }
             }
         }
+
+        
+        document.getElementById('ordinateur').addEventListener('change', function() {
+            var selectedOutilsId = this.value;
+            console.log(selectedOutilsId);
+            
+        });
     </script>
 @endsection
 

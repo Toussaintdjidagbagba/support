@@ -150,12 +150,7 @@
             if (techm == 0) {
                 erreur += "sélectionner un technicien pour gérer la maintenance.. .\n";
             }
-            if (sdcm == 0) {
-                erreur += "sélectionner un service ou direction pour gérer la maintenance.. \n";
-            }
-            if (ucm == 0) {
-                erreur += "sélectionner un administrateur pour gérer la maintenance.. \n";
-            }
+           
             if (erreur !== "") {
                 document.getElementById('infomaintenance').innerHTML =
                     "<div class='alert alert-danger alert-block'> Veuillez : " + erreur + "</div>";
