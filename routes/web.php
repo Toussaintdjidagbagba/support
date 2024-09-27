@@ -1,7 +1,9 @@
 <?php
 
+use App\Exports\MaintPreventiveExport;
 use App\Http\Controllers\CategorieOutilsController;
 use App\Http\Controllers\IncidentAdminController;
+use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\OutilController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -176,10 +178,10 @@ Route::group([
 	//////////////////////////////////** Les Exports **//////////////////////////
 	Route::post('export-incident', [IncidentAdminController::class, 'exportincident'])->name('incident.export');
 	Route::post('export-outils', [OutilController::class, 'exportoutils'])->name('outils.export');
-	//Route::post('export-outilshisto', [OutilController::class, 'expoutilhisto'])->name('outilshisto.export');
+	
 	Route::get('/outilshisto/export', 'App\Http\Controllers\OutilController@expoutilhisto')->name('outilshisto.export');
 
-
+	Route::post('export-maintenancepreventive', [MaintenanceController::class, 'expmaintpre'])->name('export.mainte');
 
 
 

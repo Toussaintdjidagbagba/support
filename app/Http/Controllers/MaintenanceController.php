@@ -364,4 +364,42 @@ class MaintenanceController extends Controller
             return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
         }
     }
+
+    //export maintenance preventive
+	public function expmaintpre(Request $request)
+	{
+		try 
+        {
+            $data = DB::table('traces')
+                    ->join('utilisateurs', 'utilisateurs.idUser', '=', 'traces.action') // Correction ici
+                    ->join('outils', 'outils.id', '=', 'traces.idsec') // Si vous voulez inclure la table 'outils'
+                    ->select('nom', 'prenom', 'libelle', 'traces.created_at as created_at', 'outils.nameoutils')
+                    ->where('traces.type', 'outil')
+                    ->where('traces.idsec', $request->idhisto)
+                    ->get();
+
+            $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
+                    ->where("outils.user", session("utilisateur")->idUser)
+                    ->get(); 
+            $format = $request->format;
+	
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new OutilhistopdfExport($data);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+                
+                    return response($pdfContent, 200)
+                    ->header('Content-Type', 'application/pdf')
+                    ->header('Content-Disposition', 'attachment; filename="HistoriqueOutilsExport.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new HistoExport($data), 'HistoriqueOutilsExport.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+
+		} catch (\Exception $e) {
+			return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
+		}
+	}
 }
