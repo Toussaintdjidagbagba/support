@@ -78,7 +78,7 @@
                                                         data-id="{{ $cat->id }}" onclick="addactions(this)"
                                                         data-libelle="{{ $cat->libelle }}"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        data-toggle="modal" data-target="#action"> <i
+                                                        data-toggle="modal" data-target="#addaction"> <i
                                                             class="material-icons">add</i></a>
                                                     </button>
                                                 @endif
@@ -336,7 +336,7 @@
 
             let infoAction = document.getElementById('infoaction');
             var token = document.getElementById("_token").value;
-            let idOutils = document.getElementById('idoutils').value;
+            let idCatOutils = document.getElementById('idcatoutils').value;
             let lib = document.getElementById('libelleaction').value;
             let code = document.getElementById('codeaction').value;
 
@@ -358,7 +358,7 @@
 
                     data = {
                         _token: token,
-                        idOutils: idOutils,
+                        idCatOutils: idCatOutils,
                         libelleaction: lib,
                         codeaction: code,
                     };
@@ -535,7 +535,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="action" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="addaction" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -551,7 +551,7 @@
                     <label id="infoaction"></label>
                     <form method="post" role="form" id="formaction">
                         <input type="hidden" id="_token" name="_token" value="{{ csrf_token() }}" />
-                        <input type="hidden" name="idoutils" id="idoutils">
+                        <input type="hidden" name="idcatoutils" id="idcatoutils">
                         <div class="row clearfix">
                             <div class="col-md-6">
                                 <label for="libelleaction">Libellé

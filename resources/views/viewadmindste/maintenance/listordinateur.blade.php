@@ -317,46 +317,6 @@
             }
         }
 
-        // async function setupdatemaintenance(id, maint, periode, outil, etat, commentaire) {
-        //     document.getElementById('idupdate').value = id;
-        //     document.getElementById('uobs').value = commentaire;
-        //     tab = maint.split("|");
-        //     if (tab.includes("sft"))
-        //         document.getElementById("usft").checked = true;
-        //     if (tab.includes("mjw"))
-        //         document.getElementById("umjw").checked = true;
-        //     if (tab.includes("dfg"))
-        //         document.getElementById("udfg").checked = true;
-        //     if (tab.includes("rdd"))
-        //         document.getElementById("urdd").checked = true;
-        //     if (tab.includes("edd"))
-        //         document.getElementById("uedd").checked = true;
-        //     if (tab.includes("epdd"))
-        //         document.getElementById("uepdd").checked = true;
-        //     if (tab.includes("atv"))
-        //         document.getElementById("uatv").checked = true;
-        //     if (tab.includes("duc"))
-        //         document.getElementById("uduc").checked = true;
-        //     if (tab.includes("dram"))
-        //         document.getElementById("udram").checked = true;
-        //     if (tab.includes("dcs"))
-        //         document.getElementById("udcs").checked = true;
-        //     if (tab.includes("decr"))
-        //         document.getElementById("udecr").checked = true;
-        //     if (tab.includes("bkpi"))
-        //         document.getElementById("ubkpi").checked = true;
-        //     if (tab.includes("bkpe"))
-        //         document.getElementById("ubkpe").checked = true;
-
-        //     document.getElementById('uperiode').innerHTML = 'Période : ' + periode;
-
-        //     document.getElementById('uordinateur').innerHTML = 'Ordinateur : ' + outil;
-
-        //     document.getElementById('uetat').innerHTML =
-        //         '<select type="text" id="uuetat" name="etat" class="form-control"> <option> ' + etat +
-        //         ' </option> <option> Excellent </option><option> Bien </option><option> Passable </option> <option> Médiocre </option> </select>';
-        // }
-
         async function valideupdatemaintenance() {
 
             // récupération des données du formulaire 
@@ -469,6 +429,7 @@
 
         async function selecteOutils(event, outilsId) {
             event.preventDefault();
+console.log(outilsId);
 
             // Masquer toutes les listes d'actions
             document.querySelectorAll('.actions-list').forEach(function(list) {

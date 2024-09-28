@@ -100,7 +100,9 @@ class InterfaceServiceProvider extends ServiceProvider
 
     public static function recupactionsoutils($id)
     {
-        $actions = DB::table('action_outils')->where('Outils', $id)->get();
+        $actions = DB::table('action_outils')
+        ->where('Outils', $id)
+        ->get();
         return $actions;
     }
     

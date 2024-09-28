@@ -6,6 +6,7 @@ use App\Models\ActionOutil;
 use Illuminate\Http\Request;
 use App\Models\CategorieOutil;
 use App\Models\ChampsCategorieOutil;
+use App\Models\Outil;
 use App\Models\Trace;
 use App\Providers\InterfaceServiceProvider;
 use Illuminate\Database\QueryException;
@@ -43,7 +44,9 @@ class CategorieOutilsController extends Controller
 
     public function listactionsoutils(Request $request)
     {
-        $lists = InterfaceServiceProvider::recupactionsoutils($request->id);
+        // dd($request->id);
+        $idCatOutils = Outil::where('id', $request->id)->first()->categorie;
+        $lists = InterfaceServiceProvider::recupactionsoutils($idCatOutils);
         return $lists;
     }
 
@@ -53,7 +56,7 @@ class CategorieOutilsController extends Controller
             return view("vendor.error.649");
         } else {
             try {
-                if (isset(DB::table('action_outils')->where('code', $request->codeaction)->where('Outils', $request->idoutils)->first()->id)) {
+                if (isset(DB::table('action_outils')->where('code', $request->codeaction)->where('Outils', $request->idCatOutils)->first()->id)) {
                     $errorString = "L'action que vous voulez ajouter existe déjà pour cet outil!! ";
                     flash("Erreur : " . $errorString)->error();
                     return $errorString;
@@ -76,14 +79,14 @@ class CategorieOutilsController extends Controller
                         return $errorString;
                     }
 
-                    $idOutils = $request->idOutils;
+                    $idCatOutils = $request->idCatOutils;
                     $add = new ActionOutil();
-                    $add->Outils =  $idOutils;
+                    $add->Outils =  $idCatOutils;
                     $add->libelle = $request->libelleaction;
                     $add->code =  $request->codeaction;
                     $add->action_users = session("utilisateur")->idUser;
                     $add->save();
-                    $outilsname =  DB::table('categorieoutils')->where('id',  $idOutils)->first()->libelle;
+                    $outilsname =  DB::table('categorieoutils')->where('id',  $idCatOutils)->first()->libelle;
                     TraceController::setTrace("Vous avez enregistrée l'action " . $request->libelleaction . " pour l'outil :" . $outilsname . ".", session("utilisateur")->idUser);
                     $message = "Vous avez enregistrée l'action " . $request->libelleaction . " pour l'outils : " . $outilsname . ".";
                     flash("Succès : " . $message)->success();
