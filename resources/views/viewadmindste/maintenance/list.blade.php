@@ -309,6 +309,7 @@
                 document.getElementById("infoupdate").innerHTML = error;
             }
         }
+        
         async function validedeletemaintenance() {
             token = document.getElementById("_token").value;
             iddelete = document.getElementById("iddelete").value;

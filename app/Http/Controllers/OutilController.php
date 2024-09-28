@@ -135,61 +135,7 @@ class OutilController extends Controller
             ->get(['code', 'libelle']);
         return response()->json($libelles);
     }
-
-    public function addactionsoutils(Request $request)
-    {
-        if (!in_array("add_outil", session("auto_action"))) {
-            return view("vendor.error.649");
-        } else {
-            try {
-                if (isset(DB::table('action_outils')->where('code', $request->codeaction)->where('Outils', $request->idoutils)->first()->id)) {
-                    $errorString = "L'action que vous voulez ajouter existe déjà pour cet outil!! ";
-                    flash("Erreur : " . $errorString)->error();
-                    return $errorString;
-                } else {
-                    $messages = [
-                        '_token.required' => 'Les jeton du formulaire sont requis.',
-                        'libelleaction.required' => 'Le Libellé est requis.',
-                        'codeaction.required' => 'La code de l\'action est requis.',
-                    ];
-                    $validator = Validator::make($request->all(), [
-                        '_token' => 'required',
-                        'libelleaction' => 'required',
-                        'codeaction' => 'required',
-                    ], $messages);
-
-                    if ($validator->fails()) {
-                        $errors = $validator->errors()->all();
-                        $errorString = implode(' ', $errors);
-                        flash("Erreur : " . $errorString)->error();
-                        return $errorString;
-                    }
-
-                    $idOutils = $request->idOutils;
-                    $add = new ActionOutil();
-                    $add->Outils =  $idOutils;
-                    $add->libelle = $request->libelleaction;
-                    $add->code =  $request->codeaction;
-                    $add->action_users = session("utilisateur")->idUser;
-                    $add->save();
-                    $outilsname =  DB::table('outils')->where('id',  $idOutils)->first()->nameoutils;
-                    TraceController::setTrace("Vous avez enregistrée l'action " . $request->libelleaction . " pour l'outil :" . $outilsname . ".", session("utilisateur")->idUser);
-                    $message = "Vous avez enregistrée l'action " . $request->libelleaction . " pour l'outils : " . $outilsname . ".";
-                    flash("Succès : " . $message)->success();
-                    return $message;
-                }
-            } catch (QueryException $qe) {
-                $errorString = "Une erreur ses produites " .  $qe->getMessage();
-                flash("Erreur : " . $errorString)->error();
-                return $errorString;
-            } catch (\Exception $e) {
-                $errorString = "Une erreur ses produites " .  $e->getMessage();
-                flash("Erreur : " . $errorString)->error();
-                return $errorString;
-            }
-        }
-    }
-
+    
     public function affectUserInOutil(Request $request)
     {
         try {
