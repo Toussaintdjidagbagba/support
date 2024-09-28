@@ -240,12 +240,14 @@ class MaintenanceController extends Controller
                     TraceController::setTrace($message, session("utilisateur")->idUser);
 
                     // Envoie de message au utilisateur
-
+                    flash($message)->success();
                     return $message;
                 }
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
         }
     }
 

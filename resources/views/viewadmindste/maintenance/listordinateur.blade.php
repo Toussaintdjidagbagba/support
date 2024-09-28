@@ -88,7 +88,7 @@
                                                     <button type="button" title="Modifier"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#update"
-                                                        onclick="setupdatemaintenance({{ $maint->id }}, '{{ $maint->detailjson }}', '{{ App\Providers\InterfaceServiceProvider::periodeMaintenance($maint->maintenance) }}', '{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}', '{{ $maint->etat }}', '{{ $maint->commentaireinf }}','{{$maint->outil}}')">
+                                                        onclick="setupdatemaintenance({{ $maint->id }}, '{{ $maint->detailjson }}', '{{ App\Providers\InterfaceServiceProvider::periodeMaintenance($maint->maintenance) }}', '{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}', '{{ $maint->etat }}', '{{ $maint->commentaireinf }}','{{ $maint->outil }}')">
                                                         <i class="material-icons">system_update_alt</i>
                                                     </button>
                                                 @endif
@@ -268,15 +268,13 @@
         async function setupdatemaintenance(id, maint, periode, outil, etat, commentaire, outilsId) {
             document.getElementById('idupdate').value = id;
             document.getElementById('uobs').value = commentaire;
-            console.log(outilsId);
 
             let tab = maint.split("|").filter(Boolean);
 
-            const selectedActionsList = document.querySelector('.actions-select-list');
             let lists = "";
             if (tab.length > 0) {
                 try {
-                    const response = await fetch(`{{ route('LAO') }}?codes=${tab.join(',')}&outilsId=${outilsId}`, {
+                    const response = await fetch(`{{ route('LAOS') }}?id=${outilsId}`, {
                         method: 'GET',
                         headers: {
                             'Accept': 'application/json',
@@ -285,13 +283,15 @@
                     });
 
                     const data = await response.json();
-                    
+
                     if (data.length > 0) {
                         let lists = "";
                         data.forEach(function(currentline) {
-                            lists += `
-                    <input type="checkbox" id="${currentline.code}" name="maint" value="${currentline.code}" class="filled-in chk-col-brown" checked />
-                    <label for="${currentline.code}">${currentline.libelle}</label><br>`;
+                            const isChecked = tab.includes(currentline.code) ? 'checked' : '';
+                            lists +=
+                                '<input type="checkbox" id="' + currentline.code + '" name="umaint" value="' +
+                                currentline.code + '" class="filled-in chk-col-brown" ' + isChecked + ' />' +
+                                '<label for="' + currentline.code + '">' + currentline.libelle + '</label><br>';
                         });
 
                         const selectedActionsList = document.querySelector('.actions-select-list');
@@ -305,11 +305,15 @@
                 }
                 document.getElementById('uperiode').innerHTML = 'Période : ' + periode;
 
-                document.getElementById('uordinateur').innerHTML = 'Ordinateur : ' + outilsId;
+                document.getElementById('uordinateur').innerHTML = 'Outils : ' + outil;
 
                 document.getElementById('uetat').innerHTML =
-                    '<select type="text" id="uuetat" name="etat" class="form-control"> <option> ' + etat +
-                    ' </option> <option> Excellent </option><option> Bien </option><option> Passable </option> <option> Médiocre </option> </select>';
+                    '<select type="text" id="uuetat" name="etat" class="form-control">' +
+                    '<option value="Excellent" ' + (etat === 'Excellent' ? 'selected' : '') + '>Excellent</option>' +
+                    '<option value="Bien" ' + (etat === 'Bien' ? 'selected' : '') + '>Bien</option>' +
+                    '<option value="Passable" ' + (etat === 'Passable' ? 'selected' : '') + '>Passable</option>' +
+                    '<option value="Médiocre" ' + (etat === 'Médiocre' ? 'selected' : '') + '>Médiocre</option>' +
+                    '</select>';
             }
         }
 

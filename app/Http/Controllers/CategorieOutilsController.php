@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\CategorieOutil;
 use App\Models\ChampsCategorieOutil;
 use App\Models\Trace;
+use App\Providers\InterfaceServiceProvider;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -38,6 +39,12 @@ class CategorieOutilsController extends Controller
                 return Back();
             }
         }
+    }
+
+    public function listactionsoutils(Request $request)
+    {
+        $lists = InterfaceServiceProvider::recupactionsoutils($request->id);
+        return $lists;
     }
 
     public function addactionsoutils(Request $request)

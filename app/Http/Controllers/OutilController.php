@@ -119,12 +119,6 @@ class OutilController extends Controller
         }
     }
 
-    public function listactionsoutils(Request $request)
-    {
-        $lists = InterfaceServiceProvider::recupactionsoutils($request->id);
-        return $lists;
-    }
-
     public function libelleactionsoutils(Request $request)
     {
         $codes = $request->query('codes');

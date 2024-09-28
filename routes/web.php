@@ -86,6 +86,7 @@ Route::group([
 
 	//////////////////////////////////** Categorie d'outils **////////////////////////////////////////////////////////
 	Route::get('/listcategoriesoutils', 'App\Http\Controllers\CategorieOutilsController@listcat')->name('GCO');
+	Route::get('/actions/outils', 'App\Http\Controllers\CategorieOutilsController@listactionsoutils')->name('LAOS');
 	Route::post('/categories-outils', 'App\Http\Controllers\CategorieOutilsController@addcat')->name('ACO');
 	Route::post('/outil/actions', 'App\Http\Controllers\CategorieOutilsController@addactionsoutils')->name('AAO');
 	Route::get('/delete-categoriesoutils', 'App\Http\Controllers\CategorieOutilsController@deletecat')->name('DCO');
@@ -141,7 +142,6 @@ Route::group([
 	//////////////////////////////////** OUtils **////////////////////////////////////////////////////////////////
 	Route::get('/listoutils', 'App\Http\Controllers\OutilController@list')->name('GO');
 	Route::get('/getchampcat', 'App\Http\Controllers\OutilController@getallchamp')->name('GCCO');
-	Route::get('/actions/outils', 'App\Http\Controllers\OutilController@listactionsoutils')->name('LAOS');
 	Route::get('/actions/libelle/outils', 'App\Http\Controllers\OutilController@libelleactionsoutils')->name('LAO');
 	Route::post('/outil', 'App\Http\Controllers\OutilController@add')->name('AO');
 	Route::post('/affectation', 'App\Http\Controllers\OutilController@affectUserInOutil')->name('PAOU');

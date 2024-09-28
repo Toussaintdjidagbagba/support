@@ -75,100 +75,12 @@
 
                                                 @if (in_array('define_champ_cat_outil', session('auto_action')))
                                                     <button type="button" title="Ajouter action"
+                                                        data-id="{{ $cat->id }}" onclick="addactions(this)"
+                                                        data-libelle="{{ $cat->libelle }}"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        data-toggle="modal" data-target="#action{{ $cat->id }}"> <i
+                                                        data-toggle="modal" data-target="#action"> <i
                                                             class="material-icons">add</i></a>
                                                     </button>
-                                                    <div class="modal fade" id="action{{ $cat->id }}" tabindex="-1"
-                                                        role="dialog" aria-labelledby="myModalLabel{{ $cat->id }}">
-                                                        <div class="modal-dialog" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <button type="button" class="close"
-                                                                        data-dismiss="modal" aria-label="Close"><span
-                                                                            aria-hidden="true">&times;</span></button>
-                                                                    <h4 class="modal-title"
-                                                                        id="myModalLabel{{ $cat->id }}">Ajout
-                                                                        d'action a l'outils : {{ $cat->libelle }}</h4>
-                                                                </div>
-                                                                <div class="modal-body">
-
-                                                                    <label id="infoaction{{ $cat->id }}"></label>
-                                                                    <form method="post" role="form"
-                                                                        id="formaction{{ $cat->id }}">
-                                                                        <input type="hidden"
-                                                                            id="_token{{ $cat->id }}" name="_token"
-                                                                            value="{{ csrf_token() }}" />
-                                                                        <input type="hidden" name="idoutils"
-                                                                            id="idoutils{{ $cat->id }}"
-                                                                            value="{{ $cat->id }}">
-                                                                        <div class="row clearfix">
-                                                                            <div class="col-md-6">
-                                                                                <label
-                                                                                    for="libelleaction{{ $cat->id }}">Libellé
-                                                                                    action</label>
-                                                                                <div class="form-group">
-                                                                                    <div class="form-line">
-                                                                                        <input type="text"
-                                                                                            id="libelleaction{{ $cat->id }}"
-                                                                                            name="libelleaction"
-                                                                                            class="form-control"
-                                                                                            placeholder="">
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-md-6">
-                                                                                <label
-                                                                                    for="codeaction{{ $cat->id }}">Code
-                                                                                    action </label>
-                                                                                <div class="form-group">
-                                                                                    <div class="form-line">
-                                                                                        <input type="text"
-                                                                                            id="codeaction{{ $cat->id }}"
-                                                                                            name="codeaction"
-                                                                                            class="form-control"
-                                                                                            placeholder="">
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="row clearfix">
-                                                                            @php
-                                                                                $actions = App\Providers\InterfaceServiceProvider::recupactionsoutils(
-                                                                                    $cat->id,
-                                                                                );
-                                                                            @endphp
-                                                                            Les actions de l'outils actuel
-                                                                            <div class="col-md-12">
-                                                                                @if (count($actions) != 0)
-                                                                                    @for ($i = 0; $i < count($actions); $i++)
-                                                                                        <span
-                                                                                            class="alert alert-info alert-block pull-left"
-                                                                                            style="font-weight: bold">
-                                                                                            {{ $actions[$i]->libelle ?? 'Aucune liste disponible' }}
-                                                                                        </span>
-                                                                                    @endfor
-                                                                                @else
-                                                                                    <span class="pull-left ml-2">
-                                                                                        Aucune action disponible pour cet
-                                                                                        outil.
-                                                                                    </span>
-                                                                                @endif
-                                                                            </div>
-                                                                        </div>
-                                                                    </form>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button"
-                                                                        class="btn btn-default btn-sm waves-effect waves-light"
-                                                                        data-dismiss="modal">FERMER</button>
-                                                                    <button onclick="valideaction(event)"
-                                                                        data-Id="{{ $cat->id }}"
-                                                                        class="btn bg-deep-orange waves-effect">AJOUTER</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 @endif
                                             </td>
                                         </tr>
@@ -367,16 +279,66 @@
             }
         }
 
-         async function valideaction(event) {
+        function addactions(dvalue) {
+            const outils = dvalue.getAttribute('data-libelle');
+            const id = dvalue.getAttribute('data-id');
+            document.getElementById('idoutils').value = id;
+            document.getElementById('titleotil').innerHTML = outils;
+            listaction(id);
+        }
+
+        async function listaction(id) {
+            try {
+                const response = await fetch(`{{ route('LAOS') }}?id=${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Access-Control-Allow-Credentials': true
+                    }
+                });
+                const data = await response.json();
+
+                if (data.length > 0) {
+                    let lists = '<div class="row">';
+
+                    data.forEach(function(currentline) {
+                        lists += `
+            <div class="col-md-3">  
+                <span class="alert alert-info alert-block" style="font-weight: bold; display: block;">
+                    ${currentline.libelle ?? 'Aucune liste disponible'}
+                </span>
+            </div>`;
+                    });
+
+                    lists += '</div>';
+
+                    const selectedActionsList = document.getElementById('listsaction');
+                    if (selectedActionsList) {
+                        selectedActionsList.innerHTML = lists;
+                    }
+                } else {
+                    const selectedActionsList = document.getElementById('listsaction');
+                    if (selectedActionsList) {
+                        selectedActionsList.innerHTML = `
+            <span class="pull-left ml-2">
+                Aucune action disponible pour cet outil.
+            </span>`;
+                    }
+                }
+
+            } catch (error) {
+
+            }
+        }
+
+        async function valideaction(event) {
             event.preventDefault();
 
-            var target = event.currentTarget;
-            var idOutils = target.getAttribute('data-Id') ?? "";
-
-            let infoAction = document.getElementById('infoaction' + idOutils);
-            var token = document.getElementById("_token" + idOutils).value;
-            let lib = document.getElementById('libelleaction' + idOutils).value;
-            let code = document.getElementById('codeaction' + idOutils).value;
+            let infoAction = document.getElementById('infoaction');
+            var token = document.getElementById("_token").value;
+            let idOutils = document.getElementById('idoutils').value;
+            let lib = document.getElementById('libelleaction').value;
+            let code = document.getElementById('codeaction').value;
 
             let erreurs = "";
             if (lib === "") {
@@ -415,9 +377,7 @@
                         infoAction.innerHTML =
                             '<div class="alert alert-success alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>' +
                             message + '</strong></div>';
-                        // setTimeout(function() {
-                        //     window.location.reload();
-                        // }, 3000);
+                        listaction(idOutils);
                     } else {
                         throw new Error('Erreur lors de l\'ajout de l\'action : ' + data['libelleaction']);
                     }
@@ -570,6 +530,63 @@
                     <button type="button" class="btn btn-default btn-sm waves-effect waves-light"
                         data-dismiss="modal">FERMER</button>
                     <button onclick="confirmechamp()" class="btn btn-warning waves-effect waves-light">VALIDER</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="action" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Ajout
+                        d'action a l'outils :
+                        <span id="titleotil" class="modal-title"></span>
+                    </h4>
+                </div>
+                <div class="modal-body">
+
+                    <label id="infoaction"></label>
+                    <form method="post" role="form" id="formaction">
+                        <input type="hidden" id="_token" name="_token" value="{{ csrf_token() }}" />
+                        <input type="hidden" name="idoutils" id="idoutils">
+                        <div class="row clearfix">
+                            <div class="col-md-6">
+                                <label for="libelleaction">Libellé
+                                    action</label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <input type="text" id="libelleaction" name="libelleaction"
+                                            class="form-control" placeholder="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="codeaction">Code
+                                    action </label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <input type="text" id="codeaction" name="codeaction" class="form-control"
+                                            placeholder="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            Les actions de l'outils actuel
+                            <div class="col-md-12" id="listsaction">
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-sm waves-effect waves-light"
+                        data-dismiss="modal">FERMER</button>
+                    <button onclick="valideaction(event)" data-Id=""
+                        class="btn bg-deep-orange waves-effect">AJOUTER</button>
                 </div>
             </div>
         </div>
