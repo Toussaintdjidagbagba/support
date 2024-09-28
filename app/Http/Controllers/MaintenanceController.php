@@ -30,6 +30,13 @@ class MaintenanceController extends Controller
         return view('viewadmindste.maintenance.list', compact('list', 'service'));
     }
 
+    public function listgestionmaintenancecurative()
+    {
+        $list = Maintenance::all();
+        $service = Service::all();
+        return view('viewadmindste.maintenance.curative.list', compact('list', 'service'));
+    }
+
     public function addmaintenance(Request $request)
     {
         if (!in_array("prog_maint", session("auto_action"))) {
@@ -197,6 +204,19 @@ class MaintenanceController extends Controller
             return Back();
         }
     }
+    public function detailsmaintenacecurative(Request $request)
+    {
+        try {
+            $list = Gestionmaintenance::where("maintenance", $request->id)->get();
+            $periode = $request->id;
+            $existe = $list->count();
+            return view('viewadmindste.maintenance.curative.listordinateur', compact('list', 'periode', 'existe'));
+        } catch (\Exception $e) {
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return Back();
+        }
+    }
 
     public function listordinateurmaintenance(Request $request)
     {
@@ -204,6 +224,19 @@ class MaintenanceController extends Controller
             $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
                 ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
                 ->where("outils.user", session("utilisateur")->idUser)
+                ->get();
+
+            return view('viewadmindste.maintenance.listmaintenance', compact('list'));
+        } catch (\Exception $e) {
+            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+        }
+    }
+    public function listmaintenancecurative(Request $request)
+    {
+        try {
+            $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
+            ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
+            ->where("outils.user", session("utilisateur")->idUser)
                 ->get();
 
             return view('viewadmindste.maintenance.listmaintenance', compact('list'));

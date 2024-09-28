@@ -169,8 +169,9 @@ Route::group([
 	Route::get('/exportmaintenancepdf-{id}', 'App\Http\Controllers\MaintenanceController@getexportmaintenancepdf')->name('GEMP');
 
 	//////////////////////////////////** Maintenance Curative **/////////////////////////////////////
-	Route::get('/listmaintenancecurative', 'App\Http\Controllers\MaintenanceController@list')->name('LMC');
-	Route::get('/gestionmaintenancecurative', 'App\Http\Controllers\MaintenanceController@list')->name('GMC');
+	Route::get('/listmaintenancecurative', 'App\Http\Controllers\MaintenanceController@listmaintenancecurative')->name('LMC');
+	Route::get('/detailmaintenancescurative', 'App\Http\Controllers\MaintenanceController@detailsmaintenacecurative')->name('GMDC');
+	Route::get('/gestionmaintenancecurative', 'App\Http\Controllers\MaintenanceController@listgestionmaintenancecurative')->name('GMC');
 
 	//////////////////////////////////** Commentaire Maintenance préventive ou curative **//////////////////////////
 	Route::get('/maintenances', 'App\Http\Controllers\MaintenanceController@listordinateurmaintenance')->name('GMU');
