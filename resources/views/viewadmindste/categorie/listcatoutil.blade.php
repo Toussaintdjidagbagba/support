@@ -280,6 +280,7 @@
         }
 
         function addactions(dvalue) {
+            document.getElementById('infoaction').innerHTML="";
             const outils = dvalue.getAttribute('data-libelle');
             const id = dvalue.getAttribute('data-id');
             document.getElementById('idcatoutils').value = id;
