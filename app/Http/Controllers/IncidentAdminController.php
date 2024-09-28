@@ -122,7 +122,6 @@ class IncidentAdminController extends Controller
             if (!in_array("delete_incie", session("auto_action"))) {
                 return view("vendor.error.649");
             } else {
-
                 $incident = Incident::find(request('id'));
                 if ($incident) {
                     $occurence = json_encode(Incident::where('id', request('id'))->first());
@@ -140,7 +139,9 @@ class IncidentAdminController extends Controller
                 return Back();
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produite :" . $e->getMessage());
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
         }
     }
 

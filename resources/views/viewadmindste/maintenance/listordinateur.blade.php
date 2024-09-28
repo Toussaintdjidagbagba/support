@@ -418,7 +418,6 @@
             var target = event.currentTarget;
             var token = target.getAttribute('data-token') ?? "";
             var iddelete = target.getAttribute('data-Id') ?? "";
-            console.log(token + iddelete);
 
             const {
                 isConfirmed

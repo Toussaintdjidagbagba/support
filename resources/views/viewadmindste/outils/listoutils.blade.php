@@ -146,8 +146,8 @@
                                                 @endif
 
                                                 @if (in_array('delete_outil', session('auto_action')))
-                                                    <button type="button" title="Supprimer",
-                                                        onclick="Delete(event, '{{ route('DIA', $out->id) }}','{{ $out->nameoutils }}')"
+                                                    <button type="button" title="Supprimer" data-token="{{ csrf_token() }}" data-Id="{{ $out->id }}"
+                                                        onclick="Delete(event, '{{ route('DO') }}','{{ $out->nameoutils }}')"
                                                         class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
                                                         <i class="material-icons">delete_sweep</i></a> </button>
                                                 @endif
@@ -697,6 +697,9 @@
 
         async function Delete(event, url, libelle) {
             event.preventDefault();
+            var target = event.currentTarget;
+            var token = target.getAttribute('data-token') ?? "";
+             var iddelete = target.getAttribute('data-Id') ?? "";
             const {
                 isConfirmed
             } = await Swal.fire({
@@ -715,17 +718,23 @@
 
             if (isConfirmed) {
                 try {
+                    dat = {
+                        _token: token,
+                        id: iddelete,
+                    };
                     const response = await fetch(url, {
-                        method: 'get',
+                        method: 'POST',
                         headers: {
                             'Access-Control-Allow-Credentials': true,
                             'Content-Type': 'application/json',
                             'Accept': 'application/json',
                         },
+                        body: JSON.stringify(dat)
                     });
 
                     if (response.status == 200) {
-                        Swal.fire("Succès", "Incident supprimé avec succès", "success").then(() => {
+                         data = await response.text();
+                        Swal.fire("Succès",data, "success").then(() => {
                             window.location.reload();
                         });
                     } else {

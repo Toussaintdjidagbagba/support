@@ -61,7 +61,9 @@ class InterfaceServiceProvider extends ServiceProvider
     }
 
     public static function getordinateur(){
-        return DB::table('outils')->select('outils.nameoutils as nameoutils', 'outils.id as id')->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")->get();
+        return DB::table('outils')->select('outils.nameoutils as nameoutils', 'outils.id as id')
+        ->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")
+        ->get();
     }
 
     public static function getUserOutil($id){
