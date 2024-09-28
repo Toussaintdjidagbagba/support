@@ -474,7 +474,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Exécution de le maintenance du :
+                    <h4 class="modal-title" id="myModalLabel">Exécution de la maintenance curative du :
                         <span class="text-primary font-bold">
                             {{ App\Providers\InterfaceServiceProvider::periodeMaintenance($periode) }}
                         </span>
