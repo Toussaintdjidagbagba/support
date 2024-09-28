@@ -87,6 +87,7 @@ Route::group([
 	//////////////////////////////////** Categorie d'outils **////////////////////////////////////////////////////////
 	Route::get('/listcategoriesoutils', 'App\Http\Controllers\CategorieOutilsController@listcat')->name('GCO');
 	Route::get('/actions/outils', 'App\Http\Controllers\CategorieOutilsController@listactionsoutils')->name('LAOS');
+	Route::get('/listcategorie/actions/outils', 'App\Http\Controllers\CategorieOutilsController@listcatactionsoutils')->name('LCAO');
 	Route::post('/categories-outils', 'App\Http\Controllers\CategorieOutilsController@addcat')->name('ACO');
 	Route::post('/outil/actions', 'App\Http\Controllers\CategorieOutilsController@addactionsoutils')->name('AAO');
 	Route::get('/delete-categoriesoutils', 'App\Http\Controllers\CategorieOutilsController@deletecat')->name('DCO');

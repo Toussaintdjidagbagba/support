@@ -429,7 +429,6 @@
 
         async function selecteOutils(event, outilsId) {
             event.preventDefault();
-console.log(outilsId);
 
             // Masquer toutes les listes d'actions
             document.querySelectorAll('.actions-list').forEach(function(list) {

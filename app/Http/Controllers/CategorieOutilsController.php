@@ -49,6 +49,12 @@ class CategorieOutilsController extends Controller
         $lists = InterfaceServiceProvider::recupactionsoutils($idCatOutils);
         return $lists;
     }
+    public function listcatactionsoutils(Request $request)
+    {
+        // dd($request->id);
+        $lists = InterfaceServiceProvider::recupactionsoutils($request->id);
+        return $lists;
+    }
 
     public function addactionsoutils(Request $request)
     {

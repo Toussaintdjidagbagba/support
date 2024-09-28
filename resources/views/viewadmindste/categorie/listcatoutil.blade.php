@@ -282,14 +282,14 @@
         function addactions(dvalue) {
             const outils = dvalue.getAttribute('data-libelle');
             const id = dvalue.getAttribute('data-id');
-            document.getElementById('idoutils').value = id;
+            document.getElementById('idcatoutils').value = id;
             document.getElementById('titleotil').innerHTML = outils;
             listaction(id);
         }
 
         async function listaction(id) {
             try {
-                const response = await fetch(`{{ route('LAOS') }}?id=${id}`, {
+                const response = await fetch(`{{ route('LCAO') }}?id=${id}`, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
@@ -377,7 +377,7 @@
                         infoAction.innerHTML =
                             '<div class="alert alert-success alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>' +
                             message + '</strong></div>';
-                        listaction(idOutils);
+                        listaction(idCatOutils);
                     } else {
                         throw new Error('Erreur lors de l\'ajout de l\'action : ' + data['libelleaction']);
                     }
