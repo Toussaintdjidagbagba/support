@@ -15,6 +15,8 @@ use App\Exports\ExportExcel;
 use App\Exports\ExportMaintenance;
 use App\Exports\MaintPreventiveExport;
 use App\Models\ActionOutil;
+use App\Models\GestionmaintenanceCurative;
+use App\Models\MaintenanceCurative;
 use App\Models\Service;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -28,13 +30,6 @@ class MaintenanceController extends Controller
         $list = Maintenance::all();
         $service = Service::all();
         return view('viewadmindste.maintenance.list', compact('list', 'service'));
-    }
-
-    public function listgestionmaintenancecurative()
-    {
-        $list = Maintenance::all();
-        $service = Service::all();
-        return view('viewadmindste.maintenance.curative.list', compact('list', 'service'));
     }
 
     public function addmaintenance(Request $request)
@@ -121,6 +116,7 @@ class MaintenanceController extends Controller
             return $errorString;
         }
     }
+    
     // setdeletemaintenance
     public function setdeletemaintenance(Request $request)
     {
@@ -204,19 +200,6 @@ class MaintenanceController extends Controller
             return Back();
         }
     }
-    public function detailsmaintenacecurative(Request $request)
-    {
-        try {
-            $list = Gestionmaintenance::where("maintenance", $request->id)->get();
-            $periode = $request->id;
-            $existe = $list->count();
-            return view('viewadmindste.maintenance.curative.listordinateur', compact('list', 'periode', 'existe'));
-        } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
-            return Back();
-        }
-    }
 
     public function listordinateurmaintenance(Request $request)
     {
@@ -224,19 +207,6 @@ class MaintenanceController extends Controller
             $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
                 ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
                 ->where("outils.user", session("utilisateur")->idUser)
-                ->get();
-
-            return view('viewadmindste.maintenance.listmaintenance', compact('list'));
-        } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
-        }
-    }
-    public function listmaintenancecurative(Request $request)
-    {
-        try {
-            $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
-            ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
-            ->where("outils.user", session("utilisateur")->idUser)
                 ->get();
 
             return view('viewadmindste.maintenance.listmaintenance', compact('list'));
@@ -437,6 +407,251 @@ class MaintenanceController extends Controller
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
+        }
+    }
+
+    // Tout sur la maintenace curative ***********************
+    public function listgestionmaintenancecurative()
+    {
+        $list = MaintenanceCurative::all();
+        $service = Service::all();
+        return view('viewadmindste.maintenance.curative.list', compact('list', 'service'));
+    }
+
+    public function listmaintenancecurative(Request $request)
+    {
+        try {
+            $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
+            ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
+            ->where("outils.user", session("utilisateur")->idUser)
+                ->get();
+
+            return view('viewadmindste.maintenance.listmaintenance', compact('list'));
+        } catch (\Exception $e) {
+            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+        }
+    }
+
+    public function addmaintenancecuartive(Request $request)
+    {
+        if (!in_array("prog_maint", session("auto_action"))) {
+            return view("vendor.error.649");
+        } else {
+            try {
+                if (isset(DB::table('maintenance_curatives')->where('periodedebut', $request->pdm)->where('periodefin', $request->pfm)->first()->id)) {
+                    return "Cette période de maintenance existe déjà!! ";
+                } else {
+                    $messages = [
+                        'pdm.required' => 'La période de début est requis.',
+                        'pfm.required' => 'La période de fin est requise.',
+                        'techm.required' => 'Le technicien est requis.',
+                        'dgnt.required' => 'Le diagnostique est requis.',
+                        'cse.required' => 'La cause est requis.',
+                        'rslt.required' => 'Le resultat est requis.',
+                    ];
+                    $validator = Validator::make($request->all(), [
+                        'pdm' => 'required',
+                        'pfm' => 'required',
+                        'techm' => 'required',
+                        'dgnt' => 'required',
+                        'cse' => 'required',
+                        'rslt' => 'required',
+                    ], $messages);
+
+                    if ($validator->fails()) {
+                        $errors = $validator->errors()->all();
+                        $errorString = implode(' ', $errors);
+                        flash("Erreur : " . $errorString)->error();
+                        return $errorString;
+                    }
+                    $add = new MaintenanceCurative();
+                    $add->periodedebut =  $request->pdm; // Période fin
+                    $add->periodefin = $request->pfm; // Période Début
+                    $add->user = $request->techm;  // Technicien
+                    $add->diagnostique = $request->dgnt;  // Diagnostique
+                    $add->cause = $request->cse;  // Cause
+                    $add->resultat = $request->rslt;  // Resultat
+                    $add->action = session("utilisateur")->idUser;
+                    $add->save();
+
+                    $message = "Vous avez enregistrer une maintenance curative pour la période du " . InterfaceServiceProvider::Dateformat($request->pdm) . " au " . InterfaceServiceProvider::Dateformat($request->pfm) . " .";
+
+                    TraceController::setTrace($message, session("utilisateur")->idUser);
+                    flash("Succès : " . $message)->success();
+                    // Envoie de message au utilisateur
+                    return $message;
+                }
+            } catch (QueryException $qe) {
+                $errorString = "Une erreur ses produites" .  $qe->getMessage();
+                flash("Erreur : " . $errorString)->error();
+                return $errorString;
+            } catch (\Exception $e) {
+                $errorString = "Une erreur ses produites" .  $e->getMessage();
+                flash("Erreur : " . $errorString)->error();
+                return $errorString;
+            }
+        }
+    }
+
+    public function traitementmaintenancecurative(Request $request)
+    {
+        try {
+            if (!in_array("add_maint_outil", session("auto_action"))) {
+                return view("vendor.error.649");
+            } else {
+                if (isset(DB::table('gestionmaintenance_curatives')->where('outil', $request->ordinateur)->where('maintenance', $request->id)->first()->id)) {
+                    return "Une maintenance a été déjà faite sur cette outils!";
+                } else {
+
+                    $periode = DB::table('maintenance_curatives')->where('id', $request->id)->first();
+
+                    $ordinateur = DB::table('outils')->select('outils.nameoutils as nameoutils', 'outils.id as id')->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")->where('categorieoutils.libelle', "Ordinateurs")->where('outils.id', $request->ordinateur)->first();
+
+                    $add = new GestionmaintenanceCurative();
+                    $add->outil =  $request->ordinateur;
+                    $add->maintenance = $request->periode;
+                    $add->etat = $request->etat;
+                    $add->commentaireinf = $request->obs;
+                    $add->action_effectuer = $request->maint;
+                    $add->action = session("utilisateur")->idUser;
+                    $add->save();
+
+                    $message = "Vous avez enregistrée l'exécution de la maintenance curative de la période du " . InterfaceServiceProvider::Dateformat($periode->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($periode->periodefin) . " sur l'outil " . $ordinateur->nameoutils . ".";
+
+                    TraceController::setTrace($message, session("utilisateur")->idUser);
+
+                    // Envoie de message au utilisateur
+                    flash($message)->success();
+                    return $message;
+                }
+            }
+        } catch (\Exception $e) {
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
+        }
+    }
+
+    public function setdefinitionetatmaintenancecurative(Request $request)
+    {
+        try {
+            if (!in_array("define_etat_maint", session("auto_action"))) {
+                return view("vendor.error.649");
+            } else {
+                $maintenanceexitant = MaintenanceCurative::where('id', request('id'))->first();
+                $lib = $maintenanceexitant->periodedebut . " au " . $maintenanceexitant->periodefin;
+                $occurence = json_encode(MaintenanceCurative::where('id', request('id'))->first());
+
+                TraceController::setTrace("Data existant : " . $occurence, session("utilisateur")->idUser);
+
+                $message = "Vous avez défini l'état de la maintenance curative de la période du `" . $lib . "` à " . $request->etat . "``. <br> " . $request->commentaire;
+
+                TraceController::setTrace($message, session("utilisateur")->idUser);
+
+                MaintenanceCurative::where(
+                    "id",
+                    $request->id
+                )->update([
+                    "etat" => $request->etat,
+                    "commentaire" => $request->commentaire,
+                    "action" => session("utilisateur")->idUser
+                ]);
+
+                $info = "Changement d'état effectif sur la maintenance curative de la période de " . $lib . " avec succès.";
+                flash("Succès : " . $message)->success();
+                return $info;
+            }
+        } catch (\Exception $e) {
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
+        }
+    }
+
+    public function setupdatemaintenancecurative(Request $request)
+    {
+        try {
+            if (!in_array("update_maint_prog", session("auto_action"))) {
+                return view("vendor.error.649");
+            } else {
+
+                $maintencancesexistant = MaintenanceCurative::where('id', $request->id)->first();
+
+                TraceController::setTrace("Data ancien : " . json_encode($maintencancesexistant), session("utilisateur")->idUser);
+
+                MaintenanceCurative::where("id", $request->id)->update([
+                    "periodedebut" => $request->pdm,
+                    "periodefin" => $request->pfm,
+                    "diagnostique" => $request->udgnt,
+                    "cause" => $request->ucse,
+                    "resultat" => $request->urslt,
+                    "action" => session("utilisateur")->idUser
+                ]);
+
+                if ($request->ucm != 0) {
+                    MaintenanceCurative::where("id", $request->id)->update([
+                        "user" => $request->ucm
+                    ]);
+                }
+
+                $message = "Vous avez modifiée les informations de la période de " . InterfaceServiceProvider::Dateformat($maintencancesexistant->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($maintencancesexistant->periodefin) . "  en " . InterfaceServiceProvider::Dateformat($request->pdm) . " au " . InterfaceServiceProvider::Dateformat($request->pfm);
+                TraceController::setTrace($message, session("utilisateur")->idUser);
+                flash($message)->success();
+                return $message;
+            }
+        } catch (QueryException $qe) {
+            $errorString = "Une erreur ses produites" .  $qe->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
+        } catch (\Exception $e) {
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
+        }
+    }
+
+    public function setdeletemaintenancecurative(Request $request)
+    {
+        try {
+            if (!in_array("delete_maint_prog", session("auto_action"))) {
+                return view("vendor.error.649");
+            } else {
+                $maintenance = MaintenanceCurative::find($request->id);
+                if ($maintenance) {
+                    $libs = MaintenanceCurative::where('id', $request->id)->first();
+                    $lib = InterfaceServiceProvider::Dateformat($libs->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($libs->periodefin);
+                    $occurence = json_encode(MaintenanceCurative::where('id', $request->id)->first());
+
+                    TraceController::setTrace("Data delete M : " . $occurence, session("utilisateur")->idUser);
+
+                    MaintenanceCurative::where('id', $request->id)->delete();
+                    $info = "Vous avez supprimé la mainteance de la période du " . $lib . " avec succès.";
+                    flash($info)->success();
+                    return  $info;
+                } else {
+                    $info = "Maintenance introuvable.";
+                    flash($info)->error();
+                    return $info;
+                }
+            }
+        } catch (\Exception $e) {
+            $info = "Une erreur ses produites :" . $e->getMessage();
+            flash($info)->error();
+            return $info;
+        }
+    }
+
+    public function detailsmaintenacecurative(Request $request)
+    {
+        try {
+            $list = GestionmaintenanceCurative::where("maintenance", $request->id)->get();
+            $periode = $request->id;
+            $existe = $list->count();
+            return view('viewadmindste.maintenance.curative.listordinateur', compact('list', 'periode', 'existe'));
+        } catch (\Exception $e) {
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return Back();
         }
     }
 }

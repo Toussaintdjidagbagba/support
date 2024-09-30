@@ -60,6 +60,11 @@ class InterfaceServiceProvider extends ServiceProvider
         return DB::table('maintenances')->get();
     }
 
+    public static function getallmaintenacecurative()
+    {
+        return DB::table('maintenance_curatives')->get();
+    }
+
     public static function getordinateur(){
         return DB::table('outils')->select('outils.nameoutils as nameoutils', 'outils.id as id')
         ->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")
@@ -81,6 +86,17 @@ class InterfaceServiceProvider extends ServiceProvider
         if (isset($maintenance->id)) {
             return InterfaceServiceProvider::Dateformat($maintenance->periodedebut) . ' au ' . InterfaceServiceProvider::Dateformat($maintenance->periodefin);
         }else{
+            return '';
+        }
+    }
+
+    public static function periodeMaintenancecurative($id)
+    {
+        $maintenance = DB::table('maintenance_curatives')->where('id', $id)->first();
+
+        if (isset($maintenance->id)) {
+            return InterfaceServiceProvider::Dateformat($maintenance->periodedebut) . ' au ' . InterfaceServiceProvider::Dateformat($maintenance->periodefin);
+        } else {
             return '';
         }
     }

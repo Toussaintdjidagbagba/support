@@ -10,7 +10,7 @@
         <div class="block-header">
             @include('flash::message')
             <h2>
-                <a href="{{ route('GMPC') }}"> Maintenances </a> \ Exécution
+                <a href="{{ route('GMC') }}"> Maintenances Curative</a> \ Exécution
                 <small></small>
             </h2>
         </div>
@@ -88,7 +88,7 @@
                                                     <button type="button" title="Modifier"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#update"
-                                                        onclick="setupdatemaintenance({{ $maint->id }}, '{{ $maint->detailjson }}', '{{ App\Providers\InterfaceServiceProvider::periodeMaintenance($maint->maintenance) }}', '{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}', '{{ $maint->etat }}', '{{ $maint->commentaireinf }}','{{ $maint->outil }}')">
+                                                        onclick="setupdatemaintenance({{ $maint->id }}, '{{ $maint->action_effectuer }}', '{{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($maint->maintenance) }}', '{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}', '{{ $maint->etat }}', '{{ $maint->commentaireinf }}', '{{ $maint->action_effectuer }}')">
                                                         <i class="material-icons">system_update_alt</i>
                                                     </button>
                                                 @endif
@@ -130,17 +130,10 @@
             ordinateur = document.getElementById("ordinateur").value;
             etat = document.getElementById("etat").value;
             obs = document.getElementById("obs").value;
+            maint = document.getElementById("acteff").value;
+            id = document.getElementById("idMC").value;
 
             document.getElementById('infomaintenance').innerHTML = "";
-
-            maint = "";
-
-            chks = document.getElementsByName('maint');
-            for (var checkbox of chks) {
-                if (checkbox.checked) {
-                    maint += "|" + checkbox.value;
-                }
-            }
 
             if (periode == 0 || ordinateur == 0)
                 if (periode == 0) {
@@ -149,11 +142,12 @@
                 }
             if (ordinateur == 0) {
                 document.getElementById('infomaintenance').innerHTML +=
-                    "<div class='alert alert-danger alert-block'>Veuillez sélectionner l'ordinateur pour lequel la maintenance sera effectuée.. </div>";
+                    "<div class='alert alert-danger alert-block'>Veuillez sélectionner l'outils pour lequel la maintenance sera effectuée.. </div>";
             } else {
                 dat = {
                     _token: token,
                     periode: periode,
+                    id: id,
                     ordinateur: ordinateur,
                     etat: etat,
                     maint: maint,
@@ -165,7 +159,7 @@
 
                 // En cours d'envoie
                 try {
-                    let response = await fetch("{{ route('SMU') }}", {
+                    let response = await fetch("{{ route('TMC') }}", {
                         method: 'POST',
                         headers: {
                             'Access-Control-Allow-Credentials': true,
@@ -265,56 +259,23 @@
                 document.getElementById("dbkpe").checked = true;
         }
 
-        async function setupdatemaintenance(id, maint, periode, outil, etat, commentaire, outilsId) {
+        async function setupdatemaintenance(id, maint, periode, outil, etat, commentaire, action) {
             document.getElementById('idupdate').value = id;
             document.getElementById('uobs').value = commentaire;
+            document.getElementById('uacteff').value = action;
 
-            let tab = maint.split("|").filter(Boolean);
 
-            let lists = "";
-            if (tab.length > 0) {
-                try {
-                    const response = await fetch(`{{ route('LAOS') }}?id=${outilsId}`, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Access-Control-Allow-Credentials': true
-                        }
-                    });
+            document.getElementById('uperiode').innerHTML = 'Période : ' + periode;
 
-                    const data = await response.json();
+            document.getElementById('uordinateur').innerHTML = 'Outils : ' + outil;
 
-                    if (data.length > 0) {
-                        let lists = "";
-                        data.forEach(function(currentline) {
-                            const isChecked = tab.includes(currentline.code) ? 'checked' : '';
-                            lists +=
-                                '<input type="checkbox" id="' + currentline.code + '" name="umaint" value="' +
-                                currentline.code + '" class="filled-in chk-col-brown" ' + isChecked + ' />' +
-                                '<label for="' + currentline.code + '">' + currentline.libelle + '</label><br>';
-                        });
-
-                        const selectedActionsList = document.querySelector('.actions-select-list');
-                        if (selectedActionsList) {
-                            selectedActionsList.innerHTML = lists;
-                        }
-
-                    }
-                } catch (error) {
-
-                }
-                document.getElementById('uperiode').innerHTML = 'Période : ' + periode;
-
-                document.getElementById('uordinateur').innerHTML = 'Outils : ' + outil;
-
-                document.getElementById('uetat').innerHTML =
-                    '<select type="text" id="uuetat" name="etat" class="form-control">' +
-                    '<option value="Excellent" ' + (etat === 'Excellent' ? 'selected' : '') + '>Excellent</option>' +
-                    '<option value="Bien" ' + (etat === 'Bien' ? 'selected' : '') + '>Bien</option>' +
-                    '<option value="Passable" ' + (etat === 'Passable' ? 'selected' : '') + '>Passable</option>' +
-                    '<option value="Médiocre" ' + (etat === 'Médiocre' ? 'selected' : '') + '>Médiocre</option>' +
-                    '</select>';
-            }
+            document.getElementById('uetat').innerHTML =
+                '<select type="text" id="uuetat" name="etat" class="form-control">' +
+                '<option value="Excellent" ' + (etat === 'Excellent' ? 'selected' : '') + '>Excellent</option>' +
+                '<option value="Bien" ' + (etat === 'Bien' ? 'selected' : '') + '>Bien</option>' +
+                '<option value="Passable" ' + (etat === 'Passable' ? 'selected' : '') + '>Passable</option>' +
+                '<option value="Médiocre" ' + (etat === 'Médiocre' ? 'selected' : '') + '>Médiocre</option>' +
+                '</select>';
         }
 
         async function valideupdatemaintenance() {
@@ -476,7 +437,7 @@
                             aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Exécution de la maintenance curative du :
                         <span class="text-primary font-bold">
-                            {{ App\Providers\InterfaceServiceProvider::periodeMaintenance($periode) }}
+                            {{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($periode) }}
                         </span>
                     </h4>
                 </div>
@@ -484,6 +445,7 @@
                 <div class="modal-body">
                     <form role="form" method="post">
                         <input type="hidden" id="_token" name="_token" value="{{ csrf_token() }}" />
+                        <input type="hidden" id="idMC" name="idMC" value="{{ $periode }}" />
                         <label id="infomaintenance"></label>
                         <div class="row clearfix" id="other">
                             <div class="col-md-6">
@@ -491,15 +453,16 @@
                                 <div class="form-group">
                                     <div class="form-line">
                                         @php
-                                            $allperiode = App\Providers\InterfaceServiceProvider::getallperiode();
+                                            $allperiode = App\Providers\InterfaceServiceProvider::getallmaintenacecurative();
                                         @endphp
                                         <select type="text" id="periode" name="periode" class="form-control">
                                             @forelse ($allperiode as $itemPeriode)
                                                 <option value="{{ $itemPeriode->id }}"
                                                     @if ($itemPeriode->id == $periode) @selected(true) @else @disabled(true) @endif>
-                                                    {{ App\Providers\InterfaceServiceProvider::periodeMaintenance($itemPeriode->id) }}
+                                                    {{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($itemPeriode->id) }}
                                                 </option>
                                             @empty
+                                                <option disabled>Aucune option n'est disponible</option>
                                             @endforelse
                                         </select>
                                     </div>
@@ -546,10 +509,14 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Affichage des actions basées sur l'outil sélectionné -->
-                        <div class="row clearfix">
-                            <div class="col-md-6 actions-list hidden">
+                            <div class="col-md-6">
+                                <label for="acteff">Action effectuer :</label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <input type="text" id="acteff" name="acteff" class="form-control"
+                                            placeholder="">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -690,9 +657,13 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="row clearfix">
-                        <div class="col-md-6 actions-select-list">
+                    <div class="col-md-6">
+                        <label for="uacteff">Action effectuer :</label>
+                        <div class="form-group">
+                            <div class="form-line">
+                                <input type="text" id="uacteff" name="uacteff" class="form-control"
+                                    placeholder="">
+                            </div>
                         </div>
                     </div>
                 </div>

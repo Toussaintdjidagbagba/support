@@ -24,7 +24,7 @@
                             <button type="button"
                                 style="margin-right: 30px; float: right; padding-right: 30px; padding-left: 30px;"
                                 class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal"
-                                data-target="#add">PROGRAMMER</button>
+                                data-target="#add">ENREGISTRER</button>
                         </h2>
                     </div>
                     <div class="body">
@@ -86,7 +86,7 @@
                                                 @if (in_array('see_detail_maint', session('auto_action')))
                                                     <button type="button" title="Liste"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        onClick="javascript:window.open('{{ route('GMDC') }}?id={{ $maint->id }}');">
+                                                        onClick="javascript:window.open('{{ route('GDMC') }}?id={{ $maint->id }}');">
                                                         <i class="material-icons">list</i></a>
                                                     </button>
                                                 @endif
@@ -94,7 +94,7 @@
                                                     <button type="button" title="Modifier"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#update"
-                                                        onclick="setupdatemaintenance({{ $maint->id }}, '{{ $maint->periodedebut }}', '{{ $maint->periodefin }}', {{ $maint->user }}, '{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->user) }}')">
+                                                        onclick="setupdatemaintenance({{ $maint->id }}, '{{ $maint->resultat }}','{{ $maint->diagnostique }}','{{ $maint->cause }}','{{ $maint->periodedebut }}', '{{ $maint->periodefin }}', {{ $maint->user }}, '{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->user) }}')">
                                                         <i class="material-icons">system_update_alt</i>
                                                     </button>
                                                 @endif
@@ -102,7 +102,7 @@
                                                 @if (in_array('delete_maint_prog', session('auto_action')))
                                                     <button type="button" title="Supprimer"
                                                         data-token="{{ csrf_token() }}" data-Id="{{ $maint->id }}"
-                                                        onclick="Delete(event, '{{ route('DPC') }}','{{ $maint->periodedebut }} au {{ $maint->periodefin }}')"
+                                                        onclick="Delete(event, '{{ route('DMCR') }}','{{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }} au {{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodefin) }}')"
                                                         class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
                                                         <i class="material-icons">delete_sweep</i></a> </button>
                                                 @endif
@@ -128,13 +128,16 @@
     </div>
 
     <script type="text/javascript">
-        async function validemaintenance() {
-
+        async function validemaintenancecurative() {
             // récupération des données du formulaire 
             token = document.getElementById("_token").value;
             pdm = document.getElementById("pdm").value;
             pfm = document.getElementById("pfm").value;
             techm = document.getElementById("techm").value;
+            dgnt = document.getElementById("dgnt").value;
+            cse = document.getElementById("cse").value;
+            cdat = document.getElementById("cdat").value;
+            rslt = document.getElementById("rslt").value;
             ucm = document.getElementById("ucm").value;
             sdcm = document.getElementById("sdcm").value;
             cm = document.getElementById("cm").value;
@@ -142,15 +145,24 @@
 
             let erreur = "";
             if (pdm === "") {
-                erreur += "définir la période de début pour gérer la maintenance.. \n";
+                erreur += "définir la temps de début pour gérer la maintenance.. \n";
             }
             if (pfm === "") {
-                erreur += "définir la période de de fin pour gérer la maintenance.. \n";
+                erreur += "définir la temps de de fin pour gérer la maintenance.. \n";
+            }
+            if (dgnt === "") {
+                erreur += "renseigner le diagnostique pour la maintenance.. \n";
+            }
+            if (cse === "") {
+                erreur += "renseigner la cause pour la maintenance.. \n";
+            }
+            if (rslt === "") {
+                erreur += "renseigner le resultat pour la maintenance.. \n";
             }
             if (techm == 0) {
                 erreur += "sélectionner un technicien pour gérer la maintenance.. .\n";
             }
-           
+
             if (erreur !== "") {
                 document.getElementById('infomaintenance').innerHTML =
                     "<div class='alert alert-danger alert-block'> Veuillez : " + erreur + "</div>";
@@ -162,13 +174,17 @@
                     techm: techm,
                     sdcm: sdcm,
                     ucm: ucm,
+                    dgnt: dgnt,
+                    cse: cse,
+                    cdat: cdat,
+                    rslt: rslt,
                 };
                 document.getElementById("infomaintenance").innerHTML =
                     '<div class="alert alert-warning alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>En cours de traitement.. <br> Veuillez patienter! </strong></div>';
 
                 // En cours d'envoie
                 try {
-                    let response = await fetch("{{ route('SMPC') }}", {
+                    let response = await fetch("{{ route('ADDMC') }}", {
                         method: 'POST',
                         headers: {
                             'Access-Control-Allow-Credentials': true,
@@ -187,7 +203,7 @@
                                 '<div class="alert alert-success alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>' +
                                 data + '</strong></div>';
                             setTimeout(function() {
-                                window.location.href = "{{ route('GMPC') }}";
+                                window.location.href = "{{ route('GMC') }}";
                             }, 3000);
                         }
 
@@ -222,7 +238,7 @@
                 '<div class="alert alert-warning alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>En cours de traitement.. <br> Veuillez patienter! </strong></div>';
 
             try {
-                let response = await fetch("{{ route('DEPC') }}", {
+                let response = await fetch("{{ route('DEMC') }}", {
                     method: 'POST',
                     headers: {
                         'Access-Control-Allow-Credentials': true,
@@ -254,10 +270,13 @@
             document.getElementById('iddelete').value = id;
         }
 
-        async function setupdatemaintenance(id, periodedebut, periodefin, user, nameuser) {
+        async function setupdatemaintenance(id,resultat,diagnostique,cause, periodedebut, periodefin, user, nameuser) {
             document.getElementById('idupdate').value = id;
             document.getElementById('pdmu').value = periodedebut;
             document.getElementById('pfmu').value = periodefin;
+            document.getElementById('udgnt').value = diagnostique;
+            document.getElementById('ucse').value = cause;
+            document.getElementById('urslt').value = resultat;
             document.getElementById('ucma').innerHTML =
                 "Utilisateur en charge : <br> Voulez-vous changer l'utilisateur actuel `" + nameuser +
             "` ? Si oui choisissez..";
@@ -270,6 +289,9 @@
             idupdate = document.getElementById("idupdate").value;
             pdm = document.getElementById("pdmu").value;
             pfm = document.getElementById("pfmu").value;
+            udgnt = document.getElementById("udgnt").value;
+            ucse = document.getElementById("ucse").value;
+            urslt = document.getElementById("urslt").value;
             ucm = document.getElementById("ucmu").value;
 
             dat = {
@@ -277,6 +299,9 @@
                 pdm: pdm,
                 pfm: pfm,
                 ucm: ucm,
+                udgnt: udgnt,
+                ucse: ucse,
+                urslt: urslt,
                 id: idupdate,
             };
             document.getElementById("infoupdate").innerHTML =
@@ -284,7 +309,7 @@
 
             // En cours d'envoie
             try {
-                let response = await fetch("{{ route('UPC') }}", {
+                let response = await fetch("{{ route('SUMC') }}", {
                     method: 'POST',
                     headers: {
                         'Access-Control-Allow-Credentials': true,
@@ -309,7 +334,7 @@
                 document.getElementById("infoupdate").innerHTML = error;
             }
         }
-        
+
         async function validedeletemaintenance() {
             token = document.getElementById("_token").value;
             iddelete = document.getElementById("iddelete").value;
@@ -354,7 +379,7 @@
             var token = target.getAttribute('data-token') ?? "";
             var iddelete = target.getAttribute('data-Id') ?? "";
             console.log(iddelete);
-            
+
             const {
                 isConfirmed
             } = await Swal.fire({
@@ -419,8 +444,19 @@
                     <input type="hidden" id="_token" name="_token" value="{{ csrf_token() }}" />
                     <label id="infomaintenance"></label>
                     <div class="row clearfix">
+                        <div class="col-md-12">
+                            <label for="dgnt">Diagnostique :</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="dgnt" name="dgnt" class="form-control"
+                                        placeholder="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
                         <div class="col-md-6">
-                            <label for="pdm">Période début :</label>
+                            <label for="pdm">Temps de début :</label>
                             <div class="form-group">
                                 <div class="form-line">
                                     <input type="date" id="pdm" name="pdm" class="form-control"
@@ -429,7 +465,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label for="pfm">Période fin :</label>
+                            <label for="pfm">Tmeps d'arrêt :</label>
                             <div class="form-group">
                                 <div class="form-line">
                                     <input type="date" id="pfm" name="pfm" class="form-control"
@@ -465,7 +501,8 @@
                                     @endphp
                                     <select type="text" id="ucm" name="ucm" class="form-control"
                                         multiple="true">
-                                        <option value="0" disabled>Sélectionner un ou plusieurs utilisateurs</option>
+                                        <option value="0" selected disabled>Sélectionner un ou plusieurs utilisateurs
+                                        </option>
                                         @foreach ($allUser as $user)
                                             <option value="{{ $user->idUser }}"> {{ $user->nom }} {{ $user->prenom }}
                                             </option>
@@ -477,17 +514,46 @@
                     </div>
                     <div class="row clearfix">
                         <div class="col-md-6">
+                            <label for="cse">Cause :</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="cse" name="cse" class="form-control"
+                                        placeholder="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="rslt">Resultat :</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="rslt" name="rslt" class="form-control"
+                                        placeholder="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-md-6">
                             <label for="sdcm">Service / Direction concernés :</label>
                             <div class="form-group">
                                 <div class="form-line">
 
                                     <select type="text" id="sdcm" name="sdcm" class="form-control">
-                                        <option value="0" disabled selected>Sélectionner </option>
+                                        <option value="0" disabled selected>Sélectionner un service </option>
                                         @foreach ($service as $itemServ)
                                             <option value="{{ $itemServ->id }}"> {{ $itemServ->libelle }}
                                             </option>
                                         @endforeach
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="cdat">Action :</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="cdat" name="cdat" class="form-control"
+                                        placeholder="">
                                 </div>
                             </div>
                         </div>
@@ -506,7 +572,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default btn-sm waves-effect waves-light"
                         data-dismiss="modal">FERMER</button>
-                    <button onclick="validemaintenance()" class="btn bg-deep-orange waves-effect">VALIDER</button>
+                    <button onclick="validemaintenancecurative()" class="btn bg-deep-orange waves-effect">VALIDER</button>
                 </div>
             </div>
         </div>
@@ -526,8 +592,19 @@
                     <input type="hidden" id="idupdate" name="idupdate" />
                     <label id="infoupdate"></label>
                     <div class="row clearfix">
+                        <div class="col-md-12">
+                            <label for="udgnt">Diagnostique :</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="udgnt" name="udgnt" class="form-control"
+                                        placeholder="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
                         <div class="col-md-6">
-                            <label for="pdmu">Période début :</label>
+                            <label for="pdmu">Temps de début :</label>
                             <div class="form-group">
                                 <div class="form-line">
                                     <input type="date" id="pdmu" name="pdmu" class="form-control"
@@ -536,10 +613,30 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label for="pfmu">Période fin :</label>
+                            <label for="pfmu">Temps d'arrêt :</label>
                             <div class="form-group">
                                 <div class="form-line">
                                     <input type="date" id="pfmu" name="pfmu" class="form-control"
+                                        placeholder="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-md-6">
+                            <label for="ucse">Cause :</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="ucse" name="ucse" class="form-control"
+                                        placeholder="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="urslt">Resultat :</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="urslt" name="urslt" class="form-control"
                                         placeholder="">
                                 </div>
                             </div>
