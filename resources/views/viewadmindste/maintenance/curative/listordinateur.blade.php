@@ -88,7 +88,7 @@
                                                     <button type="button" title="Modifier"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#update"
-                                                        onclick="setupdatemaintenance({{ $maint->id }}, '{{ $maint->action_effectuer }}', '{{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($maint->maintenance) }}', '{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}', '{{ $maint->etat }}', '{{ $maint->commentaireinf }}', '{{ $maint->action_effectuer }}')">
+                                                        onclick="setupdatemaintenances({{ $maint->id }}, '{{ $maint->action_effectuer }}', '{{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($maint->maintenance) }}', '{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}', '{{ $maint->etat }}', '{{ $maint->commentaireinf }}')">
                                                         <i class="material-icons">system_update_alt</i>
                                                     </button>
                                                 @endif
@@ -96,9 +96,10 @@
                                                 @if (in_array('delete_maint_admin', session('auto_action')))
                                                     <button type="button" title="Supprimer"
                                                         data-token="{{ csrf_token() }}" data-Id="{{ $maint->id }}"
-                                                        onclick="Delete(event, '{{ route('DMU') }}','{{ App\Providers\InterfaceServiceProvider::periodeMaintenance($maint->maintenance) }} au {{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}')"
+                                                        onclick="Delete(event, '{{ route('DGMC') }}','{{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($maint->maintenance) }} au {{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}')"
                                                         class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                        <i class="material-icons">delete_sweep</i></a> </button>
+                                                        <i class="material-icons">delete_sweep</i></a>
+                                                    </button>
                                                 @endif
 
                                             </td>
@@ -185,85 +186,14 @@
                 }
             }
         }
-
-        async function setdeletemaintenance(id, periode, outil) {
-            document.getElementById('infodelete').innerHTML = "Vous voulez vraiment supprimer " + outil +
-                " de la période " + periode + " ?";
-            document.getElementById('iddelete').value = id;
+        
+         function setdetailmaintenance(maint) {
         }
 
-        async function validedeletemaintenance() {
-            token = document.getElementById("_token").value;
-            iddelete = document.getElementById("iddelete").value;
-
-            inputs = document.getElementsByClassName('outilupdate');
-            dat = {
-                _token: token,
-                id: iddelete,
-            };
-            document.getElementById("infodelete").innerHTML =
-                '<div class="alert alert-warning alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>En cours de traitement.. <br> Veuillez patienter! </strong></div>';
-
-            // En cours d'envoie
-            try {
-                let response = await fetch("{{ route('DMU') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Access-Control-Allow-Credentials': true,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify(dat)
-                });
-                if (response.status == 200) {
-                    data = await response.text();
-                    document.getElementById("infodelete").innerHTML =
-                        '<div class="alert alert-success alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>' +
-                        data + '</strong></div>';
-                } else {
-                    document.getElementById("infodelete").innerHTML =
-                        '<div class="alert alert-danger alert-block"> <button type="button" class="close" data-dismiss="alert">×</button><strong>Une erreur s\'est produite </strong></div>';
-                }
-            } catch (error) {
-                document.getElementById("infodelete").innerHTML = error;
-            }
-        }
-
-        function setdetailmaintenance(maint) {
-            tab = maint.split("|");
-            if (tab.includes("sft"))
-                document.getElementById("dsft").checked = true;
-            if (tab.includes("mjw"))
-                document.getElementById("dmjw").checked = true;
-            if (tab.includes("dfg"))
-                document.getElementById("ddfg").checked = true;
-            if (tab.includes("rdd"))
-                document.getElementById("drdd").checked = true;
-            if (tab.includes("edd"))
-                document.getElementById("dedd").checked = true;
-            if (tab.includes("epdd"))
-                document.getElementById("depdd").checked = true;
-            if (tab.includes("atv"))
-                document.getElementById("datv").checked = true;
-            if (tab.includes("duc"))
-                document.getElementById("dduc").checked = true;
-            if (tab.includes("dram"))
-                document.getElementById("ddram").checked = true;
-            if (tab.includes("dcs"))
-                document.getElementById("ddcs").checked = true;
-            if (tab.includes("decr"))
-                document.getElementById("ddecr").checked = true;
-            if (tab.includes("bkpi"))
-                document.getElementById("dbkpi").checked = true;
-            if (tab.includes("bkpe"))
-                document.getElementById("dbkpe").checked = true;
-        }
-
-        async function setupdatemaintenance(id, maint, periode, outil, etat, commentaire, action) {
-            document.getElementById('idupdate').value = id;
+        function setupdatemaintenances(id, maint, periode, outil, etat, commentaire) {
+            document.getElementById('idupdates').value = id;
             document.getElementById('uobs').value = commentaire;
-            document.getElementById('uacteff').value = action;
-
+            document.getElementById('uacteff').value = maint;
 
             document.getElementById('uperiode').innerHTML = 'Période : ' + periode;
 
@@ -284,23 +214,15 @@
             token = document.getElementById("_token").value;
             etat = document.getElementById("uuetat").value;
             obs = document.getElementById("uobs").value;
-            id = document.getElementById("idupdate").value;
-
-            maint = "";
-
-            chks = document.getElementsByName('umaint');
-            for (var checkbox of chks) {
-                if (checkbox.checked) {
-                    maint += "|" + checkbox.value;
-                }
-            }
+            maint = document.getElementById("uacteff").value;
+            id = document.getElementById("idupdates").value;
 
             dat = {
                 _token: token,
                 id: id,
                 etat: etat,
                 maint: maint,
-                obs: obs
+                obs: obs,
             };
 
             document.getElementById("infoupdate").innerHTML =
@@ -308,7 +230,7 @@
 
             // En cours d'envoie
             try {
-                let response = await fetch("{{ route('SUMU') }}", {
+                let response = await fetch("{{ route('SUMUC') }}", {
                     method: 'POST',
                     headers: {
                         'Access-Control-Allow-Credentials': true,
@@ -387,44 +309,7 @@
                 }
             }
         }
-
-        async function selecteOutils(event, outilsId) {
-            event.preventDefault();
-
-            // Masquer toutes les listes d'actions
-            document.querySelectorAll('.actions-list').forEach(function(list) {
-                list.classList.add('hidden');
-            });
-            try {
-                const response = await fetch("{{ route('LAOS') }}?id=" + outilsId, {
-                    method: 'get',
-                    headers: {
-                        'Access-Control-Allow-Credentials': true,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                });
-                const data = await response.json();
-                if (data.length > 0) {
-                    let lists = "";
-                    data.forEach(function(currentline) {
-                        lists +=
-                            `<input type="checkbox" id="${currentline['code']}" name="maint" value="${currentline['code']}" class="filled-in chk-col-brown" />`;
-                        lists +=
-                            `<label for="${currentline['code']}">${currentline['libelle']}</label><br>`;
-                    });
-                    // Afficher les actions dans l'élément .actions-list
-                    const selectedActionsList = document.querySelector('.actions-list');
-                    if (selectedActionsList) {
-                        selectedActionsList.innerHTML = lists;
-                        selectedActionsList.classList.remove('hidden');
-                    }
-                }
-
-            } catch (error) {
-                throw new Error('Erreur lors de la selection des actions');
-            }
-        }
+       
     </script>
 @endsection
 
@@ -628,9 +513,9 @@
 
                 <div class="modal-body">
                     <input type="hidden" id="_token" name="_token" value="{{ csrf_token() }}" />
-                    <input type="hidden" id="idupdate" name="idupdate" />
+                    <input type="hidden" id="idupdates" name="idupdates" />
                     <label id="infoupdate"></label>
-                    <div class="row clearfix" id="other">
+                    <div class="row clearfix">
                         <div class="col-md-6">
                             <label id="uperiode"></label>
                         </div>
@@ -651,7 +536,7 @@
                             <label for="uobs">Observation :</label>
                             <div class="form-group">
                                 <div class="form-line">
-                                    <input type="text" id="uobs" name="obs" class="form-control"
+                                    <input type="text" id="uobs" name="uobs" class="form-control"
                                         placeholder="">
                                 </div>
                             </div>

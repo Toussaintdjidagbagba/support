@@ -306,11 +306,12 @@ class MaintenanceController extends Controller
 
                 $message = "Vous avez modifiée les informations de la période du " . InterfaceServiceProvider::Dateformat($periode->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($periode->periodefin) . " sur l'ordinateur " . $ordinateur->nameoutils . ".";
                 TraceController::setTrace($message, session("utilisateur")->idUser);
-
+                flash($message)->success();
                 return $message;
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            $info = "Une erreur ses produites :" . $e->getMessage();
+            flash($info)->error();
         }
     }
 
@@ -509,7 +510,7 @@ class MaintenanceController extends Controller
 
                     $add = new GestionmaintenanceCurative();
                     $add->outil =  $request->ordinateur;
-                    $add->maintenance = $request->periode;
+                    $add->maintenance = $request->id;
                     $add->etat = $request->etat;
                     $add->commentaireinf = $request->obs;
                     $add->action_effectuer = $request->maint;
@@ -622,9 +623,15 @@ class MaintenanceController extends Controller
                     $lib = InterfaceServiceProvider::Dateformat($libs->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($libs->periodefin);
                     $occurence = json_encode(MaintenanceCurative::where('id', $request->id)->first());
 
-                    TraceController::setTrace("Data delete M : " . $occurence, session("utilisateur")->idUser);
+                    TraceController::setTrace("Data delete MC : " . $occurence, session("utilisateur")->idUser);
 
                     MaintenanceCurative::where('id', $request->id)->delete();
+                    // Suppression egalement dans la tables Gestion maintenance curative : 
+                    $occurence = json_encode(GestionmaintenanceCurative::where('id', $request->id)->first());
+
+                    TraceController::setTrace("Data delete GMC : " . $occurence, session("utilisateur")->idUser);
+
+                    GestionmaintenanceCurative::where('maintenance', $request->id)->delete();
                     $info = "Vous avez supprimé la mainteance de la période du " . $lib . " avec succès.";
                     flash($info)->success();
                     return  $info;
@@ -654,4 +661,66 @@ class MaintenanceController extends Controller
             return Back();
         }
     }
+
+    public function setupdatedefinitionmaintenancescurative(Request $request)
+    {
+        try {
+            if (!in_array("update_maint_admin", session("auto_action"))) {
+                return view("vendor.error.649");
+            } else {
+
+                $existant = GestionmaintenanceCurative::where('id', $request->id)->first();
+
+                TraceController::setTrace("Data ancien : " . json_encode($existant), session("utilisateur")->idUser);
+
+                $periode = DB::table('maintenance_curatives')->where('id', $existant->maintenance)->first();
+
+                $ordinateur = DB::table('outils')->select('outils.nameoutils as nameoutils', 'outils.id as id')->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")->where('categorieoutils.libelle', "Ordinateurs")->where('outils.id', $existant->outil)->first();
+
+                GestionmaintenanceCurative::where("id", $request->id)->update([
+                    "etat" => $request->etat,
+                    "commentaireinf" => $request->obs,
+                    "action_effectuer" => $request->maint
+                ]);
+
+                $message = "Vous avez modifiée les informations de la période du " . InterfaceServiceProvider::Dateformat($periode->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($periode->periodefin) . " sur l'outils " . $ordinateur->nameoutils . ".";
+                TraceController::setTrace($message, session("utilisateur")->idUser);
+                flash($message)->success();
+                return $message;
+            }
+        } catch (\Exception $e) {
+            $info = "Une erreur ses produites :" . $e->getMessage();
+            flash($info)->error();
+        }
+    }
+
+    public function setdeletegmaintenancecurative(Request $request)
+    {
+        try {
+            if (!in_array("delete_maint_admin", session("auto_action"))) {
+                return view("vendor.error.649");
+            } else {
+                $existe = GestionmaintenanceCurative::find($request->id);
+                if ($existe) {
+                    $occurence = json_encode(GestionmaintenanceCurative::where('id', $request->id)->first());
+
+                    TraceController::setTrace("Data delete GMC : " . $occurence, session("utilisateur")->idUser);
+
+                    GestionmaintenanceCurative::where('id', $request->id)->delete();
+                    $info = "Suppression effectué avec succès.";
+                    flash($info)->success();
+                    return $info;
+                } else {
+                    $info = "Maintenance introuvable.";
+                    flash($info)->error();
+                    return $info;
+                }
+            }
+        } catch (\Exception $e) {
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
+        }
+    }
+
 }

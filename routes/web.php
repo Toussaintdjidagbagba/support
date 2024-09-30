@@ -177,6 +177,8 @@ Route::group([
 	Route::post('/definitionetatmaintenancecurative', 'App\Http\Controllers\MaintenanceController@setdefinitionetatmaintenancecurative')->name('DEMC');
 	Route::post('/updatemaintenancecurative', 'App\Http\Controllers\MaintenanceController@setupdatemaintenancecurative')->name('SUMC');
 	Route::post('/deletemaintenancecurative', 'App\Http\Controllers\MaintenanceController@setdeletemaintenancecurative')->name('DMCR');
+	Route::post('/updatedefinitionmaintenancescurative', 'App\Http\Controllers\MaintenanceController@setupdatedefinitionmaintenancescurative')->name('SUMUC');
+	Route::post('/deletemaintenancesgestion', 'App\Http\Controllers\MaintenanceController@setdeletegmaintenancecurative')->name('DGMC');
 
 	//////////////////////////////////** Commentaire Maintenance préventive ou curative **//////////////////////////
 	Route::get('/maintenances', 'App\Http\Controllers\MaintenanceController@listordinateurmaintenance')->name('GMU');
