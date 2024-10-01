@@ -54,7 +54,7 @@
                                                     <button type="button" title="Etat"
                                                         class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#etatmaintenance"
-                                                        onclick="setetatmaintenance({{ $maint->id }}, '{{ $maint->periodedebut }} au {{ $maint->periodefin }}')">
+                                                        onclick="setetatmaintenance({{ $maint->id }},'{{ $maint->etat }}', '{{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }} au {{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodefin) }}')">
                                                         <i class="material-icons">gps_fixed</i></a> </button>
                                                 @endif
                                             </td>
@@ -142,7 +142,7 @@
             formData = document.getElementById("formData");
 
             console.log(ucm);
-            
+
             let erreur = "";
             if (pdm === "") {
                 erreur += "définir la temps de début pour gérer la maintenance.. \n";
@@ -215,9 +215,24 @@
             }
         }
 
-        function setetatmaintenance(id, periode) {
+        function setetatmaintenance(id, etat, periode) {
+            console.log(etat);
+
             document.getElementById('infoetat').innerHTML = "Modification de l'état de " + periode + " :";
             document.getElementById('idetat').value = id;
+            document.getElementById('etats').innerHTML = 'Etat Actuelle :<span class="text-primary"> ' + etat + '</span>';
+
+            document.getElementById('etatContainer').innerHTML =
+                '<select id="etatselect" name="etatselect" class="form-control">' +
+                '<option value="Excellent" ' + (etat === 'Excellent' ? 'selected' : '') + '>Excellent</option>' +
+                '<option value="Bien" ' + (etat === 'Bien' ? 'selected' : '') + '>Bien</option>' +
+                '<option value="Défaillant" ' + (etat === 'Défaillant' ? 'selected' : '') + '>Défaillant</option>' +
+                '<option value="Très Bien" ' + (etat === 'Très Bien' ? 'selected' : '') + '>Très Bien</option>' +
+                '<option value="Passable" ' + (etat === 'Passable' ? 'selected' : '') + '>Passable</option>' +
+                '<option value="Médiocre" ' + (etat === 'Médiocre' ? 'selected' : '') + '>Médiocre</option>' +
+                '<option value="Autres" ' + (etat === 'Autres' ? 'selected' : '') + '>Autres</option>' +
+                '</select>';
+
         }
 
         async function valideetatmaintenance() {
@@ -268,7 +283,7 @@
             document.getElementById('iddelete').value = id;
         }
 
-        async function setupdatemaintenance(id,resultat,diagnostique,cause, periodedebut, periodefin, user, nameuser) {
+        async function setupdatemaintenance(id, resultat, diagnostique, cause, periodedebut, periodefin, user, nameuser) {
             document.getElementById('idupdate').value = id;
             document.getElementById('pdmu').value = periodedebut;
             document.getElementById('pfmu').value = periodefin;
@@ -530,7 +545,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row clearfix">
                         <div class="col-md-12">
                             <label for="cm">Contenu mail :</label>
@@ -680,17 +695,14 @@
                     <input type="hidden" id="idetat" name="idetat" />
                     <label id="infoetat"></label>
                     <div class="row clearfix">
+                        <div class="col-md-12">
+                            <label id="etats" class="modal-title pull-center"></label><br>
+                        </div>
                         <div class="col-md-6">
                             <label for="etatselect">Etat :</label>
                             <div class="form-group">
-                                <div class="form-line">
-                                    <select type="text" id="etatselect" name="etatselect" class="form-control">
-                                        <option>TRES BON</option>
-                                        <option>BON</option>
-                                        <option>MAUVAISE</option>
-                                        <option>DEFAILLANT</option>
-                                        <option>Autres</option>
-                                    </select>
+                                <div class="form-line" id="etatContainer">
+
                                 </div>
                             </div>
                         </div>

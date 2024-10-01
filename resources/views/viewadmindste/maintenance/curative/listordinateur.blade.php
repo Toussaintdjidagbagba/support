@@ -21,12 +21,12 @@
                     <div class="header">
                         <h2>
                             Exécution de la maintenance curative
-                           
-                                <button type="button"
-                                    style="margin-right: 30px; float: right; padding-right: 30px; padding-left: 30px;"
-                                    class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal"
-                                    data-target="#add">Exécuter</button>
-                            
+
+                            <button type="button"
+                                style="margin-right: 30px; float: right; padding-right: 30px; padding-left: 30px;"
+                                class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal"
+                                data-target="#add">Exécuter</button>
+
                         </h2>
                     </div>
                     <div class="body">
@@ -80,7 +80,12 @@
                                                     <button type="button" title="Détails"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#detail"
-                                                        onclick="setdetailmaintenance('{{ $maint->detailjson }}')">
+                                                        onclick="setdetailmaintenance(event,
+                                                        '{{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($maint->maintenance) }}',
+                                                        '{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}',
+                                                        '{{ $maint->action_effectuer }}',
+                                                        '{{ $maint->commentaireinf }}',
+                                                        '{{ $maint->avisinf }}')">
                                                         <i class="material-icons">book</i></a>
                                                     </button>
                                                 @endif
@@ -88,7 +93,7 @@
                                                     <button type="button" title="Modifier"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#update"
-                                                        onclick="setupdatemaintenances({{ $maint->id }}, '{{ $maint->action_effectuer }}', '{{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($maint->maintenance) }}', '{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}', '{{ $maint->etat }}', '{{ $maint->commentaireinf }}')">
+                                                        onclick="setupdatemaintenances(event,{{ $maint->id }}, '{{ $maint->action_effectuer }}', '{{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($maint->maintenance) }}', '{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}', '{{ $maint->etat }}', '{{ $maint->commentaireinf }}')">
                                                         <i class="material-icons">system_update_alt</i>
                                                     </button>
                                                 @endif
@@ -146,7 +151,7 @@
                     "<div class='alert alert-danger alert-block'>Veuillez sélectionner l'outils pour lequel la maintenance sera effectuée.. </div>";
             } else {
                 console.log(ordinateur);
-                
+
                 dat = {
                     _token: token,
                     periode: periode,
@@ -188,11 +193,16 @@
                 }
             }
         }
-        
-         function setdetailmaintenance(maint) {
+
+        function setdetailmaintenance(event, periode, outil, action, avisinf) {
+            event.preventDefault();
+            document.getElementById('dates').innerHTML = periode;
+            document.getElementById('outild').innerHTML = outil;
+            document.getElementById('aviinf').innerHTML = avisinf;
+            document.getElementById('actn').innerHTML = action;
         }
 
-        function setupdatemaintenances(id, maint, periode, outil, etat, commentaire) {
+        function setupdatemaintenances(event, id, maint, periode, outil, etat, commentaire) {
             document.getElementById('idupdates').value = id;
             document.getElementById('uobs').value = commentaire;
             document.getElementById('uacteff').value = maint;
@@ -202,11 +212,14 @@
             document.getElementById('uordinateur').innerHTML = 'Outils : ' + outil;
 
             document.getElementById('uetat').innerHTML =
-                '<select type="text" id="uuetat" name="etat" class="form-control">' +
+                '<select id="uuetat" name="etat" class="form-control">' +
                 '<option value="Excellent" ' + (etat === 'Excellent' ? 'selected' : '') + '>Excellent</option>' +
                 '<option value="Bien" ' + (etat === 'Bien' ? 'selected' : '') + '>Bien</option>' +
+                '<option value="Défaillant" ' + (etat === 'Défaillant' ? 'selected' : '') + '>Défaillant</option>' +
+                '<option value="Très Bien" ' + (etat === 'Très Bien' ? 'selected' : '') + '>Très Bien</option>' +
                 '<option value="Passable" ' + (etat === 'Passable' ? 'selected' : '') + '>Passable</option>' +
                 '<option value="Médiocre" ' + (etat === 'Médiocre' ? 'selected' : '') + '>Médiocre</option>' +
+                '<option value="Autres" ' + (etat === 'Autres' ? 'selected' : '') + '>Autres</option>' +
                 '</select>';
         }
 
@@ -311,7 +324,6 @@
                 }
             }
         }
-       
     </script>
 @endsection
 
@@ -378,11 +390,23 @@
                                 <label for="etat">Etat :</label>
                                 <div class="form-group">
                                     <div class="form-line">
-                                        <select type="text" id="etat" name="etat" class="form-control">
-                                            <option> Excellent </option>
-                                            <option> Bien </option>
-                                            <option> Passable </option>
-                                            <option> Médiocre </option>
+                                        <select id="etat" name="etat" class="form-control">
+
+                                            <option value="Excellent" {{ $etat === 'Excellent' ? 'selected' : '' }}>
+                                                Excellent
+                                            </option>
+                                            <option value="Bien" {{ $etat === 'Bien' ? 'selected' : '' }}>Bien</option>
+                                            <option value="Défaillant" {{ $etat === 'Défaillant' ? 'selected' : '' }}>
+                                                Défaillant</option>
+                                            <option value="Très Bien" {{ $etat === 'Très Bien' ? 'selected' : '' }}>Très
+                                                Bien
+                                            </option>
+                                            <option value="Passable" {{ $etat === 'Passable' ? 'selected' : '' }}>Passable
+                                            </option>
+                                            <option value="Médiocre" {{ $etat === 'Médiocre' ? 'selected' : '' }}>Médiocre
+                                            </option>
+                                            <option value="Autres" {{ $etat === 'Autres' ? 'selected' : '' }}>Autres
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
@@ -444,55 +468,36 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Détails : </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Détails :</h4>
                 </div>
-
                 <div class="modal-body">
-                    <div class="row clearfix">
+                    <div class="row">
                         <div class="col-md-6">
-                            <input type="checkbox" id="dsft" name="maint" value="dsft"
-                                class="filled-in chk-col-brown" />
-                            <label for="dsft">Suppression des fichiers temporaire</label> <br>
-                            <input type="checkbox" id="dmjw" name="maint" value="dmjw"
-                                class="filled-in chk-col-brown" />
-                            <label for="dmjw">Mise à jour Windows</label> <br>
-                            <input type="checkbox" id="ddfg" name="maint" value="ddfg"
-                                class="filled-in chk-col-brown" />
-                            <label for="ddfg">Défragmentation</label> <br>
-                            <input type="checkbox" id="drdd" name="maint" value="drdd"
-                                class="filled-in chk-col-brown" />
-                            <label for="drdd">Réparation des disques</label> <br>
-                            <input type="checkbox" id="dedd" name="maint" value="dedd"
-                                class="filled-in chk-col-brown" />
-                            <label for="dedd">Etat de disque</label> <br>
-                            <input type="checkbox" id="depdd" name="maint" value="depdd"
-                                class="filled-in chk-col-brown" />
-                            <label for="depdd">Espace de disque</label> <br>
-                            <input type="checkbox" id="datv" value="datv" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="datv">Antivirus</label> <br>
+                            <div class="form-group">
+                                <label><strong>Date d'exécution :</strong></label>
+                                <p id="dates"></p>
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <input type="checkbox" id="dduc" name="maint" value="dduc"
-                                class="filled-in chk-col-brown" />
-                            <label for="dduc">Dépoussièrer Unité Centrale</label> <br>
-                            <input type="checkbox" id="ddram" name="maint" value="ddram"
-                                class="filled-in chk-col-brown" />
-                            <label for="ddram">Dépoussièrer RAM</label> <br>
-                            <input type="checkbox" id="ddcs" value="ddcs" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="ddcs">Dépoussièrer Clavier/Souris</label> <br>
-                            <input type="checkbox" id="ddecr" value="ddecr" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="ddecr">Dépoussièrer Ecran</label> <br>
-                            <input type="checkbox" id="dbkpi" value="dbkpi" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="dbkpi">Backup interne </label> <br>
-                            <input type="checkbox" id="dbkpe" value="dbkpe" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="dbkpe">Backup externe </label> <br>
+                            <div class="form-group">
+                                <label><strong>Outil :</strong></label>
+                                <p id="outild"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><strong>Action effectuer :</strong></label>
+                                <p id="actn"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><strong>Avis Technicien :</strong></label>
+                                <p id="aviinf"></p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -501,6 +506,7 @@
                         data-dismiss="modal">FERMER</button>
                 </div>
             </div>
+
         </div>
     </div>
 

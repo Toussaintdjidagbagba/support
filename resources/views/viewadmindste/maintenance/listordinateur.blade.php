@@ -80,7 +80,7 @@
                                                     <button type="button" title="Détails"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#detail"
-                                                        onclick="setdetailmaintenance('{{ $maint->detailjson }}')">
+                                                        onclick="setdetailmaintenance('{{ $maint->detailjson }}','{{ $maint->outil }}')">
                                                         <i class="material-icons">book</i></a>
                                                     </button>
                                                 @endif
@@ -235,86 +235,100 @@
             }
         }
 
-        function setdetailmaintenance(maint) {
-            tab = maint.split("|");
-            if (tab.includes("sft"))
-                document.getElementById("dsft").checked = true;
-            if (tab.includes("mjw"))
-                document.getElementById("dmjw").checked = true;
-            if (tab.includes("dfg"))
-                document.getElementById("ddfg").checked = true;
-            if (tab.includes("rdd"))
-                document.getElementById("drdd").checked = true;
-            if (tab.includes("edd"))
-                document.getElementById("dedd").checked = true;
-            if (tab.includes("epdd"))
-                document.getElementById("depdd").checked = true;
-            if (tab.includes("atv"))
-                document.getElementById("datv").checked = true;
-            if (tab.includes("duc"))
-                document.getElementById("dduc").checked = true;
-            if (tab.includes("dram"))
-                document.getElementById("ddram").checked = true;
-            if (tab.includes("dcs"))
-                document.getElementById("ddcs").checked = true;
-            if (tab.includes("decr"))
-                document.getElementById("ddecr").checked = true;
-            if (tab.includes("bkpi"))
-                document.getElementById("dbkpi").checked = true;
-            if (tab.includes("bkpe"))
-                document.getElementById("dbkpe").checked = true;
+        async function setdetailmaintenance(maint, outilsId) {
+            let tab = maint.split("|").filter(Boolean);
+            let lists = "";
+            try {
+                const response = await fetch(`{{ route('LAOS') }}?id=${outilsId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Access-Control-Allow-Credentials': true
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.length > 0) {
+                    let lists = "";
+                    data.forEach(function(currentline) {
+                        const isChecked = tab.includes(currentline.code) ? 'checked' : '';
+                        const disabled = 'disabled';
+
+                        lists +=
+                            '<input type="checkbox" id="' + currentline.code + '" name="umaint" value="' +
+                            currentline.code + '" class="filled-in chk-col-brown" ' + isChecked + ' ' +
+                            disabled + ' />' +
+                            '<label for="' + currentline.code + '">' + currentline.libelle + '</label><br>';
+                    });
+                    const selectedActionsList = document.querySelector('.actions-details-list');
+                    if (selectedActionsList) {
+                        selectedActionsList.innerHTML = lists;
+                    }
+
+                }
+            } catch (error) {
+
+            }
         }
 
         async function setupdatemaintenance(id, maint, periode, outil, etat, commentaire, outilsId) {
             document.getElementById('idupdate').value = id;
             document.getElementById('uobs').value = commentaire;
+            console.log(outilsId);
 
             let tab = maint.split("|").filter(Boolean);
 
             let lists = "";
-            if (tab.length > 0) {
-                try {
-                    const response = await fetch(`{{ route('LAOS') }}?id=${outilsId}`, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Access-Control-Allow-Credentials': true
-                        }
+            const selectedActionsList = document.querySelector('.actions-select-list');
+            try {
+                const response = await fetch(`{{ route('LAOS') }}?id=${outilsId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Access-Control-Allow-Credentials': true
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.length > 0) {
+                    console.log(data);
+
+                    let lists = "";
+                    data.forEach(function(currentline, index) {
+                        const isChecked = tab.includes(currentline.code) ? 'checked' : '';
+                        lists +=
+                            '<input type="checkbox" id="item-' + index + '" name="umaint" value="' +
+                            currentline.code + '" class="filled-in chk-col-brown" ' + isChecked + ' />' +
+                            '<label for="item-' + index + '">' + currentline.libelle +
+                            '</label><br>';
+
                     });
 
-                    const data = await response.json();
-
-                    if (data.length > 0) {
-                        let lists = "";
-                        data.forEach(function(currentline) {
-                            const isChecked = tab.includes(currentline.code) ? 'checked' : '';
-                            lists +=
-                                '<input type="checkbox" id="' + currentline.code + '" name="umaint" value="' +
-                                currentline.code + '" class="filled-in chk-col-brown" ' + isChecked + ' />' +
-                                '<label for="' + currentline.code + '">' + currentline.libelle + '</label><br>';
-                        });
-
-                        const selectedActionsList = document.querySelector('.actions-select-list');
-                        if (selectedActionsList) {
-                            selectedActionsList.innerHTML = lists;
-                        }
-
+                    if (selectedActionsList) {
+                        selectedActionsList.innerHTML = lists;
                     }
-                } catch (error) {
-
+                } else {
+                    selectedActionsList.innerHTML = "Aucune action n'est trouvée";
                 }
-                document.getElementById('uperiode').innerHTML = 'Période : ' + periode;
-
-                document.getElementById('uordinateur').innerHTML = 'Outils : ' + outil;
-
-                document.getElementById('uetat').innerHTML =
-                    '<select type="text" id="uuetat" name="etat" class="form-control">' +
-                    '<option value="Excellent" ' + (etat === 'Excellent' ? 'selected' : '') + '>Excellent</option>' +
-                    '<option value="Bien" ' + (etat === 'Bien' ? 'selected' : '') + '>Bien</option>' +
-                    '<option value="Passable" ' + (etat === 'Passable' ? 'selected' : '') + '>Passable</option>' +
-                    '<option value="Médiocre" ' + (etat === 'Médiocre' ? 'selected' : '') + '>Médiocre</option>' +
-                    '</select>';
+            } catch (error) {
+                selectedActionsList.innerHTML = "Erreur : " + err;
             }
+            document.getElementById('uperiode').innerHTML = 'Période : ' + periode;
+
+            document.getElementById('uordinateur').innerHTML = 'Outils : ' + outil;
+
+            document.getElementById('uetat').innerHTML =
+                '<select id="uuetat" name="etat" class="form-control">' +
+                '<option value="Excellent" ' + (etat === 'Excellent' ? 'selected' : '') + '>Excellent</option>' +
+                '<option value="Bien" ' + (etat === 'Bien' ? 'selected' : '') + '>Bien</option>' +
+                '<option value="Défaillant" ' + (etat === 'Défaillant' ? 'selected' : '') + '>Défaillant</option>' +
+                '<option value="Très Bien" ' + (etat === 'Très Bien' ? 'selected' : '') + '>Très Bien</option>' +
+                '<option value="Passable" ' + (etat === 'Passable' ? 'selected' : '') + '>Passable</option>' +
+                '<option value="Médiocre" ' + (etat === 'Médiocre' ? 'selected' : '') + '>Médiocre</option>' +
+                '<option value="Autres" ' + (etat === 'Autres' ? 'selected' : '') + '>Autres</option>' +
+                '</select>';
         }
 
         async function valideupdatemaintenance() {
@@ -434,6 +448,7 @@
             document.querySelectorAll('.actions-list').forEach(function(list) {
                 list.classList.add('hidden');
             });
+            const selectedActionsList = document.querySelector('.actions-list');
             try {
                 const response = await fetch("{{ route('LAOS') }}?id=" + outilsId, {
                     method: 'get',
@@ -446,14 +461,15 @@
                 const data = await response.json();
                 if (data.length > 0) {
                     let lists = "";
-                    data.forEach(function(currentline) {
+                    data.forEach(function(currentline, index) {
                         lists +=
-                            `<input type="checkbox" id="${currentline['code']}" name="maint" value="${currentline['code']}" class="filled-in chk-col-brown" />`;
-                        lists +=
-                            `<label for="${currentline['code']}">${currentline['libelle']}</label><br>`;
+                            '<input type="checkbox" id="item-' + index + '" name="umaint" value="' +
+                            currentline.code + '" class="filled-in chk-col-brown" />' +
+                            '<label for="item-' + index + '">' + currentline.libelle +
+                            '</label><br>';
+
                     });
                     // Afficher les actions dans l'élément .actions-list
-                    const selectedActionsList = document.querySelector('.actions-list');
                     if (selectedActionsList) {
                         selectedActionsList.innerHTML = lists;
                         selectedActionsList.classList.remove('hidden');
@@ -529,11 +545,22 @@
                                 <label for="etat">Etat :</label>
                                 <div class="form-group">
                                     <div class="form-line">
-                                        <select type="text" id="etat" name="etat" class="form-control">
-                                            <option> Excellent </option>
-                                            <option> Bien </option>
-                                            <option> Passable </option>
-                                            <option> Médiocre </option>
+                                        <select id="etat" name="etat" class="form-control">                                           
+                                            <option value="Excellent" {{ $etat === 'Excellent' ? 'selected' : '' }}>
+                                                Excellent
+                                            </option>
+                                            <option value="Bien" {{ $etat === 'Bien' ? 'selected' : '' }}>Bien</option>
+                                            <option value="Défaillant" {{ $etat === 'Défaillant' ? 'selected' : '' }}>
+                                                Défaillant</option>
+                                            <option value="Très Bien" {{ $etat === 'Très Bien' ? 'selected' : '' }}>Très
+                                                Bien
+                                            </option>
+                                            <option value="Passable" {{ $etat === 'Passable' ? 'selected' : '' }}>Passable
+                                            </option>
+                                            <option value="Médiocre" {{ $etat === 'Médiocre' ? 'selected' : '' }}>Médiocre
+                                            </option>
+                                            <option value="Autres" {{ $etat === 'Autres' ? 'selected' : '' }}>Autres
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
@@ -598,48 +625,7 @@
 
                 <div class="modal-body">
                     <div class="row clearfix">
-                        <div class="col-md-6">
-                            <input type="checkbox" id="dsft" name="maint" value="dsft"
-                                class="filled-in chk-col-brown" />
-                            <label for="dsft">Suppression des fichiers temporaire</label> <br>
-                            <input type="checkbox" id="dmjw" name="maint" value="dmjw"
-                                class="filled-in chk-col-brown" />
-                            <label for="dmjw">Mise à jour Windows</label> <br>
-                            <input type="checkbox" id="ddfg" name="maint" value="ddfg"
-                                class="filled-in chk-col-brown" />
-                            <label for="ddfg">Défragmentation</label> <br>
-                            <input type="checkbox" id="drdd" name="maint" value="drdd"
-                                class="filled-in chk-col-brown" />
-                            <label for="drdd">Réparation des disques</label> <br>
-                            <input type="checkbox" id="dedd" name="maint" value="dedd"
-                                class="filled-in chk-col-brown" />
-                            <label for="dedd">Etat de disque</label> <br>
-                            <input type="checkbox" id="depdd" name="maint" value="depdd"
-                                class="filled-in chk-col-brown" />
-                            <label for="depdd">Espace de disque</label> <br>
-                            <input type="checkbox" id="datv" value="datv" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="datv">Antivirus</label> <br>
-                        </div>
-                        <div class="col-md-6">
-                            <input type="checkbox" id="dduc" name="maint" value="dduc"
-                                class="filled-in chk-col-brown" />
-                            <label for="dduc">Dépoussièrer Unité Centrale</label> <br>
-                            <input type="checkbox" id="ddram" name="maint" value="ddram"
-                                class="filled-in chk-col-brown" />
-                            <label for="ddram">Dépoussièrer RAM</label> <br>
-                            <input type="checkbox" id="ddcs" value="ddcs" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="ddcs">Dépoussièrer Clavier/Souris</label> <br>
-                            <input type="checkbox" id="ddecr" value="ddecr" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="ddecr">Dépoussièrer Ecran</label> <br>
-                            <input type="checkbox" id="dbkpi" value="dbkpi" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="dbkpi">Backup interne </label> <br>
-                            <input type="checkbox" id="dbkpe" value="dbkpe" name="maint"
-                                class="filled-in chk-col-brown" />
-                            <label for="dbkpe">Backup externe </label> <br>
+                        <div class="col-md-6 actions-details-list">
                         </div>
                     </div>
                 </div>

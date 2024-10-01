@@ -191,9 +191,9 @@ class MaintenanceController extends Controller
     {
         try {
             $list = Gestionmaintenance::where("maintenance", $request->id)->get();
+            $etat = Maintenance::where("id", $request->id)->first()->etat;
             $periode = $request->id;
-            $existe = $list->count();
-            return view('viewadmindste.maintenance.listordinateur', compact('list', 'periode', 'existe'));
+            return view('viewadmindste.maintenance.listordinateur', compact('list', 'periode', 'etat'));
         } catch (\Exception $e) {
             $errorString = "Une erreur ses produites" .  $e->getMessage();
             flash("Erreur : " . $errorString)->error();
@@ -303,7 +303,19 @@ class MaintenanceController extends Controller
 
                 $periode = DB::table('maintenances')->where('id', $existant->maintenance)->first();
 
-                $ordinateur = DB::table('outils')->select('outils.nameoutils as nameoutils', 'outils.id as id')->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")->where('categorieoutils.libelle', "Ordinateurs")->where('outils.id', $existant->outil)->first();
+                // $ordinateur = DB::table('outils')
+                // ->select('outils.nameoutils as nameoutils', 'outils.id as id')
+                // ->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")
+                // ->where('categorieoutils.libelle', "Ordinateurs")
+                // ->where('outils.id', $existant->outil)
+                // ->first();
+
+                //Nouvelle requette; 
+                $ordinateur = DB::table('outils')
+                    ->select('outils.nameoutils as nameoutils', 'outils.id as id', 'categorieoutils.libelle as libelle')
+                    ->join('categorieoutils', 'categorieoutils.id', '=', 'outils.categorie')
+                    ->where('outils.id', $existant->outil)
+                    ->first();
 
                 Gestionmaintenance::where("id", $request->id)->update([
                     "etat" => $request->etat,
@@ -311,7 +323,7 @@ class MaintenanceController extends Controller
                     "detailjson" => $request->maint
                 ]);
 
-                $message = "Vous avez modifiée les informations de la période du " . InterfaceServiceProvider::Dateformat($periode->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($periode->periodefin) . " sur l'ordinateur " . $ordinateur->nameoutils . ".";
+                $message = "Vous avez modifiée les informations de la période du " . InterfaceServiceProvider::Dateformat($periode->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($periode->periodefin) . " sur l'outil " . $ordinateur->nameoutils . ".";
                 TraceController::setTrace($message, session("utilisateur")->idUser);
                 flash($message)->success();
                 return $message;
@@ -423,7 +435,8 @@ class MaintenanceController extends Controller
     {
         $list = MaintenanceCurative::all();
         $service = Service::all();
-        return view('viewadmindste.maintenance.curative.list', compact('list', 'service'));
+        $etat = "";
+        return view('viewadmindste.maintenance.curative.list', compact('list', 'service', 'etat'));
     }
 
     public function listmaintenancecurative(Request $request)
@@ -437,6 +450,20 @@ class MaintenanceController extends Controller
             return view('viewadmindste.maintenance.listmaintenance', compact('list'));
         } catch (\Exception $e) {
             return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+        }
+    }
+
+    public function detailsmaintenacecurative(Request $request)
+    {
+        try {
+            $list = GestionmaintenanceCurative::where("maintenance", $request->id)->get();
+            $etat = MaintenanceCurative::where("id", $request->id)->first()->etat;
+            $periode = $request->id;
+            return view('viewadmindste.maintenance.curative.listordinateur', compact('list', 'periode', 'etat'));
+        } catch (\Exception $e) {
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return Back();
         }
     }
 
@@ -657,19 +684,6 @@ class MaintenanceController extends Controller
         }
     }
 
-    public function detailsmaintenacecurative(Request $request)
-    {
-        try {
-            $list = GestionmaintenanceCurative::where("maintenance", $request->id)->get();
-            $periode = $request->id;
-            return view('viewadmindste.maintenance.curative.listordinateur', compact('list', 'periode'));
-        } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
-            return Back();
-        }
-    }
-
     public function setupdatedefinitionmaintenancescurative(Request $request)
     {
         try {
@@ -683,7 +697,18 @@ class MaintenanceController extends Controller
 
                 $periode = DB::table('maintenance_curatives')->where('id', $existant->maintenance)->first();
 
-                $ordinateur = DB::table('outils')->select('outils.nameoutils as nameoutils', 'outils.id as id')->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")->where('categorieoutils.libelle', "Ordinateurs")->where('outils.id', $existant->outil)->first();
+                // $ordinateur = DB::table('outils')->select('outils.nameoutils as nameoutils', 'outils.id as id')
+                // ->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")
+                // ->where('categorieoutils.libelle', "Ordinateurs")
+                // ->where('outils.id', $existant->outil)
+                // ->first();
+
+                //Nouvelle requette; 
+                $ordinateur = DB::table('outils')
+                    ->select('outils.nameoutils as nameoutils', 'outils.id as id', 'categorieoutils.libelle as libelle')
+                    ->join('categorieoutils', 'categorieoutils.id', '=', 'outils.categorie')
+                    ->where('outils.id', $existant->outil)
+                    ->first();
 
                 GestionmaintenanceCurative::where("id", $request->id)->update([
                     "etat" => $request->etat,
