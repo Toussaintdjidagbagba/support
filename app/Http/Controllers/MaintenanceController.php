@@ -132,6 +132,12 @@ class MaintenanceController extends Controller
                     TraceController::setTrace("Data delete M : " . $occurence, session("utilisateur")->idUser);
 
                     Maintenance::where('id', $request->id)->delete();
+
+                    $occurence = json_encode(Gestionmaintenance::where('maintenance', $request->id)->first());
+
+                    TraceController::setTrace("Data delete GM : " . $occurence, session("utilisateur")->idUser);
+
+                    Gestionmaintenance::where('maintenance', $request->id)->delete();
                     $info = "Vous avez supprimé la mainteance de la période du " . $lib . " avec succès.";
                     flash($info)->success();
                     return  $info;
@@ -627,7 +633,7 @@ class MaintenanceController extends Controller
 
                     MaintenanceCurative::where('id', $request->id)->delete();
                     // Suppression egalement dans la tables Gestion maintenance curative : 
-                    $occurence = json_encode(GestionmaintenanceCurative::where('id', $request->id)->first());
+                    $occurence = json_encode(GestionmaintenanceCurative::where('maintenance', $request->id)->first());
 
                     TraceController::setTrace("Data delete GMC : " . $occurence, session("utilisateur")->idUser);
 
