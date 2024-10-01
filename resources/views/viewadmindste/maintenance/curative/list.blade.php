@@ -497,9 +497,9 @@
                                     @php
                                         $allUser = App\Providers\InterfaceServiceProvider::allutilisateurs();
                                     @endphp
-                                    <select type="text" id="ucm" name="ucm[]" class="form-control"
+                                    <select type="text" id="ucm" name="ucm" class="form-control"
                                         multiple="true">
-                                        <option value="0" selected disabled>Sélectionner un ou plusieurs utilisateurs
+                                        <option value="0" disabled>Sélectionner un ou plusieurs utilisateurs
                                         </option>
                                         @foreach ($allUser as $user)
                                             <option value="{{ $user->idUser }}"> {{ $user->nom }} {{ $user->prenom }}
