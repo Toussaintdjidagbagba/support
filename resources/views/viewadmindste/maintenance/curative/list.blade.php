@@ -136,7 +136,6 @@
             techm = document.getElementById("techm").value;
             dgnt = document.getElementById("dgnt").value;
             cse = document.getElementById("cse").value;
-            cdat = document.getElementById("cdat").value;
             rslt = document.getElementById("rslt").value;
             ucm = document.getElementById("ucm").value;
             sdcm = document.getElementById("sdcm").value;
@@ -176,7 +175,6 @@
                     ucm: ucm,
                     dgnt: dgnt,
                     cse: cse,
-                    cdat: cdat,
                     rslt: rslt,
                 };
                 document.getElementById("infomaintenance").innerHTML =
@@ -465,7 +463,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label for="pfm">Tmeps d'arrêt :</label>
+                            <label for="pfm">Temps d'arrêt :</label>
                             <div class="form-group">
                                 <div class="form-line">
                                     <input type="date" id="pfm" name="pfm" class="form-control"
@@ -532,32 +530,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row clearfix">
-                        <div class="col-md-6">
-                            <label for="sdcm">Service / Direction concernés :</label>
-                            <div class="form-group">
-                                <div class="form-line">
-
-                                    <select type="text" id="sdcm" name="sdcm" class="form-control">
-                                        <option value="0" disabled selected>Sélectionner un service </option>
-                                        @foreach ($service as $itemServ)
-                                            <option value="{{ $itemServ->id }}"> {{ $itemServ->libelle }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="cdat">Action :</label>
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <input type="text" id="cdat" name="cdat" class="form-control"
-                                        placeholder="">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
                     <div class="row clearfix">
                         <div class="col-md-12">
                             <label for="cm">Contenu mail :</label>

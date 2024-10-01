@@ -21,12 +21,12 @@
                     <div class="header">
                         <h2>
                             Exécution de la maintenance préventive
-                            @if ($existe == 0)
-                                <button type="button"
-                                    style="margin-right: 30px; float: right; padding-right: 30px; padding-left: 30px;"
-                                    class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal"
-                                    data-target="#add">Exécuter</button>
-                            @endif
+
+                            <button type="button"
+                                style="margin-right: 30px; float: right; padding-right: 30px; padding-left: 30px;"
+                                class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal"
+                                data-target="#add">Exécuter</button>
+
                         </h2>
                     </div>
                     <div class="body">

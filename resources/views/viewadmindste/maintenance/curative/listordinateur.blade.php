@@ -34,7 +34,7 @@
                             <table id="tech-companies-1" class="table table-small-font table-bordered table-striped">
                                 <thead>
                                     <tr>
-                                        <th data-priority="1">Période</th>
+                                        <th data-priority="1">Date d'exécution</th>
                                         <th data-priority="1">Outil</th>
                                         <th data-priority="1">Utilisateur</th>
                                         <th data-priority="1">Obs. Util.</th>
@@ -49,7 +49,7 @@
                                     @forelse($list as $maint)
                                         <tr>
                                             <td>
-                                                {{ App\Providers\InterfaceServiceProvider::periodeMaintenance($maint->maintenance) }}
+                                                {{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($maint->maintenance) }}
                                             </td>
                                             <td>{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}
                                             </td>
@@ -145,6 +145,8 @@
                 document.getElementById('infomaintenance').innerHTML +=
                     "<div class='alert alert-danger alert-block'>Veuillez sélectionner l'outils pour lequel la maintenance sera effectuée.. </div>";
             } else {
+                console.log(ordinateur);
+                
                 dat = {
                     _token: token,
                     periode: periode,

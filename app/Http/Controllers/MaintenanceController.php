@@ -517,7 +517,7 @@ class MaintenanceController extends Controller
                     $add->action = session("utilisateur")->idUser;
                     $add->save();
 
-                    $message = "Vous avez enregistrée l'exécution de la maintenance curative de la période du " . InterfaceServiceProvider::Dateformat($periode->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($periode->periodefin) . " sur l'outil " . $ordinateur->nameoutils . ".";
+                    $message = "Vous avez enregistrée l'exécution de la maintenance curative de la période du " . InterfaceServiceProvider::Dateformat($periode->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($periode->periodefin) . " sur l'outil " . $ordinateur->nameoutils ?? "" . ".";
 
                     TraceController::setTrace($message, session("utilisateur")->idUser);
 
