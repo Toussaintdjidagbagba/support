@@ -57,7 +57,7 @@
                                             </td>
                                             <td>{{ $maint->commentaireuser }}</td>
                                             <td>{{ $maint->avisuser }}</td>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->action) }}
+                                            <td>{{ App\Providers\InterfaceServiceProvider::LibelleTechCurative($maint->maintenance) }}
                                             </td>
                                             <td>{{ $maint->etat }}</td>
                                             <td>{{ $maint->commentaireinf }}</td>

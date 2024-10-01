@@ -116,7 +116,7 @@ class MaintenanceController extends Controller
             return $errorString;
         }
     }
-    
+
     // setdeletemaintenance
     public function setdeletemaintenance(Request $request)
     {
@@ -227,7 +227,14 @@ class MaintenanceController extends Controller
 
                     $periode = DB::table('maintenances')->where('id', $request->periode)->first();
 
-                    $ordinateur = DB::table('outils')->select('outils.nameoutils as nameoutils', 'outils.id as id')->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")->where('categorieoutils.libelle', "Ordinateurs")->where('outils.id', $request->ordinateur)->first();
+                    // $ordinateur = DB::table('outils')->select('outils.nameoutils as nameoutils', 'outils.id as id')->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")->where('categorieoutils.libelle', "Ordinateurs")->where('outils.id', $request->ordinateur)->first();
+
+                    // Nouvelle requette;
+                    $ordinateur = DB::table('outils')
+                    ->select('outils.nameoutils as nameoutils', 'outils.id as id', 'categorieoutils.libelle as libelle')
+                    ->join('categorieoutils', 'categorieoutils.id', '=', 'outils.categorie')
+                    ->where('outils.id', $request->ordinateur)
+                    ->first();
 
                     $add = new Gestionmaintenance();
                     $add->outil =  $request->ordinateur;
@@ -423,8 +430,8 @@ class MaintenanceController extends Controller
     {
         try {
             $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
-            ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
-            ->where("outils.user", session("utilisateur")->idUser)
+                ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
+                ->where("outils.user", session("utilisateur")->idUser)
                 ->get();
 
             return view('viewadmindste.maintenance.listmaintenance', compact('list'));
@@ -501,12 +508,19 @@ class MaintenanceController extends Controller
                 return view("vendor.error.649");
             } else {
                 if (isset(DB::table('gestionmaintenance_curatives')->where('outil', $request->ordinateur)->where('maintenance', $request->id)->first()->id)) {
-                    return "Une maintenance a été déjà faite sur cette outils!";
+                    return "Une maintenance a été déjà faite sur cet outils!";
                 } else {
 
                     $periode = DB::table('maintenance_curatives')->where('id', $request->id)->first();
 
-                    $ordinateur = DB::table('outils')->select('outils.nameoutils as nameoutils', 'outils.id as id')->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")->where('categorieoutils.libelle', "Ordinateurs")->where('outils.id', $request->ordinateur)->first();
+                    // $ordinateur = DB::table('outils')->select('outils.nameoutils as nameoutils', 'outils.id as id')->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")->where('categorieoutils.libelle', "Ordinateurs")->where('outils.id', $request->ordinateur)->first();
+
+                    //Nouvelle requette; 
+                    $ordinateur = DB::table('outils')
+                        ->select('outils.nameoutils as nameoutils', 'outils.id as id', 'categorieoutils.libelle as libelle')
+                        ->join('categorieoutils', 'categorieoutils.id', '=', 'outils.categorie')
+                        ->where('outils.id', $request->ordinateur)
+                        ->first();
 
                     $add = new GestionmaintenanceCurative();
                     $add->outil =  $request->ordinateur;
@@ -626,7 +640,7 @@ class MaintenanceController extends Controller
                     TraceController::setTrace("Data delete MC : " . $occurence, session("utilisateur")->idUser);
 
                     MaintenanceCurative::where('id', $request->id)->delete();
-                   
+
                     $info = "Vous avez supprimé la mainteance de la période du " . $lib . " avec succès.";
                     flash($info)->success();
                     return  $info;
@@ -648,8 +662,7 @@ class MaintenanceController extends Controller
         try {
             $list = GestionmaintenanceCurative::where("maintenance", $request->id)->get();
             $periode = $request->id;
-            $existe = $list->count();
-            return view('viewadmindste.maintenance.curative.listordinateur', compact('list', 'periode', 'existe'));
+            return view('viewadmindste.maintenance.curative.listordinateur', compact('list', 'periode'));
         } catch (\Exception $e) {
             $errorString = "Une erreur ses produites" .  $e->getMessage();
             flash("Erreur : " . $errorString)->error();
@@ -717,5 +730,4 @@ class MaintenanceController extends Controller
             return $errorString;
         }
     }
-
 }

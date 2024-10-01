@@ -138,10 +138,11 @@
             cse = document.getElementById("cse").value;
             rslt = document.getElementById("rslt").value;
             ucm = document.getElementById("ucm").value;
-            sdcm = document.getElementById("sdcm").value;
             cm = document.getElementById("cm").value;
             formData = document.getElementById("formData");
 
+            console.log(ucm);
+            
             let erreur = "";
             if (pdm === "") {
                 erreur += "définir la temps de début pour gérer la maintenance.. \n";
@@ -171,7 +172,6 @@
                     pdm: pdm,
                     pfm: pfm,
                     techm: techm,
-                    sdcm: sdcm,
                     ucm: ucm,
                     dgnt: dgnt,
                     cse: cse,
@@ -497,7 +497,7 @@
                                     @php
                                         $allUser = App\Providers\InterfaceServiceProvider::allutilisateurs();
                                     @endphp
-                                    <select type="text" id="ucm" name="ucm" class="form-control"
+                                    <select type="text" id="ucm" name="ucm[]" class="form-control"
                                         multiple="true">
                                         <option value="0" selected disabled>Sélectionner un ou plusieurs utilisateurs
                                         </option>
