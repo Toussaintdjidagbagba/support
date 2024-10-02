@@ -86,7 +86,10 @@ Route::group([
 
 	//////////////////////////////////** Categorie d'outils **////////////////////////////////////////////////////////
 	Route::get('/listcategoriesoutils', 'App\Http\Controllers\CategorieOutilsController@listcat')->name('GCO');
+	Route::get('/actions/outils', 'App\Http\Controllers\CategorieOutilsController@listactionsoutils')->name('LAOS');
+	Route::get('/listcategorie/actions/outils', 'App\Http\Controllers\CategorieOutilsController@listcatactionsoutils')->name('LCAO');
 	Route::post('/categories-outils', 'App\Http\Controllers\CategorieOutilsController@addcat')->name('ACO');
+	Route::post('/outil/actions', 'App\Http\Controllers\CategorieOutilsController@addactionsoutils')->name('AAO');
 	Route::get('/delete-categoriesoutils', 'App\Http\Controllers\CategorieOutilsController@deletecat')->name('DCO');
 	Route::post('/modif-categoriesoutils', 'App\Http\Controllers\CategorieOutilsController@modifcat')->name('SCLO');
 	Route::post('/ajout-champs-categories-outils', 'App\Http\Controllers\CategorieOutilsController@setchampcaracteristiqueoutil')->name('SCCLO');
@@ -140,6 +143,7 @@ Route::group([
 	//////////////////////////////////** OUtils **////////////////////////////////////////////////////////////////
 	Route::get('/listoutils', 'App\Http\Controllers\OutilController@list')->name('GO');
 	Route::get('/getchampcat', 'App\Http\Controllers\OutilController@getallchamp')->name('GCCO');
+	Route::get('/actions/libelle/outils', 'App\Http\Controllers\OutilController@libelleactionsoutils')->name('LAO');
 	Route::post('/outil', 'App\Http\Controllers\OutilController@add')->name('AO');
 	Route::post('/affectation', 'App\Http\Controllers\OutilController@affectUserInOutil')->name('PAOU');
 	Route::get('/getallusers', 'App\Http\Controllers\OutilController@getalluserssys')->name('GAUS');
@@ -163,10 +167,18 @@ Route::group([
 	Route::get('/detailmaintenances', 'App\Http\Controllers\MaintenanceController@listesordinateurs')->name('GMDPC');
 	Route::get('/exportmaintenances', 'App\Http\Controllers\MaintenanceController@exportexcel')->name('EMPC');
 	Route::get('/exportmaintenancepdf-{id}', 'App\Http\Controllers\MaintenanceController@getexportmaintenancepdf')->name('GEMP');
-
+	
 	//////////////////////////////////** Maintenance Curative **/////////////////////////////////////
-	Route::get('/listmaintenancecurative', 'App\Http\Controllers\MaintenanceController@list')->name('LMC');
-	Route::get('/gestionmaintenancecurative', 'App\Http\Controllers\MaintenanceController@list')->name('GMC');
+	Route::get('/listmaintenancecurative', 'App\Http\Controllers\MaintenanceController@listmaintenancecurative')->name('LMC');
+	Route::get('/detailmaintenancescurative', 'App\Http\Controllers\MaintenanceController@detailsmaintenacecurative')->name('GDMC');
+	Route::get('/gestionmaintenancecurative', 'App\Http\Controllers\MaintenanceController@listgestionmaintenancecurative')->name('GMC');
+	Route::post('/maintenancescurative', 'App\Http\Controllers\MaintenanceController@addmaintenancecuartive')->name('ADDMC');
+	Route::post('/traitement/maintenancescurative', 'App\Http\Controllers\MaintenanceController@traitementmaintenancecurative')->name('TMC');
+	Route::post('/definitionetatmaintenancecurative', 'App\Http\Controllers\MaintenanceController@setdefinitionetatmaintenancecurative')->name('DEMC');
+	Route::post('/updatemaintenancecurative', 'App\Http\Controllers\MaintenanceController@setupdatemaintenancecurative')->name('SUMC');
+	Route::post('/deletemaintenancecurative', 'App\Http\Controllers\MaintenanceController@setdeletemaintenancecurative')->name('DMCR');
+	Route::post('/updatedefinitionmaintenancescurative', 'App\Http\Controllers\MaintenanceController@setupdatedefinitionmaintenancescurative')->name('SUMUC');
+	Route::post('/deletemaintenancesgestion', 'App\Http\Controllers\MaintenanceController@setdeletegmaintenancecurative')->name('DGMC');
 
 	//////////////////////////////////** Commentaire Maintenance préventive ou curative **//////////////////////////
 	Route::get('/maintenances', 'App\Http\Controllers\MaintenanceController@listordinateurmaintenance')->name('GMU');

@@ -6,6 +6,7 @@ use App\Exports\HistoExport;
 use App\Exports\OutilhistopdfExport;
 use App\Exports\OutilsExport;
 use App\Exports\OutilspdfExport;
+use App\Models\ActionOutil;
 use Illuminate\Http\Request;
 use App\Models\Outil;
 use App\Models\Trace;
@@ -36,7 +37,6 @@ class OutilController extends Controller
         }
         $list = $lists->paginate(10);
         return view('viewadmindste.outils.listoutils', compact('list'));
-       
     }
 
     public function getallchamp(Request $request)
@@ -52,22 +52,30 @@ class OutilController extends Controller
         } else {
             try {
                 if (isset(DB::table('outils')->where('nameoutils', $request->caraclib)->where('categorie', $request->caraccat)->first()->id)) {
-                    flash("L'outil que vous voulez ajouter existe déjà!! ")->error();
-                    return Back();
+                    $errorString = "L'outil que vous voulez ajouter existe déjà!! ";
+                    flash("Erreur : " . $errorString)->error();
+                    return $errorString;
                 } else {
                     $messages = [
-                        'pdm.required' => 'La période de début est requis.',
-                        'pfm.required' => 'La période de fin est requise.',
-                        'techm.required' => 'Le technicien est requis.',
+                        '_token.required' => 'Les jeton du formulaire sont requis.',
+                        'caraclib.required' => 'Le Libellé est requis.',
+                        'caraccat.required' => 'La Catégorie d\'outils est requis.',
+                        'caracdateoutil.required' => 'La Date d\'acquisition est requis.',
+                        'caracrefoutil.required' => 'La Référence est requise.',
                     ];
                     $validator = Validator::make($request->all(), [
-                        'pdm' => 'required',
-                        'pfm' => 'required',
-                        'techm' => 'required',
+                        '_token' => 'required',
+                        'caraclib' => 'required',
+                        'caraccat' => 'required',
+                        'caracdateoutil' => 'required',
+                        'caracrefoutil' => 'required',
                     ], $messages);
 
                     if ($validator->fails()) {
-                        return Back()->with('error', $validator->errors()->messages(), $request->all());
+                        $errors = $validator->errors()->all();
+                        $errorString = implode(' ', $errors);
+                        flash("Erreur : " . $errorString)->error();
+                        return $errorString;
                     }
                     // recup les colonnes in catégorie d'outil
 
@@ -93,14 +101,32 @@ class OutilController extends Controller
 
                     TraceController::setTrace("Vous avez enregistrée l'outil " . $request->caraclib . " .", session("utilisateur")->idUser);
 
-                    return "Vous avez enregistrée l'outil " . $request->caraclib . " .";
+                    $message = "Vous avez enregistrée l'outil " . $request->caraclib . " .";
+                    flash("Succès : " . $message)->success();
+
+                    return $message;
                 }
             } catch (QueryException $qe) {
-                return Back()->with('error', "Une erreur ses produites :" . $qe->getMessage());
+                $errorString = "Une erreur ses produites" .  $qe->getMessage();
+                flash("Erreur : " . $errorString)->error();
+                return $errorString;
             } catch (\Exception $e) {
-                return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+                $errorString = "Une erreur ses produites" .  $e->getMessage();
+                flash("Erreur : " . $errorString)->error();
+                return $errorString;
             }
         }
+    }
+
+    public function libelleactionsoutils(Request $request)
+    {
+        $codes = $request->query('codes');
+        $outilsId = $request->query('outilsId');
+        $codesArray = explode(',', $codes);
+        $libelles = ActionOutil::whereIn('code', $codesArray)
+            ->where('Outils', $outilsId)
+            ->get(['code', 'libelle']);
+        return response()->json($libelles);
     }
 
     public function affectUserInOutil(Request $request)
@@ -196,9 +222,9 @@ class OutilController extends Controller
                 return view("vendor.error.649");
             } else {
                 return json_encode(["data" => DB::table('traces')
-                ->join('utilisateurs', "utilisateurs.idUser", "=", "traces.action")
-                ->select('nom', 'prenom', 'libelle', 'traces.created_at as created_at')
-                ->where('type', "outil")->where("idsec", $request->id)->get()]);
+                    ->join('utilisateurs', "utilisateurs.idUser", "=", "traces.action")
+                    ->select('nom', 'prenom', 'libelle', 'traces.created_at as created_at')
+                    ->where('type', "outil")->where("idsec", $request->id)->get()]);
             }
         } catch (\Exception $e) {
             return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
@@ -316,17 +342,28 @@ class OutilController extends Controller
             if (!in_array("delete_outil", session("auto_action"))) {
                 return view("vendor.error.649");
             } else {
-                $lib = Outil::where('id', request('id'))->first()->nameoutils;
-                $occurence = json_encode(Outil::where('id', request('id'))->first());
+                $outils = Outil::find(request('id'));
+                // dd($outils);
+                if ($outils) {
+                    $lib = Outil::where('id', request('id'))->first()->nameoutils;
+                    $occurence = json_encode(Outil::where('id', request('id'))->first());
 
-                TraceController::setTrace("Data delete : " . $occurence, session("utilisateur")->idUser);
+                    TraceController::setTrace("Data delete : " . $occurence, session("utilisateur")->idUser);
 
-                Outil::where('id', request('id'))->delete();
-                $info = "Vous avez supprimé " . $lib . " avec succès.";
-                return $info;
+                    Outil::where('id', request('id'))->delete();
+                    $info = "Vous avez supprimé l'outils " . $lib . " avec succès.";
+                    flash($info)->success();
+                    return $info;
+                } else {
+                    $info = "Outils introuvable.";
+                    flash($info)->error();
+                    return $info;
+                }
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
         }
     }
 
@@ -443,67 +480,64 @@ class OutilController extends Controller
 
 
     //outils export
-	public function exportoutils(Request $request)
-	{
-		try {
+    public function exportoutils(Request $request)
+    {
+        try {
 
             $list = Outil::orderBy("categorie", "asc")->get();
-           
-			$format = $request->format;
-	
-			// Générer le fichier en fonction du format demandé
-			switch ($format) {
-				case 'pdf':
-					$pdfExporter = new OutilspdfExport($list);
-					$filePath = $pdfExporter->generatePdf();
-					$pdfContent = Storage::get($filePath);
-	
-					return response($pdfContent, 200)
-							->header('Content-Type', 'application/pdf')
-							->header('Content-Disposition', 'attachment; filename="OutilsExport.pdf"');
-				case 'xlsx':
-				default:
-					return Excel::download(new OutilsExport($list), 'OutilsExport.xlsx', \Maatwebsite\Excel\Excel::XLSX);
-			}
-		} catch (\Exception $e) {
-			return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
-		}
-	}
 
-
-	//export outils historique
-	public function expoutilhisto(Request $request)
-	{
-		try 
-        {
-            $data = DB::table('traces')
-                    ->join('utilisateurs', 'utilisateurs.idUser', '=', 'traces.action') // Correction ici
-                    ->join('outils', 'outils.id', '=', 'traces.idsec') // Si vous voulez inclure la table 'outils'
-                    ->select('nom', 'prenom', 'libelle', 'traces.created_at as created_at', 'outils.nameoutils')
-                    ->where('traces.type', 'outil')
-                    ->where('traces.idsec', $request->idhisto)
-                    ->get();
-             
             $format = $request->format;
-	
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new OutilspdfExport($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="OutilsExport.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new OutilsExport($list), 'OutilsExport.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
+        }
+    }
+
+
+    //export outils historique
+    public function expoutilhisto(Request $request)
+    {
+        try {
+            $data = DB::table('traces')
+                ->join('utilisateurs', 'utilisateurs.idUser', '=', 'traces.action') // Correction ici
+                ->join('outils', 'outils.id', '=', 'traces.idsec') // Si vous voulez inclure la table 'outils'
+                ->select('nom', 'prenom', 'libelle', 'traces.created_at as created_at', 'outils.nameoutils')
+                ->where('traces.type', 'outil')
+                ->where('traces.idsec', $request->idhisto)
+                ->get();
+
+            $format = $request->format;
+
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
                     $pdfExporter = new OutilhistopdfExport($data);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
-                
+
                     return response($pdfContent, 200)
-                    ->header('Content-Type', 'application/pdf')
-                    ->header('Content-Disposition', 'attachment; filename="HistoriqueOutilsExport.pdf"');
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="HistoriqueOutilsExport.pdf"');
                 case 'xlsx':
                 default:
                     return Excel::download(new HistoExport($data), 'HistoriqueOutilsExport.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
-
-		} catch (\Exception $e) {
-			return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
-		}
-	}
-
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
+        }
+    }
 }

@@ -99,7 +99,7 @@ class HierarchieController extends Controller
                     "Vous avez modifié l'hierarchie " . $request->libelle . " .",
                     session("utilisateur")->idUser
                 );
-                return redirect('/listhiérarchies');
+                return redirect('/listhierarchies');
             }
         } catch (\Exception $e) {
             return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());

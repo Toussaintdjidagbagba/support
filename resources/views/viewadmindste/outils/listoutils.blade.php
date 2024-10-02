@@ -135,6 +135,7 @@
                                                         <i class="material-icons">book</i></a>
                                                     </button>
                                                 @endif
+            
                                                 @if (in_array('update_caract_outil', session('auto_action')))
                                                     <button type="button" title="Modifier"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
@@ -145,10 +146,9 @@
                                                 @endif
 
                                                 @if (in_array('delete_outil', session('auto_action')))
-                                                    <button type="button" title="Supprimer",
-                                                        onclick="Delete(event, '{{ route('DIA', $out->id) }}','{{ $out->nameoutils }}')"
-                                                        class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        >
+                                                    <button type="button" title="Supprimer" data-token="{{ csrf_token() }}" data-Id="{{ $out->id }}"
+                                                        onclick="Delete(event, '{{ route('DO') }}','{{ $out->nameoutils }}')"
+                                                        class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
                                                         <i class="material-icons">delete_sweep</i></a> </button>
                                                 @endif
 
@@ -424,7 +424,7 @@
         }
 
         async function gethistorique(id, outil) {
-            
+
             document.getElementById('infohistoriqueoutils').innerHTML = "L'historique de " + outil + " : ";
             try {
                 let response = await fetch("{{ route('GHO') }}?id=" + id, {
@@ -451,7 +451,7 @@
                         '<tr> <td colspan="2"><center> Aucune action effectuée sur cet outil. </center> </td> </tr>';
                     else
                         document.getElementById('contenuhist').innerHTML = contenu;
-                        document.getElementById('idhist').value = id;
+                    document.getElementById('idhist').value = id;
 
                 } else {
                     return "";
@@ -697,10 +697,14 @@
 
         async function Delete(event, url, libelle) {
             event.preventDefault();
+            var target = event.currentTarget;
+            var token = target.getAttribute('data-token') ?? "";
+             var iddelete = target.getAttribute('data-Id') ?? "";
             const {
                 isConfirmed
             } = await Swal.fire({
-                title: 'Êtes-vous sûr de vouloir supprimer l\'outil <span class="text-danger">' + libelle + '</span> ?',
+                title: 'Êtes-vous sûr de vouloir supprimer l\'outil <span class="text-danger">' + libelle +
+                    '</span> ?',
                 text: "Cette action est irréversible!",
                 icon: "warning",
                 showCancelButton: true,
@@ -714,17 +718,23 @@
 
             if (isConfirmed) {
                 try {
+                    dat = {
+                        _token: token,
+                        id: iddelete,
+                    };
                     const response = await fetch(url, {
-                        method: 'get',
+                        method: 'POST',
                         headers: {
                             'Access-Control-Allow-Credentials': true,
                             'Content-Type': 'application/json',
                             'Accept': 'application/json',
                         },
+                        body: JSON.stringify(dat)
                     });
 
                     if (response.status == 200) {
-                        Swal.fire("Succès", "Incident supprimé avec succès", "success").then(() => {
+                         data = await response.text();
+                        Swal.fire("Succès",data, "success").then(() => {
                             window.location.reload();
                         });
                     } else {
@@ -736,18 +746,17 @@
             }
         }
 
-        function paramhisto(format) 
-        {
+        function paramhisto(format) {
             var idhisto = document.getElementById('idhist').value;
-       
+
             var form = document.createElement('form');
-            form.method = 'GET'; 
-            form.action = '{{ route("outilshisto.export") }}';
+            form.method = 'GET';
+            form.action = '{{ route('outilshisto.export') }}';
 
             var inputId = document.createElement('input');
             inputId.type = 'hidden';
             inputId.name = 'idhisto';
-            inputId.value = idhisto; 
+            inputId.value = idhisto;
             form.appendChild(inputId);
 
             var inputFormat = document.createElement('input');
@@ -760,6 +769,7 @@
             form.submit();
         }
 
+       
     </script>
 
 @endsection
@@ -948,21 +958,25 @@
                             <div class="table-responsive" data-pattern="priority-columns">
                                 <table id="tech-companies-1" class="table table-small-font table-bordered table-striped">
                                     <thead>
-                                   
-                                        <button type="button" class="btn btn-default waves-effect dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: right;">
+
+                                        <button type="button" class="btn btn-default waves-effect dropdown-toggle"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            style="float: right;">
                                             EXPORTER
                                             <span class="caret"></span>
                                         </button>
                                         <input type="hidden" id="idhist">
-                                        <ul class="dropdown-menu pull-right" style=" position: relative; top: 68px; left:100px;">
+                                        <ul class="dropdown-menu pull-right"
+                                            style=" position: relative; top: 68px; left:100px;">
                                             <li>
-                                                <a href="javascript:void(0);" id="histoexp" onclick="paramhisto('xlsx')" >Excel</a>
+                                                <a href="javascript:void(0);" id="histoexp"
+                                                    onclick="paramhisto('xlsx')">Excel</a>
                                             </li>
                                             <li>
                                                 <a href="javascript:void(0);" onclick="paramhisto('pdf')">PDF</a>
                                             </li>
                                         </ul>
-                                       
+
                                         <br><br><br>
                                         <tr>
                                             <th data-priority="1">Date</th>
