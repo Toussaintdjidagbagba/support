@@ -58,9 +58,10 @@
 
                                                 @if (in_array('delete_cat_outil', session('auto_action')))
                                                     <button type="button" title="Supprimer"
-                                                        onclick="avissuppression({{ $cat->id }}, '{{ $cat->libelle }}')"
+                                                        data-token="{{ csrf_token() }}" data-Id="{{ $cat->id }}"
+                                                        onclick="Delete(event, '{{ route('DCO') }}','{{ $cat->libelle }}')"
                                                         class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        data-toggle="modal" data-target="#del" style="color:white;"><i
+                                                        style="color:white;"><i
                                                             class="material-icons">delete_sweep</i></button>
                                                 @endif
 
@@ -103,50 +104,96 @@
     </div>
 
     <script type="text/javascript">
-        function avissuppression(ident, lib) {
-            document.getElementById('infosdel').innerHTML = "Voulez-vous vraiment supprimer la catégorie " + lib + " ?";
-            document.getElementById('iddel').value = ident;
-        }
-
-        async function confirmesuppression() {
-            token = document.getElementById("_token").value;
-            iddel = document.getElementById("iddel").value;
-
-            document.getElementById("infosdel").innerHTML =
-                '<div class="alert alert-warning alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>En cours de traitement.. <br> Veuillez patienter! </strong></div>';
-
-            try {
-                let response = await fetch("{{ route('DCO') }}?_token=" + token + "&id=" + iddel, {
-                    method: 'GET',
-                    headers: {
-                        'Access-Control-Allow-Credentials': true,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                });
-                let html = "";
-                if (response.status == 200) {
-                    html = "";
-                    data = await response.text();
-                    document.getElementById("infosdel").innerHTML =
-                        '<div class="alert alert-success alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>' +
-                        data + '</strong></div>';
-                    setTimeout(function() {
-                        window.location.reload();
-                    }, 3000);
-
-                } else {
-                    document.getElementById("infosdel").innerHTML =
-                        '<div class="alert alert-danger alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>Une erreur s\'est produite </strong></div>';
+        async function Delete(event, url, libelle) {
+            event.preventDefault();
+            var target = event.currentTarget;
+            var token = target.getAttribute('data-token') ?? "";
+            var iddelete = target.getAttribute('data-Id') ?? "";
+            const {
+                isConfirmed
+            } = await Swal.fire({
+                title: 'Êtes-vous sûr de vouloir supprimer la catégorie <span class="text-danger">' + libelle +
+                    '</span> ?',
+                text: "Cette action est irréversible!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Oui, supprimer",
+                cancelButtonText: "Annuler",
+                customClass: {
+                    confirmButton: 'bg-confirm',
+                    cancelButton: 'bg-cancel'
                 }
-            } catch (error) {
+            });
 
-                html += "";
-                console.log(error);
-                document.getElementById("infosdel").innerHTML = html;
+            if (isConfirmed) {
+                try {
+                    dat = {
+                        _token: token,
+                        id: iddelete,
+                    };
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Access-Control-Allow-Credentials': true,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify(dat)
+                    });
+
+                    if (response.status == 200) {
+                        data = await response.text();
+                        Swal.fire("Succès", data, "success").then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        throw new Error('Erreur lors de la suppression');
+                    }
+                } catch (error) {
+                    Swal.fire("Erreur", "La suppression a échouée" + error);
+                }
             }
-
         }
+
+        // async function confirmesuppression() {
+        //     token = document.getElementById("_token").value;
+        //     iddel = document.getElementById("iddel").value;
+
+        //     document.getElementById("infosdel").innerHTML =
+        //         '<div class="alert alert-warning alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>En cours de traitement.. <br> Veuillez patienter! </strong></div>';
+
+        //     try {
+        //         let response = await fetch("{{ route('DCO') }}?_token=" + token + "&id=" + iddel, {
+        //             method: 'GET',
+        //             headers: {
+        //                 'Access-Control-Allow-Credentials': true,
+        //                 'Content-Type': 'application/json',
+        //                 'Accept': 'application/json',
+        //             },
+        //         });
+        //         let html = "";
+        //         if (response.status == 200) {
+        //             html = "";
+        //             data = await response.text();
+        //             document.getElementById("infosdel").innerHTML =
+        //                 '<div class="alert alert-success alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>' +
+        //                 data + '</strong></div>';
+        //             setTimeout(function() {
+        //                 window.location.reload();
+        //             }, 3000);
+
+        //         } else {
+        //             document.getElementById("infosdel").innerHTML =
+        //                 '<div class="alert alert-danger alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>Une erreur s\'est produite </strong></div>';
+        //         }
+        //     } catch (error) {
+
+        //         html += "";
+        //         console.log(error);
+        //         document.getElementById("infosdel").innerHTML = html;
+        //     }
+
+        // }
 
         function avisupdate(ident, lib) {
             document.getElementById('infolib').value = lib;
@@ -280,7 +327,7 @@
         }
 
         function addactions(dvalue) {
-            document.getElementById('infoaction').innerHTML="";
+            document.getElementById('infoaction').innerHTML = "";
             const outils = dvalue.getAttribute('data-libelle');
             const id = dvalue.getAttribute('data-id');
             document.getElementById('idcatoutils').value = id;
@@ -425,7 +472,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    {{-- <div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -450,7 +497,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <div class="modal fade" id="update" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">

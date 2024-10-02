@@ -23,22 +23,32 @@ class CategorieOutilsController extends Controller
 
     public function addcat(Request $request)
     {
-        if (!in_array("add_cat_outil", session("auto_action"))) {
-            return view("vendor.error.649");
-        } else {
-            if (isset(DB::table('categorieoutils')->where('libelle', $request->lib)->first()->id)) {
-                flash("La Catégorie d'outil que vous voulez ajouter existe déjà!! ")->error();
-                return Back();
+        try {
+            if (!in_array("add_cat_outil", session("auto_action"))) {
+                return view("vendor.error.649");
             } else {
-                $add = new CategorieOutil();
-                $add->libelle =  htmlspecialchars(trim($request->lib));
-                $add->action = session("utilisateur")->idUser;
-                $add->save();
+                if (isset(DB::table('categorieoutils')->where('libelle', $request->lib)->first()->id)) {
+                    flash("La Catégorie d'outil que vous voulez ajouter existe déjà!! ")->error();
+                    return Back();
+                } else {
+                    $add = new CategorieOutil();
+                    $add->libelle =  htmlspecialchars(trim($request->lib));
+                    $add->action = session("utilisateur")->idUser;
+                    $add->save();
 
-                flash("La Catégorie d'outil est enregistrée avec succès. ")->success();
-                TraceController::setTrace("Vous avez enregistrée la Catégorie d'outil " . $request->lib . " .", session("utilisateur")->idUser);
-                return Back();
+                    flash("La Catégorie d'outil est enregistrée avec succès. ")->success();
+                    TraceController::setTrace("Vous avez enregistrée la Catégorie d'outil " . $request->lib . " .", session("utilisateur")->idUser);
+                    return Back();
+                }
             }
+        } catch (QueryException $qe) {
+            $errorString = "Une erreur ses produites " .  $qe->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return Back();
+        } catch (\Exception $e) {
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return Back();
         }
     }
 
@@ -112,64 +122,104 @@ class CategorieOutilsController extends Controller
 
     public function deletecat(Request $request)
     {
-        if (!in_array("delete_cat_outil", session("auto_action"))) {
-            return view("vendor.error.649");
-        } else {
-            $occurence = json_encode(CategorieOutil::where('id', request('id'))->first());
-            $addt = new Trace();
-            $addt->libelle = "Catégorie d'outil supprimé : " . $occurence;
-            $addt->action = session("utilisateur")->idUser;
-            $addt->save();
-            CategorieOutil::where('id', request('id'))->delete();
-
-            return "Le Catégorie est supprimé avec succès.";
+        try {
+            if (!in_array("delete_cat_outil", session("auto_action"))) {
+                return view("vendor.error.649");
+            } else {
+                $outils = CategorieOutil::find(request('id'));
+                // dd($outils);
+                if ($outils) {
+                    $occurence = json_encode(CategorieOutil::where('id', request('id'))->first());
+                    $addt = new Trace();
+                    $addt->libelle = "Catégorie d'outil supprimé : " . $occurence;
+                    $addt->action = session("utilisateur")->idUser;
+                    $addt->save();
+                    CategorieOutil::where('id', request('id'))->delete();
+                    $message = "La Catégorie est modifiée avec succès. ";
+                    flash($message)->success();
+                    return $message;
+                } else {
+                    $info = "Catégorie introuvable.";
+                    flash($info)->error();
+                    return $info;
+                }
+            }
+        } catch (QueryException $qe) {
+            $errorString = "Une erreur ses produites " .  $qe->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
+        } catch (\Exception $e) {
+            $errorString = "Une erreur ses produites " .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
         }
     }
 
     public function modifcat(Request $request)
     {
 
-        if (!in_array("update_cat_outil", session("auto_action"))) {
-            return view("vendor.error.649");
-        } else {
-            $request->validate([
-                'lib' => 'required|string',
-            ]);
+        try {
+            if (!in_array("update_cat_outil", session("auto_action"))) {
+                return view("vendor.error.649");
+            } else {
+                $request->validate([
+                    'lib' => 'required|string',
+                ]);
 
-            CategorieOutil::where('id', request('id'))->update(
-                [
-                    'libelle' =>  htmlspecialchars(trim($request->lib)),
-                    'action' => session("utilisateur")->idUser,
-                ]
-            );
-            TraceController::setTrace("Vous avez modifié la catégorie " . $request->libelle . " .", session("utilisateur")->idUser);
-            return "La Catégorie est modifiée avec succès.";
+                CategorieOutil::where('id', request('id'))->update(
+                    [
+                        'libelle' =>  htmlspecialchars(trim($request->lib)),
+                        'action' => session("utilisateur")->idUser,
+                    ]
+                );
+                TraceController::setTrace("Vous avez modifié la catégorie " . $request->libelle . " .", session("utilisateur")->idUser);
+                return "La Catégorie est modifiée avec succès.";
 
-            flash("La Catégorie est modifiée avec succès. ")->success();
+                flash("La Catégorie est modifiée avec succès. ")->success();
 
-            return redirect('/listcategoriesoutils');
+                return redirect('/listcategoriesoutils');
+            }
+        } catch (QueryException $qe) {
+            $errorString = "Une erreur ses produites " .  $qe->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return Back();
+        } catch (\Exception $e) {
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return Back();
         }
     }
 
     public function setchampcaracteristiqueoutil(Request $request)
     {
-        if (!in_array("define_champ_cat_outil", session("auto_action"))) {
-            return view("vendor.error.649");
-        } else {
-            if (isset(DB::table('champscategorieoutils')->where('categoutil', $request->id)->where('libelle', $request->lib)->first()->id)) {
-                return "Le champs existe déjà dans cette catégorie ";
+        try {
+            if (!in_array("define_champ_cat_outil", session("auto_action"))) {
+                return view("vendor.error.649");
             } else {
-                $add = new ChampsCategorieOutil();
-                $add->libelle =  htmlspecialchars(trim($request->lib));
-                $add->type = $request->type;
-                $add->code = CategorieOutilsController::generercodelib(CategorieOutilsController::retirerAccents($request->lib));
-                $add->categoutil = $request->id;
-                $add->action = session("utilisateur")->idUser;
-                $add->save();
-                TraceController::setTrace("Vous avez enregistrée le champ suivant " . $request->lib . " dans la catégorie " . $request->lib . " .", session("utilisateur")->idUser);
-
-                return "Le champ est ajouter avec succès. ";
+                if (isset(DB::table('champscategorieoutils')->where('categoutil', $request->id)->where('libelle', $request->lib)->first()->id)) {
+                    flash("Le champ existe déjà dans cette catégorie. ")->success();
+                    return "Le champs existe déjà dans cette catégorie ";
+                } else {
+                    $add = new ChampsCategorieOutil();
+                    $add->libelle =  htmlspecialchars(trim($request->lib));
+                    $add->type = $request->type;
+                    $add->code = CategorieOutilsController::generercodelib(CategorieOutilsController::retirerAccents($request->lib));
+                    $add->categoutil = $request->id;
+                    $add->action = session("utilisateur")->idUser;
+                    $add->save();
+                    TraceController::setTrace("Vous avez enregistrée le champ suivant " . $request->lib . " dans la catégorie " . $request->lib . " .", session("utilisateur")->idUser);
+                    flash("Le champ est ajouter avec succès. ")->success();
+                    return "Le champ est ajouter avec succès. ";
+                }
             }
+        } catch (QueryException $qe) {
+            $errorString = "Une erreur ses produites " .  $qe->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return Back();
+        } catch (\Exception $e) {
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return Back();
         }
     }
 
