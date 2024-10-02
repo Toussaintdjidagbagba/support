@@ -81,7 +81,7 @@ Route::group([
 	Route::get('/listcategories', 'App\Http\Controllers\CategorieController@listcat')->name('GC');
 	Route::post('/categories', 'App\Http\Controllers\CategorieController@addcat')->name('AC');
 	Route::get('/modif-categories-{id}', 'App\Http\Controllers\CategorieController@getmodifcat')->name('MTC');
-	Route::get('/delete-categories-{id}', 'App\Http\Controllers\CategorieController@deletecat')->name('DC');
+	Route::post('/delete-categories', 'App\Http\Controllers\CategorieController@deletecat')->name('DC');
 	Route::post('/modif-categories', 'App\Http\Controllers\CategorieController@modifcat')->name('SCL');
 
 	//////////////////////////////////** Categorie d'outils **////////////////////////////////////////////////////////
@@ -101,14 +101,14 @@ Route::group([
 	Route::get('/listhierarchies', 'App\Http\Controllers\HierarchieController@listhie')->name('GH');
 	Route::post('/hiérarchies', 'App\Http\Controllers\HierarchieController@addhie')->name('AH');
 	Route::get('/modif-hierarchies-{id}', 'App\Http\Controllers\HierarchieController@getmodifhie')->name('MHC');
-	Route::get('/delete-hierarchies-{id}', 'App\Http\Controllers\HierarchieController@deletehie')->name('DH');
+	Route::post('/delete-hierarchies', 'App\Http\Controllers\HierarchieController@deletehie')->name('DH');
 	Route::post('/modif-hierarchies', 'App\Http\Controllers\HierarchieController@modifhie')->name('SHL');
 
 	//////////////////////////////////** Service **///////////////////////////////////////////////////////////////////
 	Route::get('/listservices', 'App\Http\Controllers\ServiceController@listserv')->name('GS');
 	Route::post('/services', 'App\Http\Controllers\ServiceController@addserv')->name('AS');
 	Route::get('/modif-services-{id}', 'App\Http\Controllers\ServiceController@getmodifserv')->name('MSC');
-	Route::get('/delete-services-{id}', 'App\Http\Controllers\ServiceController@deleteserv')->name('DS');
+	Route::post('/delete-services', 'App\Http\Controllers\ServiceController@deleteserv')->name('DS');
 	Route::post('/modif-services', 'App\Http\Controllers\ServiceController@modifserv')->name('SSL');
 
 	//////////////////////////////////** Etat / Avis **///////////////////////////////////////////////////////////////

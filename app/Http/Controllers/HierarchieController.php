@@ -37,9 +37,11 @@ class HierarchieController extends Controller
                 }
             }
         } catch (QueryException $qe) {
-            return Back()->with('error', "Une erreur ses produites :" . $qe->getMessage());
+            flash("Une erreur ses produites :" . $qe->getMessage())->error();
+            return Back();
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            flash("Une erreur ses produites :" . $e->getMessage())->error();
+            return Back();
         }
     }
 
@@ -49,18 +51,27 @@ class HierarchieController extends Controller
             if (!in_array("delete_hie", session("auto_action"))) {
                 return view("vendor.error.649");
             } else {
-                $occurence = json_encode(Hierarchie::where('id', request('id'))->first());
-                $addt = new Trace();
-                $addt->libelle = "Hierarchie supprimé : " . $occurence;
-                $addt->action = session("utilisateur")->idUser;
-                $addt->save();
-                Hierarchie::where('id', request('id'))->delete();
-                $info = "Hierarchie est supprimé avec succès.";
-                flash($info);
-                return Back();
+                $existe = Hierarchie::find($request->id);
+                if ($existe) {
+                    $occurence = json_encode(Hierarchie::where('id', request('id'))->first());
+                    $addt = new Trace();
+                    $addt->libelle = "Hierarchie supprimé : " . $occurence;
+                    $addt->action = session("utilisateur")->idUser;
+                    $addt->save();
+                    Hierarchie::where('id', request('id'))->delete();
+                    $info = "Hierarchie est supprimé avec succès.";
+                    flash($info)->success();
+                    return $info;
+                } else {
+                    $info = "Hierarchie introuvable.";
+                    flash($info)->error();
+                    return $info;
+                }
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return $errorString;
         }
     }
 
@@ -74,7 +85,8 @@ class HierarchieController extends Controller
                 return view('viewadmindste.hierarchie.modifhie', compact('info'));
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            flash("Une erreur ses produites :" . $e->getMessage())->error();
+            return Back();
         }
     }
 
@@ -102,7 +114,8 @@ class HierarchieController extends Controller
                 return redirect('/listhierarchies');
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            flash("Une erreur ses produites :" . $e->getMessage())->error();
+            return Back();
         }
     }
 }

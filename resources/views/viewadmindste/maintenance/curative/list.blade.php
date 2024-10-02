@@ -216,7 +216,6 @@
         }
 
         function setetatmaintenance(id, etat, periode) {
-            console.log(etat);
 
             document.getElementById('infoetat').innerHTML = "Modification de l'état de " + periode + " :";
             document.getElementById('idetat').value = id;

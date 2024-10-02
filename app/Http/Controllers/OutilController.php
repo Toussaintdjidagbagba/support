@@ -265,7 +265,9 @@ class OutilController extends Controller
                 return $contenu;
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return Back();
         }
     }
 

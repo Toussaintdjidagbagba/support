@@ -56,8 +56,7 @@
                                                 @if (in_array('delete_hie', session('auto_action')))
                                                     <button type="button" title="Supprimer"
                                                         data-token="{{ csrf_token() }}" data-Id="{{ $hie->id }}"
-                                                        style="color:white;"
-                                                        onclick="Delete(event, '{{ route('DH') }}','{{ $hie->libelle }}')"
+                                                        onclick="DeleteH(event, '{{ route('DH') }}','{{ $hie->libelle }}')"
                                                         class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
                                                         <i class="material-icons">delete_sweep</i>
                                                     </button>
@@ -79,63 +78,64 @@
                     </div>
                 </div>
             </div>
-            <script src="text/javascript">
-                async function Delete(event, url, libelle) {
-                    event.preventDefault();
-                    var target = event.currentTarget;
-                    var token = target.getAttribute('data-token') ?? "";
-                    var iddelete = target.getAttribute('data-Id') ?? "";
 
-                    const {
-                        isConfirmed
-                    } = await Swal.fire({
-                        title: "Êtes-vous sûr de vouloir supprimer l'hiérachie du " + libelle + "?",
-                        text: "Cette action est irréversible!",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonText: "Oui, supprimer",
-                        cancelButtonText: "Annuler",
-                        customClass: {
-                            confirmButton: 'bg-confirm',
-                            cancelButton: 'bg-cancel'
-                        }
-                    });
-
-                    if (isConfirmed) {
-                        try {
-                            dat = {
-                                _token: token,
-                                id: iddelete,
-                            };
-                            const response = await fetch(url, {
-                                method: 'POST',
-                                headers: {
-                                    'Access-Control-Allow-Credentials': true,
-                                    'Content-Type': 'application/json',
-                                    'Accept': 'application/json',
-                                },
-                                body: JSON.stringify(dat)
-                            });
-
-                            if (response.status == 200) {
-                                data = await response.text();
-                                Swal.fire("Succès", data, "success")
-                                    .then(
-                                        () => {
-                                            window.location.reload();
-                                        });
-
-                            } else {
-                                throw new Error('Erreur lors de la suppression');
-                            }
-                        } catch (error) {
-                            Swal.fire("Erreur", "La suppression a échoué" + error);
-                        }
-                    }
-                }
-            </script>
         </div>
     </div>
+    <script type="text/javascript">
+        async function DeleteH(event, url, libelle) {
+            event.preventDefault();
+            var target = event.currentTarget;
+            var token = target.getAttribute('data-token') ?? "";
+            var iddelete = target.getAttribute('data-Id') ?? "";
+
+            const {
+                isConfirmed
+            } = await Swal.fire({
+                title: "Êtes-vous sûr de vouloir supprimer l'hiérachie " + libelle + "?",
+                text: "Cette action est irréversible!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Oui, supprimer",
+                cancelButtonText: "Annuler",
+                customClass: {
+                    confirmButton: 'bg-confirm',
+                    cancelButton: 'bg-cancel'
+                }
+            });
+
+            if (isConfirmed) {
+                try {
+                    dat = {
+                        _token: token,
+                        id: iddelete,
+                    };
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Access-Control-Allow-Credentials': true,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify(dat)
+                    });
+
+                    if (response.status == 200) {
+                        data = await response.text();
+                        Swal.fire("Succès", data, "success")
+                            .then(
+                                () => {
+                                    window.location.reload();
+                                });
+
+                    } else {
+                        throw new Error('Erreur lors de la suppression');
+                    }
+                } catch (error) {
+                    Swal.fire("Erreur", "La suppression a échoué" + error);
+                }
+            }
+        }
+    </script>
 @endsection
 
 @section('model')
