@@ -137,16 +137,16 @@ class IncidentController extends Controller
                     $addt->save();
                     Incident::where('id', request('id'))->delete();
                     $info = "Incident est supprimé avec succès.";
-                    flash($info);
+                    flash($info)->success();
                 } else {
                     $info = "Incident introuvable.";
-                    flash($info);
+                    flash($info)->error();
                 }
                 return Back();
             }
         } catch (\Exception $e) {
             $info = "Une erreur ses produites :" . $e->getMessage();
-            flash($info);
+            flash($info)->error();
             return Back();
         }
     }

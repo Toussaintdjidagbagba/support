@@ -49,7 +49,7 @@ Route::group([
 	Route::post('/statistique', 'App\Http\Controllers\GestionnaireController@statis')->name('getstatistique');
 	Route::get('/utilisateur', 'App\Http\Controllers\UtilisateurController@getuser')->name('GU');
 	Route::post('/utilisateur', 'App\Http\Controllers\UtilisateurController@adduser')->name('setuser');
-	Route::get('/delete-utilisateur-{id}', 'App\Http\Controllers\UtilisateurController@deleteuser')->name('DU');
+	Route::post('/delete-utilisateur', 'App\Http\Controllers\UtilisateurController@deleteuser')->name('DU');
 	Route::get('/reinitialiser-utilisateur-{id}', 'App\Http\Controllers\UtilisateurController@reinitialiseruser')->name('RU');
 	Route::get('/desactivé-utilisateur-{id}', 'App\Http\Controllers\UtilisateurController@desactiveuser')->name('DSU');
 	Route::get('/activé-utilisateur-{id}', 'App\Http\Controllers\UtilisateurController@activeuser')->name('ATU');
@@ -62,7 +62,7 @@ Route::group([
 	Route::get('/listroles', 'App\Http\Controllers\RoleController@listrole')->name('GR');
 	Route::post('/roles', 'App\Http\Controllers\RoleController@addrole')->name('AR');
 	Route::get('/modif-roles-{id}', 'App\Http\Controllers\RoleController@getmodifrole')->name('MTR');
-	Route::get('/delete-roles-{id}', 'App\Http\Controllers\RoleController@deleterole')->name('DR');
+	Route::post('/delete-roles', 'App\Http\Controllers\RoleController@deleterole')->name('DR');
 	Route::get('/menu-roles-{id}', 'App\Http\Controllers\RoleController@getmenurole')->name('MRR');
 	Route::post('/menu-roles', 'App\Http\Controllers\RoleController@setmenurole')->name('MenuAttr');
 	Route::post('/modif-roles', 'App\Http\Controllers\RoleController@modifrole')->name('SRL');
@@ -71,7 +71,7 @@ Route::group([
 	//////////////////////////////////** Menu **//////////////////////////////////////////////////////////////////////
 	Route::get('/listmenus', 'App\Http\Controllers\MenuController@getmenu')->name('GM');
 	Route::post('/listmenus', 'App\Http\Controllers\MenuController@setmenu')->name('Menu_add');
-	Route::get('/delete-menu-{id}', 'App\Http\Controllers\MenuController@delmenu')->name('DM');
+	Route::post('/delete-menu', 'App\Http\Controllers\MenuController@delmenu')->name('DM');
 	Route::get('/modif-menu-{id}', 'App\Http\Controllers\MenuController@getmodifmenu')->name('MTM');
 	Route::post('/modif-menu', 'App\Http\Controllers\MenuController@setmodifmenu')->name('SML');
 	Route::post('/action-menu', 'App\Http\Controllers\MenuController@setactionmenu')->name('Actionsave');
@@ -81,7 +81,7 @@ Route::group([
 	Route::get('/listcategories', 'App\Http\Controllers\CategorieController@listcat')->name('GC');
 	Route::post('/categories', 'App\Http\Controllers\CategorieController@addcat')->name('AC');
 	Route::get('/modif-categories-{id}', 'App\Http\Controllers\CategorieController@getmodifcat')->name('MTC');
-	Route::get('/delete-categories-{id}', 'App\Http\Controllers\CategorieController@deletecat')->name('DC');
+	Route::post('/delete-categories', 'App\Http\Controllers\CategorieController@deletecat')->name('DC');
 	Route::post('/modif-categories', 'App\Http\Controllers\CategorieController@modifcat')->name('SCL');
 
 	//////////////////////////////////** Categorie d'outils **////////////////////////////////////////////////////////
@@ -90,7 +90,7 @@ Route::group([
 	Route::get('/listcategorie/actions/outils', 'App\Http\Controllers\CategorieOutilsController@listcatactionsoutils')->name('LCAO');
 	Route::post('/categories-outils', 'App\Http\Controllers\CategorieOutilsController@addcat')->name('ACO');
 	Route::post('/outil/actions', 'App\Http\Controllers\CategorieOutilsController@addactionsoutils')->name('AAO');
-	Route::get('/delete-categoriesoutils', 'App\Http\Controllers\CategorieOutilsController@deletecat')->name('DCO');
+	Route::post('/delete-categoriesoutils', 'App\Http\Controllers\CategorieOutilsController@deletecat')->name('DCO');
 	Route::post('/modif-categoriesoutils', 'App\Http\Controllers\CategorieOutilsController@modifcat')->name('SCLO');
 	Route::post('/ajout-champs-categories-outils', 'App\Http\Controllers\CategorieOutilsController@setchampcaracteristiqueoutil')->name('SCCLO');
 	// Get All Champ In Catégorie
@@ -101,21 +101,21 @@ Route::group([
 	Route::get('/listhierarchies', 'App\Http\Controllers\HierarchieController@listhie')->name('GH');
 	Route::post('/hiérarchies', 'App\Http\Controllers\HierarchieController@addhie')->name('AH');
 	Route::get('/modif-hierarchies-{id}', 'App\Http\Controllers\HierarchieController@getmodifhie')->name('MHC');
-	Route::get('/delete-hierarchies-{id}', 'App\Http\Controllers\HierarchieController@deletehie')->name('DH');
+	Route::post('/delete-hierarchies', 'App\Http\Controllers\HierarchieController@deletehie')->name('DH');
 	Route::post('/modif-hierarchies', 'App\Http\Controllers\HierarchieController@modifhie')->name('SHL');
 
 	//////////////////////////////////** Service **///////////////////////////////////////////////////////////////////
 	Route::get('/listservices', 'App\Http\Controllers\ServiceController@listserv')->name('GS');
 	Route::post('/services', 'App\Http\Controllers\ServiceController@addserv')->name('AS');
 	Route::get('/modif-services-{id}', 'App\Http\Controllers\ServiceController@getmodifserv')->name('MSC');
-	Route::get('/delete-services-{id}', 'App\Http\Controllers\ServiceController@deleteserv')->name('DS');
+	Route::post('/delete-services', 'App\Http\Controllers\ServiceController@deleteserv')->name('DS');
 	Route::post('/modif-services', 'App\Http\Controllers\ServiceController@modifserv')->name('SSL');
 
 	//////////////////////////////////** Etat / Avis **///////////////////////////////////////////////////////////////
 	Route::get('/settings-etat', 'App\Http\Controllers\SettingController@list')->name('GETAT');
 	Route::post('/settings-etat', 'App\Http\Controllers\SettingController@add')->name('AETAT');
 	Route::get('/modif-settings-etat-{id}', 'App\Http\Controllers\SettingController@getmodif')->name('METAT');
-	Route::get('/delete-settings-etat-{id}', 'App\Http\Controllers\SettingController@delete')->name('DMETAT');
+	Route::post('/delete-settings-etat', 'App\Http\Controllers\SettingController@deleteetatavis')->name('DMETAT');
 	Route::post('/modif-settings-etat', 'App\Http\Controllers\SettingController@modif')->name('SMETAT');
 
 	///////////////////////////////////** Incident Client **//////////////////////////////////////////////////////////

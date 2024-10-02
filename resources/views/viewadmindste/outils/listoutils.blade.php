@@ -81,6 +81,7 @@
                                             <td>
                                                 {{ $out->dateacquisition ?? '---' }}
                                             </td>
+                                           
                                             <td>
                                                 {{ $out->nameoutils ?? '---' }}
                                             </td>
@@ -94,7 +95,7 @@
                                                     <button type="button" title="Etat"
                                                         class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#etatoutil"
-                                                        onclick="setetatoutils({{ $out->id }}, '{{ $out->nameoutils }}')">
+                                                        onclick="setetatoutils({{ $out->id }},'{{ $out->etat }}', '{{ $out->nameoutils }}')">
                                                         <i class="material-icons">gps_fixed</i></a> </button>
                                                     {{ $out->etat }}
                                                 @endif
@@ -131,22 +132,23 @@
                                                     <button type="button" title="Détails"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#details"
-                                                        onclick="getdetail({{ $out->id }}, '{{ $out->nameoutils }}', '{{ $out->otherjson }}', {{ $out->categorie }})">
+                                                        onclick="getdetail({{ $out->id }}, '{{ $out->nameoutils }}',{{ json_encode($out->otherjson) }}, '{{ $out->categorie }}')">
                                                         <i class="material-icons">book</i></a>
                                                     </button>
                                                 @endif
-            
+
                                                 @if (in_array('update_caract_outil', session('auto_action')))
                                                     <button type="button" title="Modifier"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#update"
-                                                        onclick="setupdateoutils({{ $out->id }}, '{{ $out->nameoutils }}', '{{ $out->otherjson }}', {{ $out->categorie }})">
+                                                        onclick="setupdateoutils({{ $out->id }}, '{{ $out->nameoutils }}', {{ json_encode($out->otherjson) }}, '{{ $out->categorie }}')">
                                                         <i class="material-icons">system_update_alt</i>
                                                     </button>
                                                 @endif
 
                                                 @if (in_array('delete_outil', session('auto_action')))
-                                                    <button type="button" title="Supprimer" data-token="{{ csrf_token() }}" data-Id="{{ $out->id }}"
+                                                    <button type="button" title="Supprimer"
+                                                        data-token="{{ csrf_token() }}" data-Id="{{ $out->id }}"
                                                         onclick="Delete(event, '{{ route('DO') }}','{{ $out->nameoutils }}')"
                                                         class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
                                                         <i class="material-icons">delete_sweep</i></a> </button>
@@ -625,9 +627,22 @@
             }
         }
 
-        function setetatoutils(id, outil) {
+        function setetatoutils(id,etat, outil) {
             document.getElementById('infoetat').innerHTML = "Modification de l'état de " + outil + ". <br><br>";
             document.getElementById('idetat').value = id;
+
+             document.getElementById('etats').innerHTML = 'Etat Actuelle :<span class="text-primary"> ' + etat + '</span>';
+
+            document.getElementById('etatContainer').innerHTML =
+                '<select id="etatselect" name="etatselect" class="form-control">' +
+                '<option value="Excellent" ' + (etat === 'Excellent' ? 'selected' : '') + '>Excellent</option>' +
+                '<option value="Bien" ' + (etat === 'Bien' ? 'selected' : '') + '>Bien</option>' +
+                '<option value="Défaillant" ' + (etat === 'Défaillant' ? 'selected' : '') + '>Défaillant</option>' +
+                '<option value="Très Bien" ' + (etat === 'Très Bien' ? 'selected' : '') + '>Très Bien</option>' +
+                '<option value="Passable" ' + (etat === 'Passable' ? 'selected' : '') + '>Passable</option>' +
+                '<option value="Médiocre" ' + (etat === 'Médiocre' ? 'selected' : '') + '>Médiocre</option>' +
+                '<option value="Autres" ' + (etat === 'Autres' ? 'selected' : '') + '>Autres</option>' +
+                '</select>';
         }
 
         async function valideetatoutil() {
@@ -699,7 +714,7 @@
             event.preventDefault();
             var target = event.currentTarget;
             var token = target.getAttribute('data-token') ?? "";
-             var iddelete = target.getAttribute('data-Id') ?? "";
+            var iddelete = target.getAttribute('data-Id') ?? "";
             const {
                 isConfirmed
             } = await Swal.fire({
@@ -733,8 +748,8 @@
                     });
 
                     if (response.status == 200) {
-                         data = await response.text();
-                        Swal.fire("Succès",data, "success").then(() => {
+                        data = await response.text();
+                        Swal.fire("Succès", data, "success").then(() => {
                             window.location.reload();
                         });
                     } else {
@@ -768,8 +783,6 @@
             document.body.appendChild(form);
             form.submit();
         }
-
-       
     </script>
 
 @endsection
@@ -1092,17 +1105,14 @@
                     <input type="hidden" id="idetat" name="idetat" />
                     <label id="infoetat"></label>
                     <div class="row clearfix">
+                         <div class="col-md-12">
+                            <label id="etats" class="modal-title pull-center"></label><br><br>
+                        </div>
                         <div class="col-md-6">
                             <label for="etatselect">Etat :</label>
                             <div class="form-group">
-                                <div class="form-line">
-                                    <select type="text" id="etatselect" name="etatselect" class="form-control">
-                                        <option>TRES BON</option>
-                                        <option>BON</option>
-                                        <option>MAUVAISE</option>
-                                        <option>DEFAILLANT</option>
-                                        <option>Autres</option>
-                                    </select>
+                                <div class="form-line" id="etatContainer">
+
                                 </div>
                             </div>
                         </div>

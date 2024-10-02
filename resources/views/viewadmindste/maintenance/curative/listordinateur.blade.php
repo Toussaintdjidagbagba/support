@@ -391,7 +391,6 @@
                                 <div class="form-group">
                                     <div class="form-line">
                                         <select id="etat" name="etat" class="form-control">
-
                                             <option value="Excellent" {{ $etat === 'Excellent' ? 'selected' : '' }}>
                                                 Excellent
                                             </option>

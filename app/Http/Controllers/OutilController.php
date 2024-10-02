@@ -265,7 +265,9 @@ class OutilController extends Controller
                 return $contenu;
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return Back();
         }
     }
 
@@ -395,89 +397,88 @@ class OutilController extends Controller
         }
     }
 
-    public function exportPDFDetail(Request $request)
-    {
-        try {
-            Log::info('exportPDFDetail called');
+    // public function exportPDFDetail(Request $request)
+    // {
+    //     try {
+    //         Log::info('exportPDFDetail called');
 
-            $details = json_decode($request->input('detail'), true);
-            Log::info('Received data: ' . json_encode($details));
+    //         $details = json_decode($request->input('detail'), true);
+    //         Log::info('Received data: ' . json_encode($details));
 
-            if (!$details) {
-                Log::error('No data provided');
-                return response()->json(['error' => 'No data provided'], 400);
-            }
+    //         if (!$details) {
+    //             Log::error('No data provided');
+    //             return response()->json(['error' => 'No data provided'], 400);
+    //         }
 
-            // Créer une instance de TCPDF
-            $pdf = new TCPDF();
+    //         // Créer une instance de TCPDF
+    //         $pdf = new TCPDF();
 
-            // Définir les marges (pour centrer le tableau)
-            $leftMargin = 15; // marge gauche
-            $rightMargin = 15; // marge droite
-            $pdf->SetMargins($leftMargin, 10, $rightMargin);
+    //         // Définir les marges (pour centrer le tableau)
+    //         $leftMargin = 15; // marge gauche
+    //         $rightMargin = 15; // marge droite
+    //         $pdf->SetMargins($leftMargin, 10, $rightMargin);
 
-            // Ajouter une page
-            $pdf->AddPage();
+    //         // Ajouter une page
+    //         $pdf->AddPage();
 
-            // Ajouter l'image de fond
-            $imagePath = public_path('fond.png');
-            if (file_exists($imagePath)) {
-                $pdf->Image($imagePath, 0, 0, 297, 297, 'PNG');
-            }
+    //         // Ajouter l'image de fond
+    //         $imagePath = public_path('fond.png');
+    //         if (file_exists($imagePath)) {
+    //             $pdf->Image($imagePath, 0, 0, 297, 297, 'PNG');
+    //         }
 
-            // Définir la police Unicode
-            $pdf->SetFont('dejavusans', '', 12);
+    //         // Définir la police Unicode
+    //         $pdf->SetFont('dejavusans', '', 12);
 
-            // Ajouter l'en-tête du rapport
-            $pdf->Ln(10);
-            $pdf->Ln(10);
-            $pdf->SetFont('dejavusans', 'B', 18);
-            $pdf->Cell(0, 15, "Caractéristiques de l'Outil", 0, 1, 'C');
+    //         // Ajouter l'en-tête du rapport
+    //         $pdf->Ln(10);
+    //         $pdf->Ln(10);
+    //         $pdf->SetFont('dejavusans', 'B', 18);
+    //         $pdf->Cell(0, 15, "Caractéristiques de l'Outil", 0, 1, 'C');
 
 
-            // Définir les largeurs des colonnes
-            $colWidth = 90;
-            // Définir la police pour les données du tableau
-            $pdf->SetFont('dejavusans', '', 12);
+    //         // Définir les largeurs des colonnes
+    //         $colWidth = 90;
+    //         // Définir la police pour les données du tableau
+    //         $pdf->SetFont('dejavusans', '', 12);
 
-            // Ajouter les détails au tableau
-            foreach ($details as $detail) {
-                Log::info('Detail data: ' . json_encode($detail));
+    //         // Ajouter les détails au tableau
+    //         foreach ($details as $detail) {
+    //             Log::info('Detail data: ' . json_encode($detail));
 
-                // Utiliser htmlspecialchars pour encoder les caractères spéciaux
-                $label = htmlspecialchars($detail['label']);
-                $value = htmlspecialchars($detail['value']);
+    //             // Utiliser htmlspecialchars pour encoder les caractères spéciaux
+    //             $label = htmlspecialchars($detail['label']);
+    //             $value = htmlspecialchars($detail['value']);
 
-                // Ajouter un espace de 2mm autour des cellules de Label
-                $pdf->Cell($colWidth, 10, ' ' . utf8_decode($label) . ' ', 1, 0, 'L');
+    //             // Ajouter un espace de 2mm autour des cellules de Label
+    //             $pdf->Cell($colWidth, 10, ' ' . utf8_decode($label) . ' ', 1, 0, 'L');
 
-                // Centrer le texte dans les cellules de Value
-                $pdf->Cell($colWidth, 10, utf8_decode($value), 1, 1, 'C');
-            }
+    //             // Centrer le texte dans les cellules de Value
+    //             $pdf->Cell($colWidth, 10, utf8_decode($value), 1, 1, 'C');
+    //         }
 
-            // Ajouter le nom de l'application dans le pied de page
-            $pdf->SetFont('dejavusans', 'I', 10);
-            $pdf->Cell(0, 10, config('app.name'), 0, 0, 'R');
+    //         // Ajouter le nom de l'application dans le pied de page
+    //         $pdf->SetFont('dejavusans', 'I', 10);
+    //         $pdf->Cell(0, 10, config('app.name'), 0, 0, 'R');
 
-            // Sauvegarder le fichier PDF sur le serveur
-            $filename = 'Details_' . date('Y-m-d_H-i-s') . '.pdf';
-            $filePath = public_path('pdf/' . $filename);
+    //         // Sauvegarder le fichier PDF sur le serveur
+    //         $filename = 'Details_' . date('Y-m-d_H-i-s') . '.pdf';
+    //         $filePath = public_path('pdf/' . $filename);
 
-            // Assurez-vous que le répertoire existe
-            if (!file_exists(public_path('pdf'))) {
-                mkdir(public_path('pdf'), 0777, true);
-            }
+    //         // Assurez-vous que le répertoire existe
+    //         if (!file_exists(public_path('pdf'))) {
+    //             mkdir(public_path('pdf'), 0777, true);
+    //         }
 
-            // Sauvegarder le fichier PDF
-            $pdf->Output($filePath, 'F');
+    //         // Sauvegarder le fichier PDF
+    //         $pdf->Output($filePath, 'F');
 
-            // Télécharger directement le fichier PDF
-            return response()->download($filePath)->deleteFileAfterSend(true);
-        } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
-        }
-    }
-
+    //         // Télécharger directement le fichier PDF
+    //         return response()->download($filePath)->deleteFileAfterSend(true);
+    //     } catch (\Exception $e) {
+    //         return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+    //     }
+    // }
 
     //outils export
     public function exportoutils(Request $request)
@@ -506,7 +507,6 @@ class OutilController extends Controller
             return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
         }
     }
-
 
     //export outils historique
     public function expoutilhisto(Request $request)

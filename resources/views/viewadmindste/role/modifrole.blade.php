@@ -9,7 +9,7 @@
 
 <div class="container-fluid">
 	<div class="block-header">
-		@include('flash-message')
+		@include('flash::message')
 		<h2>
 			Menu
 			<small></small>
@@ -21,7 +21,7 @@
 			<div class="card">
 				<div class="header">
 					<h2>
-						Modifier un rôle
+						Modifier un r么le
 					</h2>
 				</div>
 				<div class="body">
