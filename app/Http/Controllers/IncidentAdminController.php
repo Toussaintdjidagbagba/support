@@ -397,7 +397,7 @@ class IncidentAdminController extends Controller
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
-                        ->header('Content-Disposition', 'attachment; filename="DeclarationIncident.pdf"');
+                        ->header('Content-Disposition', 'attachment; filename="DeclarationsIncident.pdf"');
                 case 'xlsx':
                 default:
                     return Excel::download(new DeclarIncidentpdfExport($list), 'DeclarationIncident.xlsx', \Maatwebsite\Excel\Excel::XLSX);
