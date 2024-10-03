@@ -78,7 +78,7 @@
                                                 @endif
 
                                                 @if (in_array('print_maint_pdf', session('auto_action')))
-                                                    <button onclick="getmaintprev(event,'pdf')"
+                                                    <button onclick="getmaintgcur(event,'pdf')"
                                                         data-Id="{{ $maint->gestion_id }}" type="button" title="PDF"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24"
@@ -231,21 +231,21 @@
             sig.signature('clear');
         });
 
-        function getmaintprev(event, format) {
+        function getmaintgcur(event, format) {
             event.preventDefault();
             var dataT = event.currentTarget;
 
-            var idmprev = dataT.getAttribute('data-Id') ?? "";
-            console.log(idmprev);
+            var idmcur = dataT.getAttribute('data-Id') ?? "";
+            console.log(idmcur);
 
             var form = document.createElement('form');
             form.method = 'GET';
-            form.action = '{{ route('export.mainte') }}';
+            form.action = '{{ route('export.maintecur') }}';
 
             var inputId = document.createElement('input');
             inputId.type = 'hidden';
-            inputId.name = 'idmprev';
-            inputId.value = idmprev;
+            inputId.name = 'idmcur';
+            inputId.value = idmcur;
             form.appendChild(inputId);
 
             var inputFormat = document.createElement('input');
