@@ -141,7 +141,8 @@ class InterfaceServiceProvider extends ServiceProvider
 
     public static function LibService($id)
     {
-        return DB::table('services')->where('id', $id)->first()->libelle;
+        $lib = DB::table('services')->where('id', $id)->first();
+        return ($lib) ? $lib->libelle : '';
     }
 
     public static function recupactionsoutils($id)
@@ -493,12 +494,14 @@ class InterfaceServiceProvider extends ServiceProvider
 
     public static function LibelleCat($id)
     {
-        return DB::table('categories')->where('id', $id)->first()->libelle;
+        $lib = DB::table('categories')->where('id', $id)->first();
+        return ($lib) ? $lib->libelle : '';
     }
 
     public static function TempsCat($id)
     {
-        return DB::table('categories')->where('id', $id)->first()->tmpCat;
+        $lib = DB::table('categories')->where('id', $id)->first();
+        return ($lib) ? $lib->tmpCat : '';
     }
 
     public static function TempsCats($id, $created_at)
@@ -535,7 +538,8 @@ class InterfaceServiceProvider extends ServiceProvider
 
     public static function LibelleHier($id)
     {
-        return DB::table('hierarchies')->where('id', $id)->first()->libelle;
+        $lib = DB::table('hierarchies')->where('id', $id)->first();
+        return ($lib) ? $lib->libelle : '';
     }
 
     public static function libmenu($id)

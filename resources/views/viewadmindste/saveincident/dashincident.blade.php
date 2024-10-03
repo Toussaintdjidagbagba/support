@@ -251,6 +251,22 @@
                 }
             }
         }
+
+        var loadImage = function(event) {
+            var output = document.getElementById('output');
+            var file = event.target.files[0];
+
+                                            // Vérification du type de fichier avant de charger l'image
+            if (file.type === "image/jpeg" || file.type === "image/png") {
+                output.src = URL.createObjectURL(file);
+                output.onload = function() {
+                    URL.revokeObjectURL(output.src);
+                }
+            } else {
+                alert('Seules les images JPG ou PNG sont autorisées.');
+                event.target.value = ''; // réinitialiser le champ fichier
+            }
+        };
     </script>
 
 @endsection
@@ -321,23 +337,6 @@
                                     <div class="form-line">
                                         <input type="file" class="form-control" id="piece" name="piece" accept=".jpg, .jpeg, .png" onchange="loadImage(event)">
                                     </div>
-                                    <script>
-                                        var loadImage = function(event) {
-                                            var output = document.getElementById('output');
-                                            var file = event.target.files[0];
-                            
-                                            // Vérification du type de fichier avant de charger l'image
-                                            if (file.type === "image/jpeg" || file.type === "image/png") {
-                                                output.src = URL.createObjectURL(file);
-                                                output.onload = function() {
-                                                    URL.revokeObjectURL(output.src);
-                                                }
-                                            } else {
-                                                alert('Seules les images JPG ou PNG sont autorisées.');
-                                                event.target.value = ''; // réinitialiser le champ fichier
-                                            }
-                                        };
-                                    </script>
                                 </div>
                             </div>
                         </div>

@@ -381,15 +381,6 @@
                                     <label for="piece">Pièce jointe</label>
                                     <div class="form-group">
                                         <div class="form-line">
-                                            <input type="file" id="piece" name="piece" accept=".pdf"
-                                                class="form-control" placeholder="">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="piece">Pièce jointe</label>
-                                    <div class="form-group">
-                                        <div class="form-line">
                                             <input type="file" class="form-control" id="piece" name="piece"
                                                 accept=".jpg, .jpeg, .png" onchange="loadImage(event)">
                                         </div>

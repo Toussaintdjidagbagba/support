@@ -83,9 +83,9 @@ class IncidentController extends Controller
                     $add->Emetteur =  session("utilisateur")->idUser;
                     $add->DateEmission = date("d-m-Y H:i:s");
                     $add->Module = $request->module;
-                    $add->description = $request->dese;
-                    $add->cat = $request->cae;
-                    $add->hierarchie = $request->hiere;
+                    $add->description = $request->desc;
+                    $add->cat = $request->cat;
+                    $add->hierarchie = $request->hiera; 
                     if ($request->hasFile('piece')) {
                         $namefile = "incident" . date('i') . "." . $request->file('piece')->getClientOriginalExtension();
                         $upload = "documents/incident/";
