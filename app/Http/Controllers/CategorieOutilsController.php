@@ -43,11 +43,11 @@ class CategorieOutilsController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -74,7 +74,7 @@ class CategorieOutilsController extends Controller
             try {
                 if (isset(DB::table('action_outils')->where('code', $request->codeaction)->where('Outils', $request->idCatOutils)->first()->id)) {
                     $errorString = "L'action que vous voulez ajouter existe déjà pour cet outil!! ";
-                    flash("Erreur : " . $errorString)->error();
+                    flash($errorString)->error();
                     return $errorString;
                 } else {
                     $messages = [
@@ -91,7 +91,7 @@ class CategorieOutilsController extends Controller
                     if ($validator->fails()) {
                         $errors = $validator->errors()->all();
                         $errorString = implode(' ', $errors);
-                        flash("Erreur : " . $errorString)->error();
+                        flash($errorString)->error();
                         return $errorString;
                     }
 
@@ -110,11 +110,11 @@ class CategorieOutilsController extends Controller
                 }
             } catch (QueryException $qe) {
                 $errorString = "Une erreur ses produites " .  $qe->getMessage();
-                flash("Erreur : " . $errorString)->error();
+                flash($errorString)->error();
                 return $errorString;
             } catch (\Exception $e) {
                 $errorString = "Une erreur ses produites " .  $e->getMessage();
-                flash("Erreur : " . $errorString)->error();
+                flash($errorString)->error();
                 return $errorString;
             }
         }
@@ -146,11 +146,11 @@ class CategorieOutilsController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return $errorString;
         } catch (\Exception $e) {
             $errorString = "Une erreur ses produites " .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return $errorString;
         }
     }
@@ -181,11 +181,11 @@ class CategorieOutilsController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -214,11 +214,11 @@ class CategorieOutilsController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }

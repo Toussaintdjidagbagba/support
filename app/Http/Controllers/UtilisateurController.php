@@ -32,8 +32,8 @@ class UtilisateurController extends Controller
             $list = $list->paginate(100);
             return view('viewadmindste.dash_utilisateur', compact('list', 'allRole'));
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -63,11 +63,11 @@ class UtilisateurController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return $errorString;
         } catch (\Exception $e) {
             $errorString = "Une erreur ses produites " .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return $errorString;
         }
     }
@@ -91,11 +91,11 @@ class UtilisateurController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites" .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -119,11 +119,11 @@ class UtilisateurController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites" .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -147,11 +147,11 @@ class UtilisateurController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites" .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -172,11 +172,11 @@ class UtilisateurController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites" .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -197,11 +197,11 @@ class UtilisateurController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites" .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -265,11 +265,11 @@ class UtilisateurController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites" .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -285,8 +285,8 @@ class UtilisateurController extends Controller
                 return view('viewadmindste.modifusers', compact('allRole', 'info'));
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -345,11 +345,11 @@ class UtilisateurController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }

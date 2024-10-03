@@ -37,8 +37,8 @@ class CategorieController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -68,8 +68,8 @@ class CategorieController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return $errorString;
         }
     }
@@ -84,8 +84,8 @@ class CategorieController extends Controller
                 return view('viewadmindste.categorie.modifcat', compact('info'));
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -115,8 +115,8 @@ class CategorieController extends Controller
                 return redirect('/listcategories');
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }

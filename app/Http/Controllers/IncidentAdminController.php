@@ -75,7 +75,7 @@ class IncidentAdminController extends Controller
                 if ($validator->fails()) {
                     $errors = $validator->errors()->all();
                     $errorString = implode(' ', $errors);
-                    flash("Erreur : " . $errorString)->error();
+                    flash($errorString)->error();
                     return Back();
                 } else {
                     $add = new Incident();
@@ -109,10 +109,10 @@ class IncidentAdminController extends Controller
                 }
             }
         } catch (QueryException $qe) {
-            flash("Une erreur ses produites  : " . $qe->getMessage())->error();
+            flash("Erreur serveur.")->error();
             return Back();
         } catch (\Exception $e) {
-            flash("Une erreur ses produites  : " . $e->getMessage())->error();
+            flash("Erreur serveur.")->error();
             return Back();
         }
     }
@@ -140,8 +140,8 @@ class IncidentAdminController extends Controller
                 return Back();
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return $errorString;
         }
     }
@@ -156,7 +156,8 @@ class IncidentAdminController extends Controller
                 return view('viewadmindste.gererincident.modifincident', compact('info'));
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produite :" . $e->getMessage());
+            flash("Erreur serveur.")->error();
+            return Back();
         }
     }
 
@@ -172,19 +173,19 @@ class IncidentAdminController extends Controller
                     'desc.required' => 'La description est requise.',
                     'cat.required' => 'La catégorie est requis.',
                     'hiera.required' => 'L\'hiérachie est requis.',
-                    'resolve.required' => 'L\état est requis.',
                 ];
                 $validator = Validator::make($request->all(), [
                     'module' => 'required',
-                    'acheteur' => 'required',
                     'desc' => 'required',
                     'cat' => 'required',
                     'hiera' => 'required',
-                    'resolve' => 'required',
                 ], $messages);
 
                 if ($validator->fails()) {
-                    return Back()->with('error', $validator->errors()->messages(), $request->all());
+                    $errors = $validator->errors()->all();
+                    $errorString = implode(' ', $errors);
+                    flash($errorString)->error();
+                    return Back();
                 }
 
                 if ($request->hasFile('piece')) {
@@ -202,11 +203,11 @@ class IncidentAdminController extends Controller
 
                 Incident::where('id', request('id'))->update(
                     [
-                        "Module" => htmlspecialchars(trim($request->module)),
-                        "description" => htmlspecialchars(trim($request->desc)),
-                        "cat" => htmlspecialchars(trim($request->cat)),
-                        "resolue" => htmlspecialchars(trim($request->resolve)),
-                        "hierarchie" => htmlspecialchars(trim($request->hiera))
+                        "Module" => $request->module,
+                        "description" => $request->desc,
+                        "cat" => $request->cat,
+                        "resolue" => $request->resolve,
+                        "hierarchie" => $request->hiera
                     ]
                 );
 
@@ -218,9 +219,11 @@ class IncidentAdminController extends Controller
                 return redirect('/incidents');
             }
         } catch (QueryException $qe) {
-            return Back()->with('error', "Une erreur ses produites :" . $qe->getMessage());
+            flash("Erreur serveur.")->error();
+            return Back();
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            flash("Erreur serveur.")->error();
+            return Back();
         }
     }
 
@@ -246,7 +249,7 @@ class IncidentAdminController extends Controller
                 if ($validator->fails()) {
                     $errors = $validator->errors()->all();
                     $errorString = implode(' ', $errors);
-                    flash("Erreur : " . $errorString)->error();
+                    flash($errorString)->error();
                     return Back();
                 }
 
@@ -281,7 +284,8 @@ class IncidentAdminController extends Controller
                 return Back();
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            flash("Erreur serveur.")->error();
+            return Back();;
         }
     }
 
@@ -305,7 +309,8 @@ class IncidentAdminController extends Controller
                 return Back();
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            flash("Erreur serveur.")->error();
+            return Back();;
         }
     }
 
@@ -333,14 +338,15 @@ class IncidentAdminController extends Controller
             // Téléchargement du fichier excel
             return Excel::download(new ExportExcel, 'Rapport_' . date('Y-m-d-h-i-s') . '.xlsx');
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            flash("Erreur serveur.")->error();
+            return Back();;
         }
     }
 
     //incident export
-	public function exportincident(Request $request)
-	{
-		try {
+    public function exportincident(Request $request)
+    {
+        try {
 
             if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
                 $list = Incident::orderBy('incidents.created_at', 'desc')->paginate(100);
@@ -348,27 +354,27 @@ class IncidentAdminController extends Controller
                 // Afficher les incidents reçu
                 $list = Incident::where("affecter", session("utilisateur")->affecter)->orderBy('incidents.created_at', 'desc')->paginate(100);
             }
-            
-			$format = $request->format;
-	
-			// Générer le fichier en fonction du format demandé
-			switch ($format) {
-				case 'pdf':
-					$pdfExporter = new IncidentpdfExport($list);
-					$filePath = $pdfExporter->generatePdf();
-					$pdfContent = Storage::get($filePath);
-	
-					return response($pdfContent, 200)
-							->header('Content-Type', 'application/pdf')
-							->header('Content-Disposition', 'attachment; filename="IncidentExport.pdf"');
-				case 'xlsx':
-				default:
-					return Excel::download(new IncidentExport($list), 'IncidentExport.xlsx', \Maatwebsite\Excel\Excel::XLSX);
-			}
-		} catch (\Exception $e) {
-			return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
-		}
-	}
+
+            $format = $request->format;
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new IncidentpdfExport($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="IncidentExport.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new IncidentExport($list), 'IncidentExport.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
+        }
+    }
 
     //export declaration incident
     public function expdeclincident(Request $request)
@@ -383,7 +389,7 @@ class IncidentAdminController extends Controller
                     ->where('id', $request->idlin)
                     ->orderBy('incidents.created_at', 'desc')
                     ->paginate(100);
-            }    
+            }
             //dd($list);       
 
             $format = $request->format;

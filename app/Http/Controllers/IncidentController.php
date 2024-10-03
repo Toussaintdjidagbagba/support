@@ -74,7 +74,7 @@ class IncidentController extends Controller
                 if ($validator->fails()) {
                     $errors = $validator->errors()->all();
                     $errorString = implode(' ', $errors);
-                    flash("Erreur : " . $errorString)->error();
+                    flash($errorString)->error();
                     return Back();
                 } else {
                     date_default_timezone_set('Africa/Porto-Novo');
@@ -82,10 +82,10 @@ class IncidentController extends Controller
                     $add->Service = session("utilisateur")->Service;
                     $add->Emetteur =  session("utilisateur")->idUser;
                     $add->DateEmission = date("d-m-Y H:i:s");
-                    $add->Module = htmlspecialchars(trim($request->module));
-                    $add->description = htmlspecialchars(trim($request->desc));
-                    $add->cat = htmlspecialchars(trim($request->cat));
-                    $add->hierarchie = htmlspecialchars(trim($request->hiera));
+                    $add->Module = $request->module;
+                    $add->description = $request->dese;
+                    $add->cat = $request->cae;
+                    $add->hierarchie = $request->hiere;
                     if ($request->hasFile('piece')) {
                         $namefile = "incident" . date('i') . "." . $request->file('piece')->getClientOriginalExtension();
                         $upload = "documents/incident/";
@@ -114,10 +114,10 @@ class IncidentController extends Controller
                 }
             }
         } catch (QueryException $qe) {
-            flash("Une erreur ses produites : " . $qe->getMessage())->error();
+            flash("Erreur serveur.")->error();
             return Back();
         } catch (\Exception $e) {
-            flash("Une erreur ses produites : " . $e->getMessage())->error();
+            flash("Erreur serveur.")->error();
             return Back();
         }
     }
@@ -184,12 +184,12 @@ class IncidentController extends Controller
                     );
                 }
 
-                Incident::where('id', request('id'))->update(
+                $updat =  Incident::where('id', request('id'))->update(
                     [
-                        "Module" => htmlspecialchars(trim($request->module)),
-                        "description" => htmlspecialchars(trim($request->desc)),
-                        "cat" => htmlspecialchars(trim($request->cat)),
-                        "hierarchie" => htmlspecialchars(trim($request->hiera))
+                        "Module" => $request->module,
+                        "description" => $request->desc,
+                        "cat" => $request->cat,
+                        "hierarchie" => $request->hiera,
                     ]
                 );
 
@@ -198,10 +198,12 @@ class IncidentController extends Controller
                     "Vous avez modifié l'incident " . $request->desc . " .",
                     session("utilisateur")->idUser
                 );
-                return redirect('/incident');
+                return Back();
             }
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            dd($e);
+            flash("Erreur serveur.")->error();
+            return Back();
         }
     }
 

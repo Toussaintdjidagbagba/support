@@ -61,7 +61,7 @@ class MaintenanceController extends Controller
                     if ($validator->fails()) {
                         $errors = $validator->errors()->all();
                         $errorString = implode(' ', $errors);
-                        flash("Erreur : " . $errorString)->error();
+                        flash($errorString)->error();
                         return $errorString;
                     }
                     $add = new Maintenance();
@@ -80,11 +80,11 @@ class MaintenanceController extends Controller
                 }
             } catch (QueryException $qe) {
                 $errorString = "Une erreur ses produites" .  $qe->getMessage();
-                flash("Erreur : " . $errorString)->error();
+                flash($errorString)->error();
                 return $errorString;
             } catch (\Exception $e) {
-                $errorString = "Une erreur ses produites" .  $e->getMessage();
-                flash("Erreur : " . $errorString)->error();
+                $errorString = "Erreur serveur.";
+                flash($errorString)->error();
                 return $errorString;
             }
         }
@@ -117,8 +117,8 @@ class MaintenanceController extends Controller
                 return $info;
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return $errorString;
         }
     }
@@ -184,11 +184,11 @@ class MaintenanceController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites" .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return $errorString;
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return $errorString;
         }
     }
@@ -201,8 +201,8 @@ class MaintenanceController extends Controller
             $periode = $request->id;
             return view('viewadmindste.maintenance.listordinateur', compact('list', 'periode', 'etat'));
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -217,8 +217,8 @@ class MaintenanceController extends Controller
 
             return view('viewadmindste.maintenance.listmaintenance', compact('list'));
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -263,8 +263,8 @@ class MaintenanceController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return $errorString;
         }
     }
@@ -292,8 +292,8 @@ class MaintenanceController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return $errorString;
         }
     }
@@ -485,8 +485,8 @@ class MaintenanceController extends Controller
 
             return view('viewadmindste.maintenance.curative.listmaintenance', compact('list'));
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -534,8 +534,8 @@ class MaintenanceController extends Controller
             $periode = $request->id;
             return view('viewadmindste.maintenance.curative.listordinateur', compact('list', 'periode', 'etat'));
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -569,7 +569,7 @@ class MaintenanceController extends Controller
                     if ($validator->fails()) {
                         $errors = $validator->errors()->all();
                         $errorString = implode(' ', $errors);
-                        flash("Erreur : " . $errorString)->error();
+                        flash($errorString)->error();
                         return $errorString;
                     }
                     $add = new MaintenanceCurative();
@@ -591,11 +591,11 @@ class MaintenanceController extends Controller
                 }
             } catch (QueryException $qe) {
                 $errorString = "Une erreur ses produites" .  $qe->getMessage();
-                flash("Erreur : " . $errorString)->error();
+                flash($errorString)->error();
                 return $errorString;
             } catch (\Exception $e) {
-                $errorString = "Une erreur ses produites" .  $e->getMessage();
-                flash("Erreur : " . $errorString)->error();
+                $errorString = "Erreur serveur.";
+                flash($errorString)->error();
                 return $errorString;
             }
         }
@@ -641,8 +641,8 @@ class MaintenanceController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return $errorString;
         }
     }
@@ -677,8 +677,8 @@ class MaintenanceController extends Controller
                 return $info;
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return $errorString;
         }
     }
@@ -716,11 +716,11 @@ class MaintenanceController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites" .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return $errorString;
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return $errorString;
         }
     }
@@ -823,8 +823,8 @@ class MaintenanceController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return $errorString;
         }
     }

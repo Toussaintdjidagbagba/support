@@ -53,7 +53,7 @@ class OutilController extends Controller
             try {
                 if (isset(DB::table('outils')->where('nameoutils', $request->caraclib)->where('categorie', $request->caraccat)->first()->id)) {
                     $errorString = "L'outil que vous voulez ajouter existe déjà!! ";
-                    flash("Erreur : " . $errorString)->error();
+                    flash($errorString)->error();
                     return $errorString;
                 } else {
                     $messages = [
@@ -74,7 +74,7 @@ class OutilController extends Controller
                     if ($validator->fails()) {
                         $errors = $validator->errors()->all();
                         $errorString = implode(' ', $errors);
-                        flash("Erreur : " . $errorString)->error();
+                        flash($errorString)->error();
                         return $errorString;
                     }
                     // recup les colonnes in catégorie d'outil
@@ -108,11 +108,11 @@ class OutilController extends Controller
                 }
             } catch (QueryException $qe) {
                 $errorString = "Une erreur ses produites" .  $qe->getMessage();
-                flash("Erreur : " . $errorString)->error();
+                flash($errorString)->error();
                 return $errorString;
             } catch (\Exception $e) {
-                $errorString = "Une erreur ses produites" .  $e->getMessage();
-                flash("Erreur : " . $errorString)->error();
+                $errorString = "Erreur serveur.";
+                flash($errorString)->error();
                 return $errorString;
             }
         }
@@ -265,8 +265,8 @@ class OutilController extends Controller
                 return $contenu;
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -363,8 +363,8 @@ class OutilController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return $errorString;
         }
     }

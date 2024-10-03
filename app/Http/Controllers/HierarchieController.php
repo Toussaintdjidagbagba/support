@@ -69,8 +69,8 @@ class HierarchieController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return $errorString;
         }
     }

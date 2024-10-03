@@ -34,11 +34,11 @@ class MenuController extends Controller
             return view('viewadmindste.menu.menu', compact('list', 'search'));
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -54,8 +54,8 @@ class MenuController extends Controller
                 return view('viewadmindste.menu.action', compact('actions', 'idMenu'));
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -81,11 +81,11 @@ class MenuController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -142,11 +142,11 @@ class MenuController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -176,11 +176,11 @@ class MenuController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return $errorString;
         } catch (\Exception $e) {
             $errorString = "Une erreur ses produites " .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return $errorString;
         }
     }
@@ -196,8 +196,8 @@ class MenuController extends Controller
                 return view('viewadmindste.menu.modifmenu', compact('info', 'list'));
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -256,11 +256,11 @@ class MenuController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }

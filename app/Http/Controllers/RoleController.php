@@ -35,8 +35,8 @@ class RoleController extends Controller
                 return view('viewadmindste.role.menu', compact('role', 'allmenu', 'auto_menu', 'auto_action'));
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -127,11 +127,11 @@ class RoleController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -155,8 +155,8 @@ class RoleController extends Controller
 
             return view('viewadmindste.role.listrole', compact('list'));
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -187,11 +187,11 @@ class RoleController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -222,11 +222,11 @@ class RoleController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return $errorString;
         } catch (\Exception $e) {
             $errorString = "Une erreur ses produites " .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return $errorString;
         }
     }
@@ -241,8 +241,8 @@ class RoleController extends Controller
                 return view('viewadmindste.role.modifrole', compact('info'));
             }
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }
@@ -274,11 +274,11 @@ class RoleController extends Controller
             }
         } catch (QueryException $qe) {
             $errorString = "Une erreur ses produites " .  $qe->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            flash($errorString)->error();
             return Back();
         } catch (\Exception $e) {
-            $errorString = "Une erreur ses produites" .  $e->getMessage();
-            flash("Erreur : " . $errorString)->error();
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
             return Back();
         }
     }

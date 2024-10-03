@@ -9,7 +9,7 @@
 
 <div class="container-fluid">
 	<div class="block-header">
-		@include('flash-message')
+		@include('flash::message')
 		<h2>
 			Incidents
 			<small></small>
