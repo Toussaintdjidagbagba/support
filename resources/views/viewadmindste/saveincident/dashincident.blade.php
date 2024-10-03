@@ -65,7 +65,21 @@
                                             </th>
                                             <td>{{ $inc->Module }}</td>
                                             <td>{{ $inc->description ?? '---' }}</td>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::LibelleHier($inc->hierarchie) }}
+                                            <td>
+                                                @php
+                                                    $hiera = App\Providers\InterfaceServiceProvider::LibelleHier(
+                                                        $inc->hierarchie,
+                                                    );
+                                                @endphp
+                                                @if ($hiera)
+                                                    <span
+                                                        class="@if ($hiera == 'Bloquant') text-danger @elseif ($hiera == 'Gênant') text-warning @elseif ($hiera == 'Confort') text-primary @endif">
+                                                        {{ $hiera }}
+                                                    </span>
+                                                @else
+                                                    <span>Aucune hiérarchie</span>
+                                                @endif
+                                            </td>
                                             </td>
                                             <td>{{ App\Providers\InterfaceServiceProvider::LibelleCat($inc->cat) }}</td>
                                             <td>{{ App\Providers\InterfaceServiceProvider::TempsCats($inc->cat, $inc->created_at) }}
