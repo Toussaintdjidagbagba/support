@@ -31,7 +31,7 @@
 							<input type="hidden" name="_token" value="{{ csrf_token() }}" />
 							<input type="hidden" name="id" value="{{ $info->id }}" />
 							<div class="row clearfix">
-		                        <div class="col-md-6">
+		                        <div class="col-md-3">
 		                             	<label for="mod">Module</label>
 		                                <div class="form-group">
 		                                <div class="form-line">
@@ -39,7 +39,7 @@
 		                                </div>
 		                                </div>
 		                        </div>
-		                        <div class="col-md-6">
+		                        <div class="col-md-3">
 		                             	<label for="cat">Catégorie</label>
 		                                <div class="form-group">
 		                                @php
@@ -61,10 +61,7 @@
 		                                </div>
 		                            </div>
 		                        </div>
-		                    </div>
-
-							<div class="row clearfix">
-		                        <div class="col-md-6">
+		                        <div class="col-md-3">
 		                        	<label for="hiera">Hiérarchisation</label>
 		                           <div class="form-group">
 		                            <div class="form-line">
@@ -86,7 +83,7 @@
 		                            </div>
 		                           </div>
 		                        </div>
-		                        <div class="col-md-6">
+		                        <div class="col-md-3">
 		                             	<label for="piece">Pièce jointe : <a href="{{ $info->piece }}">{{ $info->piece }}</a></label>
 		                                <div class="form-group">
 		                                <div class="form-line">
