@@ -402,6 +402,7 @@
                             {{-- aperçu --}}
                             <div class="row clearfix">
                                 <div class="col-md-6">
+                                    <label for="piece">Aperçu</label>
                                     <div class="form-group">
                                         <img id="output" src="user.png" style="width: 70px; height: 70px; border-radius: 50%;" />
                                     </div>

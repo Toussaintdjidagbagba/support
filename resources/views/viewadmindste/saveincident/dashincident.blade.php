@@ -305,9 +305,34 @@
                                 <label for="piece">Pièce jointe</label>
                                 <div class="form-group">
                                     <div class="form-line">
-                                        <input type="file" id="piece" name="piece"
-                                            accept=".pdf, .png, .jpg, .jpeg" class="form-control" placeholder="">
+                                        <input type="file" class="form-control" id="piece" name="piece" accept=".jpg, .jpeg, .png" onchange="loadImage(event)">
                                     </div>
+                                    <script>
+                                        var loadImage = function(event) {
+                                            var output = document.getElementById('output');
+                                            var file = event.target.files[0];
+                            
+                                            // Vérification du type de fichier avant de charger l'image
+                                            if (file.type === "image/jpeg" || file.type === "image/png") {
+                                                output.src = URL.createObjectURL(file);
+                                                output.onload = function() {
+                                                    URL.revokeObjectURL(output.src);
+                                                }
+                                            } else {
+                                                alert('Seules les images JPG ou PNG sont autorisées.');
+                                                event.target.value = ''; // réinitialiser le champ fichier
+                                            }
+                                        };
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- aperçu --}}
+                        <div class="row clearfix">
+                            <div class="col-md-6">
+                                <label for="piece">Aperçu</label>
+                                <div class="form-group">
+                                    <img id="output" src="user.png" style="width: 70px; height: 70px; border-radius: 50%;" />
                                 </div>
                             </div>
                         </div>
