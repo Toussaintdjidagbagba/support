@@ -6,6 +6,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DeclarIncidentpdfExport;
 use Illuminate\Http\Request;
 use App\Models\Incident;
 use App\Models\Trace;
@@ -368,4 +369,41 @@ class IncidentAdminController extends Controller
 			return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
 		}
 	}
+
+    //export declaration incident
+    public function expdeclincident(Request $request)
+    {
+        try {
+
+            if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
+                $list = Incident::where('id', $request->idlin)->orderBy('incidents.created_at', 'desc')->paginate(100);
+            } else {
+                // Afficher les incidents reçu
+                $list = Incident::where('affecter', session("utilisateur")->affecter)
+                    ->where('id', $request->idlin)
+                    ->orderBy('incidents.created_at', 'desc')
+                    ->paginate(100);
+            }    
+            //dd($list);       
+
+            $format = $request->format;
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new DeclarIncidentpdfExport($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="DeclarationsIncident.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new DeclarIncidentpdfExport($list), 'DeclarationIncident.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
+        }
+    }
 }
