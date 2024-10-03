@@ -35,7 +35,7 @@
                     <div class="card">
                         <div class="header">
                             <h2>
-                                Maintenance curative
+                                Maintenance curatives
                        		</h2>
                         </div>
                         <div class="body">
