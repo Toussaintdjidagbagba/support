@@ -447,7 +447,7 @@ class MaintenanceController extends Controller
                 ->where("outils.user", session("utilisateur")->idUser)
                 ->get();
 
-            return view('viewadmindste.maintenance.listmaintenance', compact('list'));
+            return view('viewadmindste.maintenance.curative.listmaintenance', compact('list'));
         } catch (\Exception $e) {
             return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
         }
