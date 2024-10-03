@@ -223,6 +223,8 @@
         }
 
         async function setdetailmaintenance(maint, outilsId) {
+            console.log(maint);
+            
             let tab = maint.split("|").filter(Boolean);
             let lists = "";
             try {
@@ -275,7 +277,7 @@
                         'Accept': 'application/json',
                         'Access-Control-Allow-Credentials': true
                     }
-                });
+                });maint
 
                 const data = await response.json();
 
@@ -384,7 +386,7 @@
                 isConfirmed
             } = await Swal.fire({
                 title: "Êtes-vous sûr de vouloir supprimer la maintenace du " + periode + "?",
-                text: "Cette action est irréversible!",
+                text: "Cette action est irréveumaintrsible!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Oui, supprimer",
@@ -450,7 +452,7 @@
                     let lists = "";
                     data.forEach(function(currentline, index) {
                         lists +=
-                            '<input type="checkbox" id="item-' + index + '" name="umaint" value="' +
+                            '<input type="checkbox" id="item-' + index + '" name="maint" value="' +
                             currentline.code + '" class="filled-in chk-col-brown" />' +
                             '<label for="item-' + index + '">' + currentline.libelle +
                             '</label><br>';
