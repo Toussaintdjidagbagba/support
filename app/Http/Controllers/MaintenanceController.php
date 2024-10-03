@@ -442,7 +442,7 @@ class MaintenanceController extends Controller
     public function listmaintenancecurative(Request $request)
     {
         try {
-            $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
+            $list = GestionmaintenanceCurative::join("outils", "outils.id", "=", "gestionmaintenances.outil")
                 ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
                 ->where("outils.user", session("utilisateur")->idUser)
                 ->get();
