@@ -351,11 +351,9 @@
 
                     data.forEach(function(currentline) {
                         lists += `
-            <div class="col-md-3">  
-                <span class="alert alert-info alert-block" style="font-weight: bold; display: block;">
+                        <span style="float:left; margin:10px; padding:10px; background:#c1cdcd; border-radius :10%; color:black; font-weight: bold; display: block;">
                     ${currentline.libelle ?? 'Aucune liste disponible'}
-                </span>
-            </div>`;
+                </span>`;
                     });
 
                     lists += '</div>';
