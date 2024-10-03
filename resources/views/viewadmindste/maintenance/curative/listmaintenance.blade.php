@@ -71,7 +71,7 @@
                                             @endif
                                                 
                                             @if(in_array("print_maint_pdf", session("auto_action")))
-                                                <button onclick="getmaintprev(event,'pdf')" data-Id="{{ $maint->gestion_id}}" type="button" title="PDF"  class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
+                                                <button onclick="getmaintcur(event,'pdf')" data-Id="{{ $maint->gestion_id}}" type="button" title="PDF"  class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                                                         <path fill="currentColor" d="M8.267 14.68c-.184 0-.308.018-.372.036v1.178c.076.018.
                                                         171.023.302.023c.479 0 .774-.242.774-.651c0-.366-.254-.586-.704-.586zm3.487.012c-.2 
@@ -219,22 +219,22 @@
                 sig.signature('clear');
             });
             
-            function getmaintprev(event,format) 
+            function getmaintcur(event,format) 
             {
                 event.preventDefault();
                 var dataT = event.currentTarget;
                 
-                var idmprev = dataT.getAttribute('data-Id') ?? "" ;
-                console.log(idmprev);
+                var idmcur = dataT.getAttribute('data-Id') ?? "" ;
+                console.log(idmcur);
 
                 var form = document.createElement('form');
                 form.method = 'GET'; 
-                form.action = '{{ route("export.mainte") }}';
+                form.action = '{{ route("export.maintecur") }}';
 
                 var inputId = document.createElement('input');
                 inputId.type = 'hidden';
-                inputId.name = 'idmprev';
-                inputId.value = idmprev; 
+                inputId.name = 'idmcur';
+                inputId.value = idmcur; 
                 form.appendChild(inputId);
 
                 var inputFormat = document.createElement('input');

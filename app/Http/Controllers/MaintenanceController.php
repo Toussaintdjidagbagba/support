@@ -13,7 +13,12 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportExcel;
 use App\Exports\ExportMaintenance;
+use App\Exports\GestCurXExport;
 use App\Exports\GestMaintCurExport;
+use App\Exports\GestMaintPrevExport;
+use App\Exports\GestPrevXExport;
+use App\Exports\MaintCurrativaExport;
+use App\Exports\MaintCurrativeExport;
 use App\Exports\MaintPreventiveExport;
 use App\Models\ActionOutil;
 use App\Models\GestionmaintenanceCurative;
@@ -433,6 +438,34 @@ class MaintenanceController extends Controller
         }
     }
 
+    //export gestion maintenance curative
+    public function expgestprev(Request $request)
+    {
+        try {
+            
+            $list = Maintenance::where('id', $request->idgestprev)->get();
+            
+            $format = $request->format;
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new GestMaintPrevExport($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="GestionMaintenancePreventive.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new GestPrevXExport($list), 'GestionMaintenancePreventive.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
+        }
+    }
+
     // Tout sur la maintenace curative ***********************
     public function listgestionmaintenancecurative()
     {
@@ -457,6 +490,41 @@ class MaintenanceController extends Controller
             return Back();
         }
     }
+
+    //export maintenance currative
+    public function expmaintcur(Request $request)
+    {
+        try {
+
+            $list = GestionmaintenanceCurative::join("outils", "outils.id", "=", "gestionmaintenance_curatives.outil")
+                ->select('gestionmaintenance_curatives.*', 'outils.*', 'gestionmaintenance_curatives.id as gestion_id')
+                ->where("outils.user", session("utilisateur")->idUser)
+                ->where("gestionmaintenance_curatives.id", $request->idmcur)
+                ->get();
+    
+            //dd($list);       
+
+            $format = $request->format;
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new MaintCurrativeExport($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="MaintenanceCurrative.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new MaintCurrativeExport($list), 'MaintenanceCurrative.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
+        }
+    }
+
 
     public function detailsmaintenacecurative(Request $request)
     {
@@ -766,14 +834,8 @@ class MaintenanceController extends Controller
     {
         try {
             
-            //$list = Maintenance::where('id', $request->idgestcur)->get();
-            $list = Maintenance::select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
-                ->where("outils.user", session("utilisateur")->idUser)
-                ->where("gestionmaintenances.id", $request->idgestcur)
-                ->get();
-    
-            dd($list);       
-
+            $list = MaintenanceCurative::where('id', $request->idgestcur)->get();
+            
             $format = $request->format;
 
             // Générer le fichier en fonction du format demandé
@@ -788,7 +850,7 @@ class MaintenanceController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="GestionMaintenanceCurative.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new GestMaintCurExport($list), 'GestionMaintenanceCurative.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new GestCurXExport($list), 'GestionMaintenanceCurative.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);

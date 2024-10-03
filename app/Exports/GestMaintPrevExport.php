@@ -1,12 +1,10 @@
 <?php
 
 namespace App\Exports;
-
 use Illuminate\Support\Facades\Storage;
 use Dompdf\Dompdf;
 
-
-class MaintPreventiveExport
+class GestMaintPrevExport
 {
     protected $list;
     
@@ -21,7 +19,7 @@ class MaintPreventiveExport
         $list = $this->list;
 
         $pdf = new Dompdf();
-        $pdf->loadHtml(view('viewadmindste.export.expmaintprev', compact('list'))->render());
+        $pdf->loadHtml(view('viewadmindste.export.expgestprev', compact('list'))->render());
         $pdf->render();
 
         $filePath = 'exports/Preventive_export.pdf';

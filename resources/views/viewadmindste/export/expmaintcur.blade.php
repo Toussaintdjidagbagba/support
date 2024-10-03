@@ -82,7 +82,7 @@
 </head>
 <body>
     <div class="container">
-        <h2 class="title">Maintenance préventive</h2><br>
+        <h2 class="title">Maintenance currative</h2><br>
         <table>
             @foreach($list as $maint)
                 <tr>
@@ -102,18 +102,22 @@
             @endforeach
         </table><br>
 
-        <table class="description-table">
+        <table class="large">
             <thead>
                 <tr>
-                    <th colspan="2">Observations</th>
+                    <th>Etat</th>
+                    <th>Observations</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($list as $maint)
                     <tr>
-                        <td colspan="2" style="height: 40px;">
-                            {{ $maint->commentaireinf }}
+                        <td style="height: 40px;">
+                            {{ $maint->etat }} 
                         </td>
+                        <td style="height: 40px;">
+                            {{ $maint->commentaireinf }}
+                        </td> 
                     </tr>
                 @endforeach
             </tbody>

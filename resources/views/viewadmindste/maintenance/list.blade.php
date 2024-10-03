@@ -60,8 +60,8 @@
                                             </td>
                                             <td class="d-flex justify-content-between align-items-center">
 
-                                                @if (in_array('etat_pdf_maint_global', session('auto_action')))
-                                                    <button type="button" title="PDF"
+                                                @if (in_array('etat_pdf_maint_global', session('auto_action'))) 
+                                                    <button type="button" title="PDF" onclick="getmaintprev(event,'pdf')" data-Id="{{ $maint->id}}"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                             height="24" viewBox="0 0 24 24">
@@ -73,7 +73,7 @@
                                                     </button>
                                                 @endif
                                                 @if (in_array('etat_excel_maint_global', session('auto_action')))
-                                                    <button type="button" title="EXCEL"
+                                                    <button type="button" title="EXCEL" onclick="getmaintprev(event,'excel')" data-Id="{{ $maint->id}}"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         onClick="javascript:window.open('{{ route('EMPC') }}?id={{ $maint->id }}');">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24"
@@ -201,7 +201,7 @@
             }
         }
 
-       function setetatmaintenance(id, etat, periode) {
+        function setetatmaintenance(id, etat, periode) {
             console.log(etat);
 
             document.getElementById('infoetat').innerHTML = "Modification de l'état de " + periode + " :";
@@ -417,6 +417,34 @@
                 }
             }
         }
+
+        function getmaintprev(event,format) 
+        {
+                event.preventDefault();
+                var dataT = event.currentTarget;
+                
+                var idgestprev = dataT.getAttribute('data-Id') ?? "" ;
+                console.log(idgestprev);
+
+                var form = document.createElement('form');
+                form.method = 'GET'; 
+                form.action = '{{ route("export.gestprev") }}';
+
+                var inputId = document.createElement('input');
+                inputId.type = 'hidden';
+                inputId.name = 'idgestprev';
+                inputId.value = idgestprev; 
+                form.appendChild(inputId);
+
+                var inputFormat = document.createElement('input');
+                inputFormat.type = 'hidden';
+                inputFormat.name = 'format';
+                inputFormat.value = format;
+                form.appendChild(inputFormat);
+
+                document.body.appendChild(form);
+                form.submit();
+        }    
     </script>
 @endsection
 

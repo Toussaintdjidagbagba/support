@@ -82,22 +82,18 @@
 </head>
 <body>
     <div class="container">
-        <h2 class="title">Maintenance préventive</h2><br>
+        <h2 class="title">Gestion Maintenance curative</h2><br>
         <table>
             @foreach($list as $maint)
                 <tr>
-                    <td class="ser">Période :</td>
-                    <td colspan="3">{{App\Providers\InterfaceServiceProvider::periodeMaintenance($maint->maintenance)}}</td>
-                </tr>
-                <tr>
-                    <td class="ser">Ordinateur :</td>
-                    <td>{{App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil)}}</td>
-                    <td class="ser">Avis :</td>
-                    <td>{{ $maint->avisuser }}</td>
+                    <td class="ser">Periode Début :</td>
+                    <td>{{App\Providers\InterfaceServiceProvider::formatDate($maint->periodedebut)}}</td>
+                    <td class="ser">Période Fin :</td>
+                    <td>{{ App\Providers\InterfaceServiceProvider::formatDate($maint->periodefin) }}</td>
                 </tr>
                 <tr>
                     <td class="ser">Technicien :</td>
-                    <td colspan="3">{{App\Providers\InterfaceServiceProvider::LibelleUser($maint->action)}}</td>
+                    <td colspan="3">{{App\Providers\InterfaceServiceProvider::LibelleUser($maint->user)}}</td>
                 </tr>
             @endforeach
         </table><br>
@@ -105,14 +101,14 @@
         <table class="description-table">
             <thead>
                 <tr>
-                    <th colspan="2">Observations</th>
+                    <th colspan="2">Commentaire</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($list as $maint)
                     <tr>
                         <td colspan="2" style="height: 40px;">
-                            {{ $maint->commentaireinf }}
+                            {{ $maint->commentaire}}
                         </td>
                     </tr>
                 @endforeach
