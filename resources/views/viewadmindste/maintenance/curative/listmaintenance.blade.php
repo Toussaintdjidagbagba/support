@@ -57,7 +57,7 @@
                                 <tbody>
                                     @forelse($list as $maint)
                                         <tr>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::periodeMaintenance($maint->maintenance) }}
+                                            <td>{{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($maint->maintenance) }}
                                             </td>
                                             <td>{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}
                                             </td>
