@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportExcel;
 use App\Exports\ExportMaintenance;
+use App\Exports\GestMaintCurExport;
 use App\Exports\MaintPreventiveExport;
 use App\Models\ActionOutil;
 use App\Models\GestionmaintenanceCurative;
@@ -753,6 +754,40 @@ class MaintenanceController extends Controller
             $errorString = "Une erreur ses produites" .  $e->getMessage();
             flash("Erreur : " . $errorString)->error();
             return $errorString;
+        }
+    }
+
+    //export gestion maintenance curative
+    public function expgestcurat(Request $request)
+    {
+        try {
+            
+            //$list = Maintenance::where('id', $request->idgestcur)->get();
+            $list = Maintenance::select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
+                ->where("outils.user", session("utilisateur")->idUser)
+                ->where("gestionmaintenances.id", $request->idgestcur)
+                ->get();
+    
+            dd($list);       
+
+            $format = $request->format;
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new GestMaintCurExport($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="GestionMaintenanceCurative.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new GestMaintCurExport($list), 'GestionMaintenanceCurative.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
         }
     }
 }
