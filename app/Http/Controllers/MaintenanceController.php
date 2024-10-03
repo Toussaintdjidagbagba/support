@@ -212,7 +212,9 @@ class MaintenanceController extends Controller
 
             return view('viewadmindste.maintenance.listmaintenance', compact('list'));
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return Back();
         }
     }
 
@@ -443,14 +445,16 @@ class MaintenanceController extends Controller
     public function listmaintenancecurative(Request $request)
     {
         try {
-            $list = GestionmaintenanceCurative::join("outils", "outils.id", "=", "gestionmaintenances.outil")
-                ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
+            $list = GestionmaintenanceCurative::join("outils", "outils.id", "=", "gestionmaintenance_curatives.outil")
+                ->select('gestionmaintenance_curatives.*', 'outils.*', 'gestionmaintenance_curatives.id as gestion_id')
                 ->where("outils.user", session("utilisateur")->idUser)
                 ->get();
 
             return view('viewadmindste.maintenance.curative.listmaintenance', compact('list'));
         } catch (\Exception $e) {
-            return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
+            $errorString = "Une erreur ses produites" .  $e->getMessage();
+            flash("Erreur : " . $errorString)->error();
+            return Back();
         }
     }
 
