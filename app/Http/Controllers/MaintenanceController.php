@@ -829,7 +829,7 @@ class MaintenanceController extends Controller
         }
     }
 
-    //export gestion maintenance curative
+    //exportation gestion maintenance curative
     public function expgestcurat(Request $request)
     {
         try {
