@@ -54,14 +54,15 @@
                                                     <button type="button" title="Etat"
                                                         class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#etatmaintenance"
-                                                        onclick="setetatmaintenance({{ $maint->id }},'{{ $maint->etat }}', '{{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }} au {{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodefin) }}')">
+                                                        onclick="setetatmaintenance({{ $maint->id }},'{{ $maint->etat }}','{{ $maint->commentaire }}', '{{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }} au {{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodefin) }}')">
                                                         <i class="material-icons">gps_fixed</i></a> </button>
                                                 @endif
                                             </td>
                                             <td class="d-flex justify-content-between align-items-center">
 
-                                                @if (in_array('etat_pdf_maint_global', session('auto_action'))) 
-                                                    <button type="button" title="PDF" onclick="getmaintprev(event,'pdf')" data-Id="{{ $maint->id}}"
+                                                @if (in_array('etat_pdf_maint_global', session('auto_action')))
+                                                    <button type="button" title="PDF"
+                                                        onclick="getmaintprev(event,'pdf')" data-Id="{{ $maint->id }}"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                             height="24" viewBox="0 0 24 24">
@@ -73,7 +74,8 @@
                                                     </button>
                                                 @endif
                                                 @if (in_array('etat_excel_maint_global', session('auto_action')))
-                                                    <button type="button" title="EXCEL" onclick="getmaintprev(event,'excel')" data-Id="{{ $maint->id}}"
+                                                    <button type="button" title="EXCEL"
+                                                        onclick="getmaintprev(event,'excel')" data-Id="{{ $maint->id }}"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         onClick="javascript:window.open('{{ route('EMPC') }}?id={{ $maint->id }}');">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24"
@@ -94,7 +96,14 @@
                                                     <button type="button" title="Modifier"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#update"
-                                                        onclick="setupdatemaintenance({{ $maint->id }}, '{{ $maint->periodedebut }}', '{{ $maint->periodefin }}', {{ $maint->user }}, '{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->user) }}')">
+                                                        onclick="setupdatemaintenance({{ $maint->id }},
+                                                         '{{ $maint->periodedebut }}',
+                                                          '{{ $maint->periodefin }}',
+                                                           '{{ $maint->user }}',
+                                                             '{{ $maint->service }}', 
+                                                             '{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->user) }}',
+                                                             '{{ $maint->commentaire }}', 
+                                                              )">
                                                         <i class="material-icons">system_update_alt</i>
                                                     </button>
                                                 @endif
@@ -150,7 +159,7 @@
             if (techm == 0) {
                 erreur += "sélectionner un technicien pour gérer la maintenance.. .\n";
             }
-           
+
             if (erreur !== "") {
                 document.getElementById('infomaintenance').innerHTML =
                     "<div class='alert alert-danger alert-block'> Veuillez : " + erreur + "</div>";
@@ -162,6 +171,7 @@
                     techm: techm,
                     sdcm: sdcm,
                     ucm: ucm,
+                    cm: cm,
                 };
                 document.getElementById("infomaintenance").innerHTML =
                     '<div class="alert alert-warning alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>En cours de traitement.. <br> Veuillez patienter! </strong></div>';
@@ -201,11 +211,12 @@
             }
         }
 
-        function setetatmaintenance(id, etat, periode) {
+        function setetatmaintenance(id, etat,commentaire, periode) {
             console.log(etat);
 
             document.getElementById('infoetat').innerHTML = "Modification de l'état de " + periode + " :";
             document.getElementById('idetat').value = id;
+            document.getElementById('commentmaintenance').value = commentaire;
             document.getElementById('etats').innerHTML = 'Etat Actuelle :<span class="text-primary"> ' + etat + '</span>';
 
             document.getElementById('etatContainer').innerHTML =
@@ -269,13 +280,57 @@
             document.getElementById('iddelete').value = id;
         }
 
-        async function setupdatemaintenance(id, periodedebut, periodefin, user, nameuser) {
+        async function setupdatemaintenance(id, periodedebut, periodefin, technicien, serv, nameuser, commentaire) {
             document.getElementById('idupdate').value = id;
             document.getElementById('pdmu').value = periodedebut;
             document.getElementById('pfmu').value = periodefin;
+            document.getElementById('cmu').value = commentaire;
             document.getElementById('ucma').innerHTML =
                 "Utilisateur en charge : <br> Voulez-vous changer l'utilisateur actuel `" + nameuser +
             "` ? Si oui choisissez..";
+
+            // select des technicien
+            let selecttechnicienHTML = '<select id="techmu" name="techmu" class="form-control">' +
+                '<option value="0">Sélectionner un technicien</option>';
+            allUser.forEach(function(tech) {
+                const techSelected = (tech.idUser == technicien) ? 'selected' :
+                    '';
+                selecttechnicienHTML += '<option value="' + tech.idUser + '" ' + techSelected + '>' + tech.nom +
+                    ' ' + tech.prenom +
+                    '</option>';
+            });
+
+            selecttechnicienHTML += '</select>';
+            document.getElementById('selectallUser').innerHTML = selecttechnicienHTML;
+
+            // select de l'Utilisateur en charge
+            let selectutilisateurHTML = '<select id="ucmu" name="ucmu" class="form-control">' +
+                '<option value="0">Sélectionner un technicien</option>';
+            allUsercharge.forEach(function(Usercharge) {
+                const utilisateurSelected = (Usercharge.idUser == technicien) ? 'selected' :
+                    '';
+                selectutilisateurHTML += '<option value="' + Usercharge.idUser + '" ' + utilisateurSelected +
+                    '>' + Usercharge.nom +
+                    ' ' + Usercharge.prenom +
+                    '</option>';
+            });
+
+            selectutilisateurHTML += '</select>';
+            document.getElementById('selectallUsercharge').innerHTML = selectutilisateurHTML;
+
+            // select de Service
+            let selectServiceHTML = '<select id="sdcmu" name="sdcmu" class="form-control">' +
+                '<option value="0">Sélectionner un service</option>';
+            allService.forEach(function(Service) {
+                const utilisateurSelected = (Service.id == serv) ? 'selected' :
+                    '';
+                selectServiceHTML += '<option value="' + Service.id + '" ' + utilisateurSelected +
+                    '>' + Service.libelle +
+                    '</option>';
+            });
+
+            selectServiceHTML += '</select>';
+            document.getElementById('selectallService').innerHTML = selectServiceHTML;
         }
 
         async function valideupdatemaintenance() {
@@ -285,13 +340,19 @@
             idupdate = document.getElementById("idupdate").value;
             pdm = document.getElementById("pdmu").value;
             pfm = document.getElementById("pfmu").value;
+            techm = document.getElementById("techmu").value;
             ucm = document.getElementById("ucmu").value;
+            sdcm = document.getElementById("sdcmu").value;
+            cm = document.getElementById("cmu").value;
 
             dat = {
                 _token: token,
                 pdm: pdm,
                 pfm: pfm,
+                techm: techm,
                 ucm: ucm,
+                sdcm: sdcm,
+                cm: cm,
                 id: idupdate,
             };
             document.getElementById("infoupdate").innerHTML =
@@ -324,7 +385,7 @@
                 document.getElementById("infoupdate").innerHTML = error;
             }
         }
-        
+
         async function validedeletemaintenance() {
             token = document.getElementById("_token").value;
             iddelete = document.getElementById("iddelete").value;
@@ -369,7 +430,7 @@
             var token = target.getAttribute('data-token') ?? "";
             var iddelete = target.getAttribute('data-Id') ?? "";
             console.log(iddelete);
-            
+
             const {
                 isConfirmed
             } = await Swal.fire({
@@ -418,33 +479,32 @@
             }
         }
 
-        function getmaintprev(event,format) 
-        {
-                event.preventDefault();
-                var dataT = event.currentTarget;
-                
-                var idgestprev = dataT.getAttribute('data-Id') ?? "" ;
-                console.log(idgestprev);
+        function getmaintprev(event, format) {
+            event.preventDefault();
+            var dataT = event.currentTarget;
 
-                var form = document.createElement('form');
-                form.method = 'GET'; 
-                form.action = '{{ route("export.gestprev") }}';
+            var idgestprev = dataT.getAttribute('data-Id') ?? "";
+            console.log(idgestprev);
 
-                var inputId = document.createElement('input');
-                inputId.type = 'hidden';
-                inputId.name = 'idgestprev';
-                inputId.value = idgestprev; 
-                form.appendChild(inputId);
+            var form = document.createElement('form');
+            form.method = 'GET';
+            form.action = '{{ route('export.gestprev') }}';
 
-                var inputFormat = document.createElement('input');
-                inputFormat.type = 'hidden';
-                inputFormat.name = 'format';
-                inputFormat.value = format;
-                form.appendChild(inputFormat);
+            var inputId = document.createElement('input');
+            inputId.type = 'hidden';
+            inputId.name = 'idgestprev';
+            inputId.value = idgestprev;
+            form.appendChild(inputId);
 
-                document.body.appendChild(form);
-                form.submit();
-        }    
+            var inputFormat = document.createElement('input');
+            inputFormat.type = 'hidden';
+            inputFormat.name = 'format';
+            inputFormat.value = format;
+            form.appendChild(inputFormat);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
     </script>
 @endsection
 
@@ -563,7 +623,15 @@
                             aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Modification : </h4>
                 </div>
-
+                @php
+                    $allUser = App\Providers\InterfaceServiceProvider::alladminandsuperadmin();
+                    $allUsercharge = App\Providers\InterfaceServiceProvider::allutilisateursadmin();
+                @endphp
+                <script type="text/javascript">
+                    var allService = @json($service);
+                    var allUser = @json($allUser);
+                    var allUsercharge = @json($allUsercharge);
+                </script>
                 <div class="modal-body">
                     <input type="hidden" id="_token" name="_token" value="{{ csrf_token() }}" />
                     <input type="hidden" id="idupdate" name="idupdate" />
@@ -589,20 +657,40 @@
                         </div>
                     </div>
                     <div class="row clearfix" id="other">
+                        <div class="col-md-6">
+                            <label for="techm">Technicien :</label>
+                            <div class="form-group">
+                                <div class="form-line" id="selectallUser">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sdcmu">Service / Direction concernés :</label>
+                            <div class="form-group">
+                                <div class="form-line" id="selectallService">
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row clearfix">
                         <div class="col-md-12">
                             <label for="ucmu" id="ucma"></label>
                             <div class="form-group">
+                                <div class="form-line" id="selectallUsercharge">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-md-12">
+                            <label for="cmu">Contenu mail :</label>
+                            <div class="form-group">
                                 <div class="form-line">
-                                    @php
-                                        $allUser = App\Providers\InterfaceServiceProvider::allutilisateursadmin();
-                                    @endphp
-                                    <select type="text" id="ucmu" name="ucmu" class="form-control">
-                                        <option value="0">Sélectionner un administrateur</option>
-                                        @foreach ($allUser as $user)
-                                            <option value="{{ $user->idUser }}"> {{ $user->nom }} {{ $user->prenom }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <textarea type="text" id="cmu" name="cmu" class="form-control"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -653,14 +741,14 @@
                     <input type="hidden" id="idetat" name="idetat" />
                     <label id="infoetat"></label>
                     <div class="row clearfix">
-                         <div class="col-md-12">
+                        <div class="col-md-12">
                             <label id="etats" class="modal-title pull-center"></label><br>
                         </div>
                         <div class="col-md-6">
                             <label for="etatselect">Etat :</label>
                             <div class="form-group">
                                 <div class="form-line" id="etatContainer">
-                                   
+
                                 </div>
                             </div>
                         </div>

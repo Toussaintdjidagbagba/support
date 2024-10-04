@@ -67,7 +67,9 @@ class MaintenanceController extends Controller
                     $add = new Maintenance();
                     $add->periodedebut =  $request->pdm; // Période fin
                     $add->periodefin = $request->pfm; // Période Début
+                    $add->service = $request->sdcm; // Service
                     $add->user = $request->techm;  // Technicien
+                    $add->commentaire = $request->cm;  // commentaire
                     $add->action = session("utilisateur")->idUser;
                     $add->save();
 
@@ -168,12 +170,13 @@ class MaintenanceController extends Controller
                 Maintenance::where("id", $request->id)->update([
                     "periodedebut" => $request->pdm,
                     "periodefin" => $request->pfm,
+                    "service" => $request->sdcm,
+                    "commentaire" => $request->cm,
                     "action" => session("utilisateur")->idUser
                 ]);
 
-                if ($request->ucm != 0) {
-                    Maintenance::where("id", $request->id)->update([
-                        "user" => $request->ucm
+                if ($request->techm != 0) {
+                    Maintenance::where("id", $request->id)->update(["user" => $request->techm
                     ]);
                 }
 
@@ -550,16 +553,18 @@ class MaintenanceController extends Controller
                 } else {
                     $messages = [
                         'pdm.required' => 'La période de début est requis.',
-                        'pfm.required' => 'La période de fin est requise.',
+                        'dam.required' => 'La période d\'arrêt est requise.',
                         'techm.required' => 'Le technicien est requis.',
+                        'outils.required' => 'L\outils est requis.',
                         'dgnt.required' => 'Le diagnostique est requis.',
                         'cse.required' => 'La cause est requis.',
                         'rslt.required' => 'Le resultat est requis.',
                     ];
                     $validator = Validator::make($request->all(), [
                         'pdm' => 'required',
-                        'pfm' => 'required',
+                        'dam' => 'required',
                         'techm' => 'required',
+                        'outils' => 'required',
                         'dgnt' => 'required',
                         'cse' => 'required',
                         'rslt' => 'required',
@@ -573,15 +578,17 @@ class MaintenanceController extends Controller
                     }
                     $add = new MaintenanceCurative();
                     $add->periodedebut =  $request->pdm; // Période fin
-                    $add->periodefin = $request->pfm; // Période Début
+                    $add->periodefin = $request->dam; // Période Début
                     $add->user = $request->techm;  // Technicien
+                    $add->outil = $request->outils;  // Outils
                     $add->diagnostique = $request->dgnt;  // Diagnostique
                     $add->cause = $request->cse;  // Cause
                     $add->resultat = $request->rslt;  // Resultat
+                    $add->commentaire = $request->cm;  // Resultat
                     $add->action = session("utilisateur")->idUser;
                     $add->save();
 
-                    $message = "Vous avez enregistrer une maintenance curative pour la période du " . InterfaceServiceProvider::Dateformat($request->pdm) . " au " . InterfaceServiceProvider::Dateformat($request->pfm) . " .";
+                    $message = "Vous avez enregistrer une maintenance curative réçu le " . InterfaceServiceProvider::Dateformat($request->pdm) . " dont la durée d'arrêt est " . $request->dam . " .";
 
                     TraceController::setTrace($message, session("utilisateur")->idUser);
                     flash("Succès : " . $message)->success();
@@ -695,8 +702,11 @@ class MaintenanceController extends Controller
 
                 MaintenanceCurative::where("id", $request->id)->update([
                     "periodedebut" => $request->pdm,
-                    "periodefin" => $request->pfm,
+                    "periodefin" => $request->dam,
+                    "outil" => $request->outilsu,
                     "diagnostique" => $request->udgnt,
+                    "user" => $request->techmu,
+                    "commentaire" => $request->cmu,
                     "cause" => $request->ucse,
                     "resultat" => $request->urslt,
                     "action" => session("utilisateur")->idUser
@@ -708,7 +718,7 @@ class MaintenanceController extends Controller
                     ]);
                 }
 
-                $message = "Vous avez modifiée les informations de la période de " . InterfaceServiceProvider::Dateformat($maintencancesexistant->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($maintencancesexistant->periodefin) . "  en " . InterfaceServiceProvider::Dateformat($request->pdm) . " au " . InterfaceServiceProvider::Dateformat($request->pfm);
+                $message = "Vous avez modifiée les informations de la maintenace curative du " . InterfaceServiceProvider::Dateformat($maintencancesexistant->periodedebut) . " en " . InterfaceServiceProvider::Dateformat($request->pdm) . " " . InterfaceServiceProvider::formatTime($request->damu);
                 TraceController::setTrace($message, session("utilisateur")->idUser);
                 flash($message)->success();
                 return $message;
