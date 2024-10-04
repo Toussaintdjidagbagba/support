@@ -87,13 +87,13 @@
             @foreach($list as $maint)
                 <tr>
                     <td class="ser">Date réception :</td>
-                    <td>{{App\Providers\InterfaceServiceProvider::formatDate($maint->periodedebut)}}</td>
+                    <td>{{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }}</td>
                     <td class="ser">Durée d'arret prévisionnel :</td>
-                    <td>{{ App\Providers\InterfaceServiceProvider::formatDate($maint->periodefin) }}</td>
+                    <td>{{ App\Providers\InterfaceServiceProvider::formatTime($maint->periodefin) }}</td>
                 </tr>
                 <tr>
                     <td class="ser">Outil sélectionné :</td>
-                    <td></td>
+                    <td>{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}</td>
                     <td class="ser">Résultat :</td>
                     <td>{{ $maint->resultat}} </td>
                 </tr>
