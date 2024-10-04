@@ -172,7 +172,7 @@ class IncidentController extends Controller
             if (!in_array("update_incident", session("auto_action"))) {
                 return view("vendor.error.649");
             } else {
-                0
+                
 
                 if ($request->hasFile('piece')) {
                     // Récupérer l'extension du fichier uploadé
