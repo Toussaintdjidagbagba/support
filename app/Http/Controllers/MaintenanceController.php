@@ -525,7 +525,6 @@ class MaintenanceController extends Controller
         }
     }
 
-
     public function detailsmaintenacecurative(Request $request)
     {
         try {

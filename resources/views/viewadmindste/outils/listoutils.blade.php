@@ -81,7 +81,7 @@
                                             <td>
                                                 {{ $out->dateacquisition ?? '---' }}
                                             </td>
-                                           
+
                                             <td>
                                                 {{ $out->nameoutils ?? '---' }}
                                             </td>
@@ -478,6 +478,9 @@
                     data = await response.text();
                     document.getElementById('detailoutils').innerHTML = data;
                     document.getElementById('idoutildetail').value = id;
+                    document.getElementById('catdetail').value = categorie;
+                    document.getElementById('carctdetail').value = caracteristique;
+
                 } else {
                     return "";
                 }
@@ -487,27 +490,44 @@
             }
         }
 
-        async function exportdetailpdf() {
-            idoutil = document.getElementById('idoutildetail').value;
+        function exportdetailpdf(format) {
 
-            try {
-                let response = await fetch("{{ route('export-pdf-detail') }}?outil=" + idoutil, {
-                    method: 'get',
-                    headers: {
-                        'Access-Control-Allow-Credentials': true,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                });
-                if (response.status == 200) {
-                    data = await response.text();
-                } else {
-                    return "";
-                }
-            } catch (error) {
+            var iddetail = document.getElementById('idoutildetail').value;
+            var cat = document.getElementById('catdetail').value;
+            var carct = document.getElementById('carctdetail').value;
+            console.log(iddetail);
 
-                return "";
-            }
+            var form = document.createElement('form');
+            form.method = 'GET';
+            form.action = '{{ route('pdfdetail') }}';
+
+            var inputId = document.createElement('input');
+            inputId.type = 'hidden';
+            inputId.name = 'iddetail';
+            inputId.value = iddetail;
+            form.appendChild(inputId);
+
+            var inputcat = document.createElement('input');
+            inputcat.type = 'hidden';
+            inputcat.name = 'cat';
+            inputcat.value = cat;
+            form.appendChild(inputcat);
+
+            var inputcarct = document.createElement('input');
+            inputcarct.type = 'hidden';
+            inputcarct.name = 'carct';
+            inputcarct.value = carct;
+            form.appendChild(inputcarct);
+
+
+            var inputFormat = document.createElement('input');
+            inputFormat.type = 'hidden';
+            inputFormat.name = 'format';
+            inputFormat.value = format;
+            form.appendChild(inputFormat);
+
+            document.body.appendChild(form);
+            form.submit();
         }
 
         async function setupdateoutils(id, outil, caracteristique, categorie) {
@@ -627,11 +647,11 @@
             }
         }
 
-        function setetatoutils(id,etat, outil) {
+        function setetatoutils(id, etat, outil) {
             document.getElementById('infoetat').innerHTML = "Modification de l'état de " + outil + ". <br><br>";
             document.getElementById('idetat').value = id;
 
-             document.getElementById('etats').innerHTML = 'Etat Actuelle :<span class="text-primary"> ' + etat + '</span>';
+            document.getElementById('etats').innerHTML = 'Etat Actuelle :<span class="text-primary"> ' + etat + '</span>';
 
             document.getElementById('etatContainer').innerHTML =
                 '<select id="etatselect" name="etatselect" class="form-control">' +
@@ -1028,10 +1048,12 @@
                     <div class="row clearfix" id="detailoutils">
 
                     </div>
-                    <input type="hidden" name="idoutildetail">
+                    <input type="hidden" id="idoutildetail" name="idoutildetail">
+                    <input type="hidden" id="catdetail" name="catdetail">
+                    <input type="hidden" id="carctdetail" name="carctdetail">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" onclick="exportdetailpdf()" id="export-pdf-detail"
+                    <button type="button" onclick="exportdetailpdf('pdf')" id="export-pdf-detail"
                         class="btn btn-danger waves-effect">
                         Exporter en PDF
                     </button>
@@ -1105,7 +1127,7 @@
                     <input type="hidden" id="idetat" name="idetat" />
                     <label id="infoetat"></label>
                     <div class="row clearfix">
-                         <div class="col-md-12">
+                        <div class="col-md-12">
                             <label id="etats" class="modal-title pull-center"></label><br><br>
                         </div>
                         <div class="col-md-6">

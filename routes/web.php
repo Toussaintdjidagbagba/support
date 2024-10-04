@@ -154,7 +154,7 @@ Route::group([
 	Route::post('/updateoutil', 'App\Http\Controllers\OutilController@setupdateoutil')->name('UO');
 	Route::post('/deleteoutil', 'App\Http\Controllers\OutilController@setdeleteoutil')->name('DO');
 	Route::post('/definitionetatoutil', 'App\Http\Controllers\OutilController@setdefinitionetatoutil')->name('DEO');
-	Route::post('/export-pdf-detail', 'App\Http\Controllers\OutilController@exportPDFDetail')->name('export-pdf-detail');
+	Route::get('/export-pdf-detail', 'App\Http\Controllers\OutilController@exportPDFDetail')->name('pdfdetail');
 	
 
 

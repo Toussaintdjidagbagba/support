@@ -90,7 +90,7 @@
                     <td colspan="3">{{App\Providers\InterfaceServiceProvider::periodeMaintenance($maint->maintenance)}}</td>
                 </tr>
                 <tr>
-                    <td class="ser">Ordinateur :</td>
+                    <td class="ser">Outil :</td>
                     <td>{{App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil)}}</td>
                     <td class="ser">Avis :</td>
                     <td>{{ $maint->avisuser }}</td>

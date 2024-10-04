@@ -45,7 +45,7 @@
                                 <thead>
                                     <tr>
                                         <th data-priority="1">Période</th>
-                                        <th data-priority="1">Ordinateur</th>
+                                        <th data-priority="1">Outils</th>
                                         <th data-priority="1">Obs. Utilisateur</th>
                                         <th data-priority="1">Avis</th>
                                         <th data-priority="1">Technicien</th>

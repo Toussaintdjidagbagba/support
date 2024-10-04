@@ -82,7 +82,7 @@
 </head>
 <body>
     <div class="container">
-        <h2 class="title">Gestion Maintenance curative</h2><br>
+        <h2 class="title">Gestion Maintenance préventive</h2><br>
         <table>
             @foreach($list as $maint)
                 <tr>
