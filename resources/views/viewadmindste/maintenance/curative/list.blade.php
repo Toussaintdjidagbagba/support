@@ -32,7 +32,9 @@
                             <table id="tech-companies-1" class="table table-small-font table-bordered table-striped">
                                 <thead>
                                     <tr>
-                                        <th data-priority="1">Période</th>
+                                        <th data-priority="1">Date de réception</th>
+                                        <th data-priority="1">Durée d'arrêt</th>
+                                        <th data-priority="1">Outils</th>
                                         <th data-priority="1">Technicien</th>
                                         <th data-priority="1">Etat</th>
                                         <th data-priority="6">Actions</th>
@@ -41,11 +43,11 @@
                                 <tbody>
                                     @forelse($list as $maint)
                                         <tr>
-                                            <td>
-                                                Du
-                                                {{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }}
-                                                au
-                                                {{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodefin) }}
+                                            <td>{{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }}
+                                            </td>
+                                            <td>{{ App\Providers\InterfaceServiceProvider::formatTime($maint->periodefin) }}
+                                            </td>
+                                            <td>{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}
                                             </td>
                                             <td>{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->user) }}</td>
                                             <td class="d-flex justify-content-between align-items-center">
@@ -61,7 +63,8 @@
                                             <td class="d-flex justify-content-between align-items-center">
 
                                                 @if (in_array('etat_pdf_maint_global', session('auto_action')))
-                                                    <button type="button" title="PDF" onclick="getmaintcur(event,'pdf')" data-Id="{{ $maint->id}}"
+                                                    <button type="button" title="PDF" onclick="getmaintcur(event,'pdf')"
+                                                        data-Id="{{ $maint->id }}"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                             height="24" viewBox="0 0 24 24">
@@ -72,29 +75,20 @@
                                                         </svg>
                                                     </button>
                                                 @endif
-                                                @if (in_array('etat_excel_maint_global', session('auto_action')))
-                                                    <button type="button" title="EXCEL" onclick="getmaintcur(event,'excel')" data-Id="{{ $maint->id}}"
-                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        onClick="javascript:window.open('{{ route('EMPC') }}?id={{ $maint->id }}');">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                            height="24" viewBox="0 0 24 24">
-                                                            <path fill="currentColor"
-                                                                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6m1.8 18H14l-2-3.4l-2 3.4H8.2l2.9-4.5L8.2 11H10l2 3.4l2-3.4h1.8l-2.9 4.5l2.9 4.5M13 9V3.5L18.5 9H13Z" />
-                                                        </svg>
-                                                    </button>
-                                                @endif
-                                                @if (in_array('see_detail_maint', session('auto_action')))
-                                                    <button type="button" title="Liste"
-                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        onClick="javascript:window.open('{{ route('GDMC') }}?id={{ $maint->id }}');">
-                                                        <i class="material-icons">list</i></a>
-                                                    </button>
-                                                @endif
                                                 @if (in_array('update_maint_prog', session('auto_action')))
                                                     <button type="button" title="Modifier"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#update"
-                                                        onclick="setupdatemaintenance({{ $maint->id }}, '{{ $maint->resultat }}','{{ $maint->diagnostique }}','{{ $maint->cause }}','{{ $maint->periodedebut }}', '{{ $maint->periodefin }}', {{ $maint->user }}, '{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->user) }}')">
+                                                        onclick="setupdatemaintenance({{ $maint->id }},
+                                                         '{{ $maint->resultat }}', '{{ $maint->outil }}',
+                                                         '{{ $maint->diagnostique }}',
+                                                         '{{ $maint->commentaire }}',
+                                                          '{{ $maint->cause }}',
+                                                          '{{ $maint->periodedebut }}',
+                                                           '{{ $maint->periodefin }}',
+                                                            {{ $maint->user }},
+                                                             '{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->user) }}')
+                                                             ">
                                                         <i class="material-icons">system_update_alt</i>
                                                     </button>
                                                 @endif
@@ -132,7 +126,8 @@
             // récupération des données du formulaire 
             token = document.getElementById("_token").value;
             pdm = document.getElementById("pdm").value;
-            pfm = document.getElementById("pfm").value;
+            dam = document.getElementById("dam").value;
+            outils = document.getElementById("outils").value;
             techm = document.getElementById("techm").value;
             dgnt = document.getElementById("dgnt").value;
             cse = document.getElementById("cse").value;
@@ -145,10 +140,10 @@
 
             let erreur = "";
             if (pdm === "") {
-                erreur += "définir la temps de début pour gérer la maintenance.. \n";
+                erreur += "définir la date de réception pour gérer la maintenance.. \n";
             }
-            if (pfm === "") {
-                erreur += "définir la temps de de fin pour gérer la maintenance.. \n";
+            if (dam === "") {
+                erreur += "définir la temps de d'arrêt pour gérer la maintenance.. \n";
             }
             if (dgnt === "") {
                 erreur += "renseigner le diagnostique pour la maintenance.. \n";
@@ -162,6 +157,12 @@
             if (techm == 0) {
                 erreur += "sélectionner un technicien pour gérer la maintenance.. .\n";
             }
+            if (ucm == 0) {
+                erreur += "sélectionner l'utilisateur concerné pour gérer la maintenance.. .\n";
+            }
+            if (outils == 0) {
+                erreur += "sélectionner un outils pour gérer la maintenance.. .\n";
+            }
 
             if (erreur !== "") {
                 document.getElementById('infomaintenance').innerHTML =
@@ -170,7 +171,8 @@
                 dat = {
                     _token: token,
                     pdm: pdm,
-                    pfm: pfm,
+                    dam: dam,
+                    outils: outils,
                     techm: techm,
                     ucm: ucm,
                     dgnt: dgnt,
@@ -282,13 +284,61 @@
             document.getElementById('iddelete').value = id;
         }
 
-        async function setupdatemaintenance(id, resultat, diagnostique, cause, periodedebut, periodefin, user, nameuser) {
+        async function setupdatemaintenance(id, resultat, outils, diagnostique, commentaire, cause, periodedebut,
+            periodefin,
+            technicien,
+            nameuser) {
             document.getElementById('idupdate').value = id;
             document.getElementById('pdmu').value = periodedebut;
-            document.getElementById('pfmu').value = periodefin;
+            document.getElementById('damu').value = periodefin;
             document.getElementById('udgnt').value = diagnostique;
+            document.getElementById('cmu').value = commentaire;
             document.getElementById('ucse').value = cause;
             document.getElementById('urslt').value = resultat;
+
+            // select des outils
+            let selectoutilsHTML = '<select id="outilsu" name="outilsu" class="form-control">' +
+                '<option value="0">Sélectionner un outil</option>';
+            alloutils.forEach(function(outil) {
+                const isoutilsSelected = (outil.id == outils) ? 'selected' :
+                    '';
+                selectoutilsHTML += '<option value="' + outil.id + '" ' + isoutilsSelected + '>' + outil
+                    .nameoutils +
+                    '</option>';
+            });
+
+            selectoutilsHTML += '</select>';
+            document.getElementById('selectoutil').innerHTML = selectoutilsHTML;
+
+            // select des technicien
+            let selecttechnicienHTML = '<select id="techmu" name="techmu" class="form-control">' +
+                '<option value="0">Sélectionner un technicien</option>';
+            allUser.forEach(function(tech) {
+                const techSelected = (tech.idUser == technicien) ? 'selected' :
+                    '';
+                selecttechnicienHTML += '<option value="' + tech.idUser + '" ' + techSelected + '>' + tech.nom +
+                    ' ' + tech.prenom +
+                    '</option>';
+            });
+
+            selecttechnicienHTML += '</select>';
+            document.getElementById('selectallUser').innerHTML = selecttechnicienHTML;
+
+            // select de l'Utilisateur en charge
+            let selectutilisateurHTML = '<select id="ucmu" name="ucmu" class="form-control">' +
+                '<option value="0">Sélectionner un technicien</option>';
+            allUsercharge.forEach(function(Usercharge) {
+                const utilisateurSelected = (Usercharge.idUser == technicien) ? 'selected' :
+                    '';
+                selectutilisateurHTML += '<option value="' + Usercharge.idUser + '" ' + utilisateurSelected + '>' + Usercharge.nom +
+                    ' ' + Usercharge.prenom +
+                    '</option>';
+            });
+
+            selectutilisateurHTML += '</select>';
+            document.getElementById('selectallUsercharge').innerHTML = selectutilisateurHTML;
+
+
             document.getElementById('ucma').innerHTML =
                 "Utilisateur en charge : <br> Voulez-vous changer l'utilisateur actuel `" + nameuser +
             "` ? Si oui choisissez..";
@@ -300,17 +350,23 @@
             token = document.getElementById("_token").value;
             idupdate = document.getElementById("idupdate").value;
             pdm = document.getElementById("pdmu").value;
-            pfm = document.getElementById("pfmu").value;
+            dam = document.getElementById("damu").value;
+            techmu = document.getElementById("techmu").value;
+            outils = document.getElementById("outilsu").value;
             udgnt = document.getElementById("udgnt").value;
             ucse = document.getElementById("ucse").value;
             urslt = document.getElementById("urslt").value;
             ucm = document.getElementById("ucmu").value;
+            cmu = document.getElementById("cmu").value;
 
             dat = {
                 _token: token,
                 pdm: pdm,
-                pfm: pfm,
+                dam: dam,
+                outilsu: outils,
+                techmu: techmu,
                 ucm: ucm,
+                cmu: cmu,
                 udgnt: udgnt,
                 ucse: ucse,
                 urslt: urslt,
@@ -440,33 +496,32 @@
             }
         }
 
-        function getmaintcur(event,format) 
-        {
-                event.preventDefault();
-                var dataT = event.currentTarget;
-                
-                var idgestcur = dataT.getAttribute('data-Id') ?? "" ;
-                console.log(idgestcur);
+        function getmaintcur(event, format) {
+            event.preventDefault();
+            var dataT = event.currentTarget;
 
-                var form = document.createElement('form');
-                form.method = 'GET'; 
-                form.action = '{{ route("export.gestcur") }}';
+            var idgestcur = dataT.getAttribute('data-Id') ?? "";
+            console.log(idgestcur);
 
-                var inputId = document.createElement('input');
-                inputId.type = 'hidden';
-                inputId.name = 'idgestcur';
-                inputId.value = idgestcur; 
-                form.appendChild(inputId);
+            var form = document.createElement('form');
+            form.method = 'GET';
+            form.action = '{{ route('export.gestcur') }}';
 
-                var inputFormat = document.createElement('input');
-                inputFormat.type = 'hidden';
-                inputFormat.name = 'format';
-                inputFormat.value = format;
-                form.appendChild(inputFormat);
+            var inputId = document.createElement('input');
+            inputId.type = 'hidden';
+            inputId.name = 'idgestcur';
+            inputId.value = idgestcur;
+            form.appendChild(inputId);
 
-                document.body.appendChild(form);
-                form.submit();
-        }    
+            var inputFormat = document.createElement('input');
+            inputFormat.type = 'hidden';
+            inputFormat.name = 'format';
+            inputFormat.value = format;
+            form.appendChild(inputFormat);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
     </script>
 @endsection
 
@@ -484,7 +539,24 @@
                     <input type="hidden" id="_token" name="_token" value="{{ csrf_token() }}" />
                     <label id="infomaintenance"></label>
                     <div class="row clearfix">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
+                            <label for="outils">Outils :</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @php
+                                        $alloutils = App\Providers\InterfaceServiceProvider::getordinateur();
+                                    @endphp
+                                    <select id="outils" name="outils" class="form-control">
+                                        <option value="0">Sélectionner un outil</option>
+                                        @foreach ($alloutils as $outils)
+                                            <option value="{{ $outils->id }}"> {{ $outils->nameoutils }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
                             <label for="dgnt">Diagnostique :</label>
                             <div class="form-group">
                                 <div class="form-line">
@@ -496,7 +568,7 @@
                     </div>
                     <div class="row clearfix">
                         <div class="col-md-6">
-                            <label for="pdm">Temps de début :</label>
+                            <label for="pdm">Date de réception :</label>
                             <div class="form-group">
                                 <div class="form-line">
                                     <input type="date" id="pdm" name="pdm" class="form-control"
@@ -505,10 +577,10 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label for="pfm">Temps d'arrêt :</label>
+                            <label for="dam">Durée d'arrêt :</label>
                             <div class="form-group">
                                 <div class="form-line">
-                                    <input type="date" id="pfm" name="pfm" class="form-control"
+                                    <input type="time" id="dam" name="dam" class="form-control"
                                         placeholder="">
                                 </div>
                             </div>
@@ -539,9 +611,8 @@
                                     @php
                                         $allUser = App\Providers\InterfaceServiceProvider::allutilisateurs();
                                     @endphp
-                                    <select type="text" id="ucm" name="ucm" class="form-control"
-                                        multiple="true">
-                                        <option value="0" disabled>Sélectionner un ou plusieurs utilisateurs
+                                    <select type="text" id="ucm" name="ucm" class="form-control">
+                                        <option value="0" disabled>Sélectionner un utilisateurs
                                         </option>
                                         @foreach ($allUser as $user)
                                             <option value="{{ $user->idUser }}"> {{ $user->nom }} {{ $user->prenom }}
@@ -572,7 +643,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row clearfix">
                         <div class="col-md-12">
                             <label for="cm">Contenu mail :</label>
@@ -601,13 +671,32 @@
                             aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Modification : </h4>
                 </div>
-
+                @php
+                    $alloutils = App\Providers\InterfaceServiceProvider::getordinateur();
+                    $allUser = App\Providers\InterfaceServiceProvider::alladminandsuperadmin();
+                    $allUsercharge = App\Providers\InterfaceServiceProvider::allutilisateursadmin();
+                @endphp
+                <script type="text/javascript">
+                    var alloutils = @json($alloutils);
+                    var allUser = @json($allUser);
+                    var allUsercharge = @json($allUsercharge);
+                </script>
                 <div class="modal-body">
                     <input type="hidden" id="_token" name="_token" value="{{ csrf_token() }}" />
                     <input type="hidden" id="idupdate" name="idupdate" />
                     <label id="infoupdate"></label>
                     <div class="row clearfix">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
+                            <label>Outil :</label>
+                            <div class="form-group">
+
+
+                                <div class="form-line" id="selectoutil">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
                             <label for="udgnt">Diagnostique :</label>
                             <div class="form-group">
                                 <div class="form-line">
@@ -619,7 +708,7 @@
                     </div>
                     <div class="row clearfix">
                         <div class="col-md-6">
-                            <label for="pdmu">Temps de début :</label>
+                            <label for="pdmu">Date de réception :</label>
                             <div class="form-group">
                                 <div class="form-line">
                                     <input type="date" id="pdmu" name="pdmu" class="form-control"
@@ -628,10 +717,10 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label for="pfmu">Temps d'arrêt :</label>
+                            <label for="damu">Durée d'arrêt :</label>
                             <div class="form-group">
                                 <div class="form-line">
-                                    <input type="date" id="pfmu" name="pfmu" class="form-control"
+                                    <input type="time" id="damu" name="damu" class="form-control"
                                         placeholder="">
                                 </div>
                             </div>
@@ -657,21 +746,32 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row clearfix">
+                        <div class="col-md-12">
+                            <label for="techmu">Technicien :</label>
+                            <div class="form-group">
+                                <div class="form-line" id="selectallUser">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row clearfix" id="other">
                         <div class="col-md-12">
                             <label for="ucmu" id="ucma"></label>
                             <div class="form-group">
+                                <div class="form-line" id="selectallUsercharge">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-md-12">
+                            <label for="cmu">Contenu mail :</label>
+                            <div class="form-group">
                                 <div class="form-line">
-                                    @php
-                                        $allUser = App\Providers\InterfaceServiceProvider::allutilisateursadmin();
-                                    @endphp
-                                    <select type="text" id="ucmu" name="ucmu" class="form-control">
-                                        <option value="0">Sélectionner un administrateur</option>
-                                        @foreach ($allUser as $user)
-                                            <option value="{{ $user->idUser }}"> {{ $user->nom }} {{ $user->prenom }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <textarea type="text" id="cmu" name="cmu" class="form-control"></textarea>
                                 </div>
                             </div>
                         </div>

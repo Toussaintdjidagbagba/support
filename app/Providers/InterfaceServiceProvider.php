@@ -45,6 +45,12 @@ class InterfaceServiceProvider extends ServiceProvider
         return $dates;
     }
 
+    public static function formatTime($time)
+    {
+        $times = Carbon::parse($time)->locale('fr')->translatedFormat('\à H\h i\m');
+        return $times;
+    }
+
     public static function Dateformat($date)
     {
         $dates = Carbon::parse($date)->locale('fr')->translatedFormat('d F Y');
