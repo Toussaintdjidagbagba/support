@@ -56,7 +56,7 @@
                                                     <button type="button" title="Etat"
                                                         class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#etatmaintenance"
-                                                        onclick="setetatmaintenance({{ $maint->id }},'{{ $maint->etat }}', '{{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }} au {{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodefin) }}')">
+                                                        onclick="setetatmaintenance({{ $maint->id }},'{{ $maint->etat }}','{{ $maint->commentaire }}', '{{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }} au {{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodefin) }}')">
                                                         <i class="material-icons">gps_fixed</i></a> </button>
                                                 @endif
                                             </td>
@@ -217,10 +217,11 @@
             }
         }
 
-        function setetatmaintenance(id, etat, periode) {
+        function setetatmaintenance(id, etat, commentaire, periode) {
 
             document.getElementById('infoetat').innerHTML = "Modification de l'état de " + periode + " :";
             document.getElementById('idetat').value = id;
+            document.getElementById('commentmaintenance').value = commentaire;
             document.getElementById('etats').innerHTML = 'Etat Actuelle :<span class="text-primary"> ' + etat + '</span>';
 
             document.getElementById('etatContainer').innerHTML =
