@@ -58,7 +58,7 @@ h5 {
         <h4>Détails des outils</h4>
     
         <div class="details-section">
-            <h5>Caractéristiques de {{ $outil->nameoutils}} :</h5><br><br>
+            <h5>Caractéristiques de {{ $outil->nameoutils}} :</h5><br>
             <div class="details-grid">
                 @foreach($details as $detail)
                 <div>

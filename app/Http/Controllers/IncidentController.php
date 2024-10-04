@@ -94,6 +94,7 @@ class IncidentController extends Controller
                     } else {
                         $add->piece = "";
                     }
+
                     $add->save();
 
                     // Sauvegarde de la trace
@@ -171,17 +172,23 @@ class IncidentController extends Controller
             if (!in_array("update_incident", session("auto_action"))) {
                 return view("vendor.error.649");
             } else {
-                if ($request->hasFile('piece')) {
-                    $namefile = "incident" . date('i') . ".pdf";
-                    $upload = "documents/incident/";
-                    $request->file('piece')->move($upload, $namefile);
-                    $piece = $upload . $namefile;
+                0
 
-                    Incident::where('id', request('id'))->update(
-                        [
-                            "piece" => $piece
-                        ]
-                    );
+                if ($request->hasFile('piece')) {
+                    // Récupérer l'extension du fichier uploadé
+                    $extension = $request->file('piece')->getClientOriginalExtension();
+                    // Générer un nom de fichier unique avec l'extension correcte
+                    $namefile = "incident_" . date('i') . "." . $extension;
+                    $upload = "documents/incident/";
+    
+                    // Enregistrer le fichier dans le répertoire spécifié
+                    $request->file('piece')->move(public_path($upload), $namefile);
+                    $piece = $upload . $namefile;
+    
+                    // Mettre à jour la base de données avec le chemin de la pièce jointe
+                    Incident::where('id', request('id'))->update([
+                        "piece" => $piece
+                    ]);
                 }
 
                 $updat =  Incident::where('id', request('id'))->update(

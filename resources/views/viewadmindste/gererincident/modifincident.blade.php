@@ -40,7 +40,7 @@
 		                                </div>
 		                                </div>
 		                        </div>
-		                        <div class="col-md-3">
+		                        <div class="col-md-2">
 		                             	<label for="cat">Catégorie</label>
 		                                <div class="form-group">
 		                                @php
@@ -63,7 +63,7 @@
 		                            </div>
 		                        </div>
 
-		                        <div class="col-md-3">
+		                        <div class="col-md-2">
 		                        	<label for="hiera">Hiérarchisation</label>
 		                           <div class="form-group">
 		                            <div class="form-line">
@@ -85,14 +85,33 @@
 		                            </div>
 		                           </div>
 		                        </div>
-		                        <div class="col-md-3">
-		                             	<label for="piece">Pièce jointe : <a href="{{ $info->piece }}">{{ $info->piece }}</a></label>
-		                                <div class="form-group">
-		                                <div class="form-line">
-		                                    <input type="file" id="piece"  name="piece" accept=".pdf, .png, .jpg, .jpeg" class="form-control" placeholder="">
-		                                </div>
-		                            </div>
-		                        </div>
+								<div class="col-md-3">
+									<label for="piece">Pièce jointe :</label>
+									<div class="form-group">
+										<div class="form-line">
+											<input type="file" class="form-control" id="piece" name="piece" onchange="loadImage(event)">
+										</div>
+								
+										<script>
+											var loadImage = function(event) {
+												var output = document.getElementById('output');
+												// Vérifiez si un fichier est sélectionné
+												if (event.target.files.length > 0) {
+													output.src = URL.createObjectURL(event.target.files[0]);
+													output.onload = function() {
+														URL.revokeObjectURL(output.src); // Libérer la mémoire
+													}
+												}
+											};
+										</script>
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div class="form-group">
+										<img id="output" src="{{ asset('documents/incident/' . ($info->piece)) }}" style="width: 70px; height: 70px; border-radius: 50%;" />
+									</div>
+								</div>								
+
 		                    </div>
 
 		                    <div class="row clearfix">
