@@ -67,7 +67,9 @@ class MaintenanceController extends Controller
                     $add = new Maintenance();
                     $add->periodedebut =  $request->pdm; // Période fin
                     $add->periodefin = $request->pfm; // Période Début
+                    $add->service = $request->sdcm; // Service
                     $add->user = $request->techm;  // Technicien
+                    $add->commentaire = $request->cm;  // commentaire
                     $add->action = session("utilisateur")->idUser;
                     $add->save();
 
@@ -168,12 +170,13 @@ class MaintenanceController extends Controller
                 Maintenance::where("id", $request->id)->update([
                     "periodedebut" => $request->pdm,
                     "periodefin" => $request->pfm,
+                    "service" => $request->sdcm,
+                    "commentaire" => $request->cm,
                     "action" => session("utilisateur")->idUser
                 ]);
 
-                if ($request->ucm != 0) {
-                    Maintenance::where("id", $request->id)->update([
-                        "user" => $request->ucm
+                if ($request->techm != 0) {
+                    Maintenance::where("id", $request->id)->update(["user" => $request->techm
                     ]);
                 }
 
