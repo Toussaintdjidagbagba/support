@@ -297,6 +297,7 @@
                         <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                         <input type="hidden" id="idupdate" name="uid" />
                         <div class="row clearfix">
+                            <input type="hidden" id="utype" name="utype" class="form-control">
                             <div class="col-md-12">
                                 <label for="ulibelle">Libellé :</label>
                                 <div class="form-group">
@@ -307,17 +308,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row clearfix">
-                            <div class="col-md-12">
-                                <label for="utype">Types :</label>
-                                <div class="form-group">
-                                    <div class="form-line">
-                                        <input type="text" id="utype" name="utype" class="form-control"
-                                            placeholder="" required>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default btn-sm waves-effect waves-light"

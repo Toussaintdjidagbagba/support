@@ -36,7 +36,7 @@
                 <div class="card">
                     <div class="header">
                         <h2>
-                            Maintenance preventive
+                            Maintenance préventive
                         </h2>
                     </div>
                     <div class="body">
@@ -45,7 +45,7 @@
                                 <thead>
                                     <tr>
                                         <th data-priority="1">Période</th>
-                                        <th data-priority="1">Ordinateur</th>
+                                        <th data-priority="1">Outil</th>
                                         <th data-priority="1">Obs. Utilisateur</th>
                                         <th data-priority="1">Avis</th>
                                         <th data-priority="1">Technicien</th>
