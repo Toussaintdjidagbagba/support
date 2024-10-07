@@ -105,14 +105,28 @@
         <table class="description-table">
             <thead>
                 <tr>
-                    <th colspan="2">Observations</th>
+                    <th colspan="4">Observations Technicien</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($list as $maint)
                     <tr>
-                        <td colspan="2" style="height: 40px;">
+                        <td colspan="4" style="height: 40px; width: 50%;">
                             {{ $maint->commentaireinf }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th colspan="2">Observations</th>
+                        <th colspan="2">Avis</th>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2" style="height: 40px; width: 50%">
+                            {{ $maint->commentaireuser }}
+                        </td>
+                        <td colspan="2" style="height: 40px; width: 50%">
+                            {{ $maint->avisuser }}
                         </td>
                     </tr>
                 @endforeach

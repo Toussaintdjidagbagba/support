@@ -117,7 +117,7 @@
                                                     <button type="button" title="Modifier"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#avis"
-                                                        onclick="getid({{ $maint->id }})">
+                                                        onclick="getid({{ $maint->gestion_id }})">
                                                         <i class="material-icons">system_update_alt</i>
                                                     </button>
                                                 @endif

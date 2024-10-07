@@ -233,7 +233,7 @@ class MaintenanceController extends Controller
                 return view("vendor.error.649");
             } else {
                 if (isset(DB::table('gestionmaintenances')->where('outil', $request->ordinateur)->where('maintenance', $request->periode)->first()->id)) {
-                    return "Une maintenance a été déjà faite sur cette ordinateur!";
+                    return "Une maintenance a été déjà faite sur cet outils!";
                 } else {
 
                     $periode = DB::table('maintenances')->where('id', $request->periode)->first();
@@ -256,7 +256,7 @@ class MaintenanceController extends Controller
                     $add->action = session("utilisateur")->idUser;
                     $add->save();
 
-                    $message = "Vous avez enregistrée une maintenance de la période du " . $periode->periodedebut . " au " . $periode->periodefin . " sur l'ordinateur " . $ordinateur->nameoutils . ".";
+                    $message = "Vous avez enregistrée une maintenance de la période du " . $periode->periodedebut . " au " . $periode->periodefin . " sur l'outil " . $ordinateur->nameoutils . ".";
 
                     TraceController::setTrace($message, session("utilisateur")->idUser);
 

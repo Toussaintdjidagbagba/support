@@ -301,6 +301,8 @@ class UtilisateurController extends Controller
                     'login' => 'required|string',
                 ]);
 
+                $imagename = "";
+
                 if ($request->hasFile('image')) {
                     $imagename = time() . '.' . $request->file('image')->extension();
                     //$request->file('image')->storePubliclyAs('images', $imagename, 'public');
@@ -313,11 +315,6 @@ class UtilisateurController extends Controller
                     }
                     
                     //Storage::putFileAs('public/imags',$request->file('image'),$imagename);
-                } else {
-                    // Gérer le cas où aucun fichier n'est téléchargé
-                    $errorString = "Erreur : Aucune image téléchargée.";
-                    flash($errorString)->error();
-                    return Back();
                 }
                 Users::where('idUser', request('id'))->update(
                     [

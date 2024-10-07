@@ -111,7 +111,7 @@
                                                     <button type="button" title="Modifier"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#avis"
-                                                        onclick="getid({{ $maint->id }})">
+                                                        onclick="getid({{ $maint->gestion_id }})">
                                                         <i class="material-icons">system_update_alt</i>
                                                     </button>
                                                 @endif
@@ -259,11 +259,10 @@
             var dataT = event.currentTarget;
 
             var idmprev = dataT.getAttribute('data-Id') ?? "";
-            console.log(idmprev);
-
+            
             var form = document.createElement('form');
             form.method = 'GET';
-            form.action = '{{ route('export.mainte') }}';
+            form.action = "{{ route('export.mainte') }}";
 
             var inputId = document.createElement('input');
             inputId.type = 'hidden';
