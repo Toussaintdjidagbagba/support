@@ -419,6 +419,9 @@ class OutilController extends Controller
             // Décoder les caractéristiques JSON de l'outil
             $carct = json_decode($outil->otherjson, true); // On décode en tableau associatif
 
+            // Récupérer la date actuelle pour l'exportation
+            $dateExp= now()->format('d-m-Y'); 
+
             if (!$carct) {
                 return response()->json(['message' => 'Caractéristiques introuvables ou non valides'], 404);
             }
@@ -429,11 +432,10 @@ class OutilController extends Controller
                     'details' => $details,
                     'carct' => $carct
                 ]);
-
-
-            return $pdf->download('Details_'.$outil->nameoutils.'.pdf');
-
             
+        
+            return $pdf->download('Details_' . $outil->nameoutils . '_' . $dateExp . '.pdf');
+
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
         }
@@ -448,6 +450,9 @@ class OutilController extends Controller
 
             $format = $request->format;
 
+            // Récupérer la date actuelle pour l'exportation
+            $dateExp = now()->format('d-m-Y');
+
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
@@ -457,10 +462,10 @@ class OutilController extends Controller
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
-                        ->header('Content-Disposition', 'attachment; filename="OutilsExport.pdf"');
+                        ->header('Content-Disposition', 'attachment; filename="OutilsExport_' . $dateExp . '.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new OutilsExport($list), 'OutilsExport.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new OutilsExport($list), 'OutilsExport_' . $dateExp . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
@@ -481,6 +486,13 @@ class OutilController extends Controller
 
             $format = $request->format;
 
+            // Récupérer la date actuelle pour l'exportation
+            $dateExp = now()->format('d-m-Y');
+
+            // Récupérer le nom de l'outil à partir du premier élément de la collection
+            $nameOutil = $data->first()->nameoutils;
+
+
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
@@ -490,10 +502,10 @@ class OutilController extends Controller
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
-                        ->header('Content-Disposition', 'attachment; filename="HistoriqueOutilsExport.pdf"');
+                        ->header('Content-Disposition', 'attachment; filename="Historique'. $nameOutil .'_'. $dateExp . '.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new HistoExport($data), 'HistoriqueOutilsExport.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new HistoExport($data), 'Historique'. $nameOutil .'_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
