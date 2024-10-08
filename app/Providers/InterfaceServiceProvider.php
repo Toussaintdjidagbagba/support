@@ -41,7 +41,11 @@ class InterfaceServiceProvider extends ServiceProvider
 
     public static function formatDate($date)
     {
-        $dates = Carbon::parse($date)->locale('fr')->translatedFormat('d F Y \à H\h i\m');
+        if ($date != "" || $date != null) {
+            $dates = Carbon::parse($date)->locale('fr')->translatedFormat('d F Y \à H\h i\m');
+        } else {
+            $dates = "Pas encore résolution";
+        }
         return $dates;
     }
 
@@ -95,9 +99,9 @@ class InterfaceServiceProvider extends ServiceProvider
 
         //Nouvelle requette; 
         $ordinateur = DB::table('outils')
-        ->select('outils.user as user', 'outils.id as id')
-        ->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")
-        ->where('outils.id', $id)
+            ->select('outils.user as user', 'outils.id as id')
+            ->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")
+            ->where('outils.id', $id)
             ->first();
 
         if (isset($ordinateur->id)) {
@@ -133,9 +137,9 @@ class InterfaceServiceProvider extends ServiceProvider
     {
         // $ordinateur = DB::table('outils')->select('outils.nameoutils as nameoutils', 'outils.id as id')->join("categorieoutils", "categorieoutils.id", "=", "outils.categorie")->where('categorieoutils.libelle', "Ordinateurs")->where('outils.id', $id)->first();
         $ordinateur = DB::table('outils')
-        ->select('outils.nameoutils as nameoutils', 'outils.id as id', 'categorieoutils.libelle as libelle')
-        ->join('categorieoutils', 'categorieoutils.id', '=', 'outils.categorie')
-        ->where('outils.id', $id)
+            ->select('outils.nameoutils as nameoutils', 'outils.id as id', 'categorieoutils.libelle as libelle')
+            ->join('categorieoutils', 'categorieoutils.id', '=', 'outils.categorie')
+            ->where('outils.id', $id)
             ->first();
 
         if (isset($ordinateur->id)) {
@@ -257,45 +261,45 @@ class InterfaceServiceProvider extends ServiceProvider
         switch ($trim) {
             case 1:
                 return Incident::where('statut', '!=', 1)
-                ->where('DateResolue', null)
-                ->where(function ($query) {
-                    $query->whereMonth('created_at', '01')
-                    ->orWhereMonth('created_at', '02')
-                    ->orWhereMonth('created_at', '03');
-                })
+                    ->where('DateResolue', null)
+                    ->where(function ($query) {
+                        $query->whereMonth('created_at', '01')
+                            ->orWhereMonth('created_at', '02')
+                            ->orWhereMonth('created_at', '03');
+                    })
                     ->whereYear('created_at', '=', $an)
                     ->get()->count();
                 break;
             case 2:
                 return Incident::where('statut', '!=', 1)
-                ->where('DateResolue', null)
-                ->where(function ($query) {
-                    $query->whereMonth('created_at', '04')
-                    ->orWhereMonth('created_at', '05')
-                    ->orWhereMonth('created_at', '06');
-                })
+                    ->where('DateResolue', null)
+                    ->where(function ($query) {
+                        $query->whereMonth('created_at', '04')
+                            ->orWhereMonth('created_at', '05')
+                            ->orWhereMonth('created_at', '06');
+                    })
                     ->whereYear('created_at', '=', $an)
                     ->get()->count();
                 break;
             case 3:
                 return Incident::where('statut', '!=', 1)
-                ->where('DateResolue', null)
-                ->where(function ($query) {
-                    $query->whereMonth('created_at', '07')
-                    ->orWhereMonth('created_at', '08')
-                    ->orWhereMonth('created_at', '09');
-                })
+                    ->where('DateResolue', null)
+                    ->where(function ($query) {
+                        $query->whereMonth('created_at', '07')
+                            ->orWhereMonth('created_at', '08')
+                            ->orWhereMonth('created_at', '09');
+                    })
                     ->whereYear('created_at', '=', $an)
                     ->get()->count();
                 break;
             case 4:
                 return Incident::where('statut', '!=', 1)
-                ->where('DateResolue', null)
-                ->where(function ($query) {
-                    $query->whereMonth('created_at', '10')
-                    ->orWhereMonth('created_at', '11')
-                    ->orWhereMonth('created_at', '12');
-                })
+                    ->where('DateResolue', null)
+                    ->where(function ($query) {
+                        $query->whereMonth('created_at', '10')
+                            ->orWhereMonth('created_at', '11')
+                            ->orWhereMonth('created_at', '12');
+                    })
                     ->whereYear('created_at', '=', $an)
                     ->get()->count();
                 break;
@@ -310,41 +314,41 @@ class InterfaceServiceProvider extends ServiceProvider
         switch ($trim) {
             case 1:
                 return Incident::where('statut', '=', 1)
-                ->where(function ($query) {
-                    $query->whereMonth('created_at', '01')
-                    ->orWhereMonth('created_at', '02')
-                    ->orWhereMonth('created_at', '03');
-                })
+                    ->where(function ($query) {
+                        $query->whereMonth('created_at', '01')
+                            ->orWhereMonth('created_at', '02')
+                            ->orWhereMonth('created_at', '03');
+                    })
                     ->whereYear('created_at', '=', $an)
                     ->get()->count();
                 break;
             case 2:
                 return Incident::where('statut', '=', 1)
-                ->where(function ($query) {
-                    $query->whereMonth('created_at', '04')
-                    ->orWhereMonth('created_at', '05')
-                    ->orWhereMonth('created_at', '06');
-                })
+                    ->where(function ($query) {
+                        $query->whereMonth('created_at', '04')
+                            ->orWhereMonth('created_at', '05')
+                            ->orWhereMonth('created_at', '06');
+                    })
                     ->whereYear('created_at', '=', $an)
                     ->get()->count();
                 break;
             case 3:
                 return Incident::where('statut', '=', 1)
-                ->where(function ($query) {
-                    $query->whereMonth('created_at', '07')
-                    ->orWhereMonth('created_at', '08')
-                    ->orWhereMonth('created_at', '09');
-                })
+                    ->where(function ($query) {
+                        $query->whereMonth('created_at', '07')
+                            ->orWhereMonth('created_at', '08')
+                            ->orWhereMonth('created_at', '09');
+                    })
                     ->whereYear('created_at', '=', $an)
                     ->get()->count();
                 break;
             case 4:
                 return Incident::where('statut', '=', 1)
-                ->where(function ($query) {
-                    $query->whereMonth('created_at', '10')
-                    ->orWhereMonth('created_at', '11')
-                    ->orWhereMonth('created_at', '12');
-                })
+                    ->where(function ($query) {
+                        $query->whereMonth('created_at', '10')
+                            ->orWhereMonth('created_at', '11')
+                            ->orWhereMonth('created_at', '12');
+                    })
                     ->whereYear('created_at', '=', $an)
                     ->get()->count();
                 break;
@@ -359,7 +363,7 @@ class InterfaceServiceProvider extends ServiceProvider
         switch ($trim) {
             case 1:
                 return Incident::select(DB::raw('(FLOOR(TIME_TO_SEC(TIMEDIFF(DATE_FORMAT(DateResolue, "%Y-%m-%d %H:%i:%s"), DATE_FORMAT(created_at, "%Y-%m-%d %H:%i:%s"))) / 60)) as jours'))
-                ->where('statut', 1)
+                    ->where('statut', 1)
                     ->where(function ($querycat) {
                         $querycat->where('cat', 6)
                             ->orWhere('cat', 3);
@@ -374,7 +378,7 @@ class InterfaceServiceProvider extends ServiceProvider
                 break;
             case 2:
                 return Incident::select(DB::raw('(FLOOR(TIME_TO_SEC(TIMEDIFF(DATE_FORMAT(DateResolue, "%Y-%m-%d %H:%i:%s"), DATE_FORMAT(created_at, "%Y-%m-%d %H:%i:%s"))) / 60)) as jours'))
-                ->where('statut', 1)
+                    ->where('statut', 1)
                     ->where(function ($querycat) {
                         $querycat->where('cat', 6)
                             ->orWhere('cat', 3);
@@ -389,7 +393,7 @@ class InterfaceServiceProvider extends ServiceProvider
                 break;
             case 3:
                 return Incident::select(DB::raw('(FLOOR(TIME_TO_SEC(TIMEDIFF(DATE_FORMAT(DateResolue, "%Y-%m-%d %H:%i:%s"), DATE_FORMAT(created_at, "%Y-%m-%d %H:%i:%s"))) / 60)) as jours'))
-                ->where('statut', 1)
+                    ->where('statut', 1)
                     ->where(function ($querycat) {
                         $querycat->where('cat', 6)
                             ->orWhere('cat', 3);
@@ -404,7 +408,7 @@ class InterfaceServiceProvider extends ServiceProvider
                 break;
             case 4:
                 return Incident::select(DB::raw('(FLOOR(TIME_TO_SEC(TIMEDIFF(DATE_FORMAT(DateResolue, "%Y-%m-%d %H:%i:%s"), DATE_FORMAT(created_at, "%Y-%m-%d %H:%i:%s"))) / 60)) as jours'))
-                ->where('statut', 1)
+                    ->where('statut', 1)
                     ->where(function ($querycat) {
                         $querycat->where('cat', 6)
                             ->orWhere('cat', 3);
@@ -457,7 +461,7 @@ class InterfaceServiceProvider extends ServiceProvider
         else
             return "Aucun technicien";
     }
-    
+
     public static function LibelleUser($id)
     {
         $user = DB::table('utilisateurs')->where('idUser', $id)->first();
@@ -510,9 +514,9 @@ class InterfaceServiceProvider extends ServiceProvider
         return ($lib) ? $lib->tmpCat : '';
     }
 
-    public static function TempsCats($id, $created_at)
+    public static function TempsCats($idIncid, $idCat, $created_at)
     {
-        $delai = DB::table('categories')->where('id', $id)->first()->tmpCat; //recuperation du délai
+        $delai = DB::table('categories')->where('id', $idCat)->first()->tmpCat; //recuperation du délai
         $valeurDelai = (int)$delai;
         $uniteDelai = 'h';
 
@@ -525,14 +529,18 @@ class InterfaceServiceProvider extends ServiceProvider
 
         // Calculer le temps restant
         $tempsRestant = $timestampLimite - $timestampNow;
-
-        if ($tempsRestant > 0) {
-            $heuresRestantes = floor($tempsRestant / 3600);
-            $minutesRestantes = floor(($tempsRestant % 3600) / 60);
-            $secondesRestantes = $tempsRestant % 60;
-            $tempsRestantFormate = sprintf('%02d h %02d m %02d s', $heuresRestantes, $minutesRestantes, $secondesRestantes);
+        $etat = Incident::where('id', $idIncid)->first(); // On verifie l'état actuel ou l'utilisateur actuel affecter de l'incident
+        if (($etat->etat != 0 || $etat->etat != null) || ($etat->affecter != 0 || $etat->affecter != null)) {
+            $tempsRestantFormate = "Prise en compte";
         } else {
-            $tempsRestantFormate = "Temps écoulé";
+            if ($tempsRestant > 0) {
+                $heuresRestantes = floor($tempsRestant / 3600);
+                $minutesRestantes = floor(($tempsRestant % 3600) / 60);
+                $secondesRestantes = $tempsRestant % 60;
+                $tempsRestantFormate = sprintf('%02d h %02d m %02d s', $heuresRestantes, $minutesRestantes, $secondesRestantes);
+            } else {
+                $tempsRestantFormate = "Temps écoulé";
+            }
         }
         return $tempsRestantFormate;
     }

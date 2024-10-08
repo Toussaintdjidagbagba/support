@@ -71,7 +71,7 @@
                                             </td>
                                             </td>
                                             <td>{{ App\Providers\InterfaceServiceProvider::LibelleCat($inc->cat) }}</td>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::TempsCats($inc->cat, $inc->created_at) }}
+                                            <td>{{ App\Providers\InterfaceServiceProvider::TempsCats($inc->id, $inc->cat, $inc->created_at) }}
                                             </td>
                                             <td>{{ App\Providers\InterfaceServiceProvider::libetat($inc->etat) }}
                                             </td>
