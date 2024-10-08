@@ -27,18 +27,7 @@
                                     style="margin-right: 30px; float: right; padding-right: 30px; padding-left: 30px;"
                                     class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal"
                                     data-target="#add">Ajouter</button-->
-                        </h2><br>
-                        <form action="{{ route('GIA') }}" method="get" role="form">
-                            <div class="input-group">
-                                <div class="form-line">
-                                    <input type="search" name="q" id="searchForm" placeholder="Mot clé..."
-                                        class="form-control">
-                                </div>
-                                <div class="input-group-addon">
-                                    <button type="submit" class="btn btn-info btn-md"> Rechercher</button>
-                                </div>
-                            </div>
-                        </form>
+                        </h2>
 
                         <ul class="header-dropdown m-r--5">
                             <li class="dropdown">
