@@ -47,7 +47,7 @@ class InterfaceServiceProvider extends ServiceProvider
 
     public static function formatTime($time)
     {
-        $times = Carbon::parse($time)->locale('fr')->translatedFormat('\à H\h i\m');
+        $times = Carbon::parse($time)->locale('fr')->translatedFormat(' H\h i\m');
         return $times;
     }
 

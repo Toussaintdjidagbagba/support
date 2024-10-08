@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DetailOutilExport;
 use App\Exports\HistoExport;
 use App\Exports\OutilhistopdfExport;
 use App\Exports\OutilsExport;
@@ -13,6 +14,7 @@ use App\Models\Trace;
 use App\Models\CategorieOutil;
 use App\Models\ChampsCategorieOutil;
 use App\Providers\InterfaceServiceProvider;
+use PDF;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -240,6 +242,7 @@ class OutilController extends Controller
             } else {
 
                 $allChamp = ChampsCategorieOutil::where("categoutil", $request->cat)->get();
+               
 
                 $caract = $request->caract; // Caractéristique associé à l'outils. La valeur otherjson
 
@@ -397,88 +400,44 @@ class OutilController extends Controller
         }
     }
 
-    // public function exportPDFDetail(Request $request)
-    // {
-    //     try {
-    //         Log::info('exportPDFDetail called');
 
-    //         $details = json_decode($request->input('detail'), true);
-    //         Log::info('Received data: ' . json_encode($details));
+    // Export des détails d'outil
+    public function exportPdfDetail(Request $request)
+    {
+        try {
+            // Récupération de l'outil en fonction de l'ID
+            $outil = Outil::where('id', $request->iddetail)->first();
+            
+            if (!$outil) {
+                return response()->json(['message' => 'Outil introuvable'], 404);
+            }
 
-    //         if (!$details) {
-    //             Log::error('No data provided');
-    //             return response()->json(['error' => 'No data provided'], 400);
-    //         }
+            // Récupérer les détails supplémentaires en fonction de la catégorie de l'outil
+            $details = ChampsCategorieOutil::where("categoutil", $request->cat)->get();
+            //dd($details);
 
-    //         // Créer une instance de TCPDF
-    //         $pdf = new TCPDF();
+            // Décoder les caractéristiques JSON de l'outil
+            $carct = json_decode($outil->otherjson, true); // On décode en tableau associatif
 
-    //         // Définir les marges (pour centrer le tableau)
-    //         $leftMargin = 15; // marge gauche
-    //         $rightMargin = 15; // marge droite
-    //         $pdf->SetMargins($leftMargin, 10, $rightMargin);
+            if (!$carct) {
+                return response()->json(['message' => 'Caractéristiques introuvables ou non valides'], 404);
+            }
 
-    //         // Ajouter une page
-    //         $pdf->AddPage();
-
-    //         // Ajouter l'image de fond
-    //         $imagePath = public_path('fond.png');
-    //         if (file_exists($imagePath)) {
-    //             $pdf->Image($imagePath, 0, 0, 297, 297, 'PNG');
-    //         }
-
-    //         // Définir la police Unicode
-    //         $pdf->SetFont('dejavusans', '', 12);
-
-    //         // Ajouter l'en-tête du rapport
-    //         $pdf->Ln(10);
-    //         $pdf->Ln(10);
-    //         $pdf->SetFont('dejavusans', 'B', 18);
-    //         $pdf->Cell(0, 15, "Caractéristiques de l'Outil", 0, 1, 'C');
+            // Passer les données à une vue PDF
+            $pdf = PDF::loadView('viewadmindste.export.detailoutil', [
+                    'outil' => $outil,
+                    'details' => $details,
+                    'carct' => $carct
+                ]);
 
 
-    //         // Définir les largeurs des colonnes
-    //         $colWidth = 90;
-    //         // Définir la police pour les données du tableau
-    //         $pdf->SetFont('dejavusans', '', 12);
+            return $pdf->download('Details_'.$outil->nameoutils.'.pdf');
 
-    //         // Ajouter les détails au tableau
-    //         foreach ($details as $detail) {
-    //             Log::info('Detail data: ' . json_encode($detail));
-
-    //             // Utiliser htmlspecialchars pour encoder les caractères spéciaux
-    //             $label = htmlspecialchars($detail['label']);
-    //             $value = htmlspecialchars($detail['value']);
-
-    //             // Ajouter un espace de 2mm autour des cellules de Label
-    //             $pdf->Cell($colWidth, 10, ' ' . utf8_decode($label) . ' ', 1, 0, 'L');
-
-    //             // Centrer le texte dans les cellules de Value
-    //             $pdf->Cell($colWidth, 10, utf8_decode($value), 1, 1, 'C');
-    //         }
-
-    //         // Ajouter le nom de l'application dans le pied de page
-    //         $pdf->SetFont('dejavusans', 'I', 10);
-    //         $pdf->Cell(0, 10, config('app.name'), 0, 0, 'R');
-
-    //         // Sauvegarder le fichier PDF sur le serveur
-    //         $filename = 'Details_' . date('Y-m-d_H-i-s') . '.pdf';
-    //         $filePath = public_path('pdf/' . $filename);
-
-    //         // Assurez-vous que le répertoire existe
-    //         if (!file_exists(public_path('pdf'))) {
-    //             mkdir(public_path('pdf'), 0777, true);
-    //         }
-
-    //         // Sauvegarder le fichier PDF
-    //         $pdf->Output($filePath, 'F');
-
-    //         // Télécharger directement le fichier PDF
-    //         return response()->download($filePath)->deleteFileAfterSend(true);
-    //     } catch (\Exception $e) {
-    //         return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
-    //     }
-    // }
+            
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
+        }
+    }
 
     //outils export
     public function exportoutils(Request $request)
@@ -507,7 +466,7 @@ class OutilController extends Controller
             return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
         }
     }
-
+    
     //export outils historique
     public function expoutilhisto(Request $request)
     {

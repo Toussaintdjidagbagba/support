@@ -90,7 +90,7 @@
                     <td colspan="3">{{App\Providers\InterfaceServiceProvider::periodeMaintenance($maint->maintenance)}}</td>
                 </tr>
                 <tr>
-                    <td class="ser">Ordinateur :</td>
+                    <td class="ser">Outil :</td>
                     <td>{{App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil)}}</td>
                     <td class="ser">Avis :</td>
                     <td>{{ $maint->avisuser }}</td>
@@ -105,14 +105,28 @@
         <table class="description-table">
             <thead>
                 <tr>
-                    <th colspan="2">Observations</th>
+                    <th colspan="4">Observations Technicien</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($list as $maint)
                     <tr>
-                        <td colspan="2" style="height: 40px;">
+                        <td colspan="4" style="height: 40px; width: 50%;">
                             {{ $maint->commentaireinf }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th colspan="2">Observations</th>
+                        <th colspan="2">Avis</th>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2" style="height: 40px; width: 50%">
+                            {{ $maint->commentaireuser }}
+                        </td>
+                        <td colspan="2" style="height: 40px; width: 50%">
+                            {{ $maint->avisuser }}
                         </td>
                     </tr>
                 @endforeach
