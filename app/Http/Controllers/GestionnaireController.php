@@ -15,142 +15,93 @@ use App\Models\Incident;
 
 class GestionnaireController extends Controller
 {
-    // A enlever 
-
-    public function traitement()
+    public function dash(Request $request)
     {
-        $directory = 'C:\Users\emmanuel.djidagbagba\Downloads\comaout\commission'; // Remplacez par le chemin de votre répertoire
-        
-        // Ouvrir le répertoire
-        if ($handle = opendir($directory)) {
-            while (false !== ($file = readdir($handle))) {
-                // Ignorer les entrées spéciales . et ..
-                if ($file != '.' && $file != '..') {
-                    // Vérifier si le fichier contient le mot à remplacer
-                        // Nouveau nom de fichier
-                        $newName = substr($file, 0, -16)."Aout 2024.pdf";
-                        // Renommer le fichier
-                        rename($directory . '/' . $file, $directory . '/' . $newName);
-                        echo "Renommé: $file en $newName\n";
-                    
-                }
-            }
-            closedir($handle);
-        } else {
-            echo "Impossible d'ouvrir le répertoire.";
-        }
-    }
+        // if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
+        //     $lists = Incident::query()->orderBy('incidents.created_at', 'desc');
+        //     if ($request->has('q') != "" && $request->has('q') != null) {
+        //         $recherche = htmlspecialchars(trim($request->q));
+        //         $list = $lists->where('Module', 'like', '%' . $recherche . '%')
+        //             ->orWhere('DateEmission', 'like', '%' . $recherche . '%')
+        //             ->orWhere('etat', 'like', '%' . $recherche . '%')
+        //             // ->orWhere('hierarchie', 'like', '%' . $recherche . '%')
+        //             ->paginate(100);
+        //     }
+        //     $list = $lists->paginate(100);
+        // } else {
+        //     // Afficher les incidents reçu
+        //     $lists = Incident::query()->where("affecter", session("utilisateur")->affecter)->orderBy('incidents.created_at', 'desc');
+        //     if ($request->has('q') != "" && $request->has('q') != null) {
+        //         $recherche = htmlspecialchars(trim($request->q));
+        //         $list = $lists->where('Module', 'like', '%' . $recherche . '%')
+        //             ->orWhere('DateEmission', 'like', '%' . $recherche . '%')
+        //             ->orWhere('etat', 'like', '%' . $recherche . '%')
+        //             // ->orWhere('hierarchie', 'like', '%' . $recherche . '%')
+        //             ->paginate(100);
+        //     }
+        //     $list = $lists->paginate(100);
+        // }
 
-    // A enlever 
-    public function traitementr(Request $request)
-    {
-        
-            $path = "document/upload/emp.xlsx";
-
-            $tab = Excel::toArray( new ImportExcel, $path);
-            $commissions = $tab[0];
-
-            //dd($tab[1]);
-
-            $tabl[0]["login"] = " Login ";
-            $tabl[0]["nom"] = " Nom  ";
-            $tabl[0]["prenom"] = " Prénoms ";
-            $tabl[0]["tel"] = "Téléphone";
-            $tabl[0]["email"] = " Email ";
-            $tabl[0]["role"] = " Rôle ";
-            $tabl[0]["coeagence"] = " Agence ";
-            $tabl[0]["agence"] = " Lib Agence ";
-            
-            for ($i=1; $i < count($commissions); $i++) { 
-                $commission = $commissions[$i];
-                $agence = $commission[7];
-                $codeagence = 0;
-                for ($j=1; $j < count($tab[1]); $j++) {
-                    
-                    if(strcasecmp(trim($tab[1][$j][1]), trim($agence)) == 0 )
-                        $codeagence = $tab[1][$j][0];
-                }
-
-                $nom = "";
-                $prenom = "";
-
-                if($commission[2] == "" || $commission[2] == null)
-                {
-                    $table_nom = explode(" ", $commission[1]);
-                    $nom = $table_nom[0];
-                    $prenoms = str_replace($table_nom[0], "", $commission[1]);
-                    $prenom= $prenoms;
-                }else{
-                    $nom = $commission[1];
-                    $prenom = $commission[2];
-                }
-
-                $tabl[$i]["login"] = strtolower(substr( trim($prenom), 0, 1).substr( trim($nom), 1));
-                
-                $tabl[$i]["nom"] = $nom;
-                $tabl[$i]["prenom"] = $prenom;
-                
-                $tabl[$i]["tel"] = $commission[3];
-                $tabl[$i]["email"] = $commission[4];
-                $tabl[$i]["role"] = $commission[5];
-                $tabl[$i]["coeagence"] = $codeagence;
-                $tabl[$i]["agence"] = $commission[7];
-
-            }
-
-            // Exporter tous les commissions 
-            $autre = new Collection($tabl);
-            Session()->put('traite', $autre);
-            
-            return Excel::download(new Export, "Emppp.xlsx");
-        
-    }
-
-    public function dash()
-    {
-    	setlocale(LC_ALL, 'fr_FR.UTF8', 'fr_FR','fr','fr','fra','fr_FR@euro');
+        setlocale(LC_ALL, 'fr_FR.UTF8', 'fr_FR', 'fr', 'fr', 'fra', 'fr_FR@euro');
         date_default_timezone_set('Africa/Porto-Novo');
 
         $nombreheuretravail = 8; // 8h 
 
-    	$start_date = strtotime(date('Y').'-01-01');
-		$end_date = strtotime(date('Y-m-d'));
-		
-		$annee = date('Y');
-		
-		//$annee = "2022";
+        $start_date = strtotime(date('Y') . '-01-01');
+        $end_date = strtotime(date('Y-m-d'));
+
+        $annee = date('Y');
+
+        //$annee = "2022";
 
 
-		//dd(($end_date - $start_date)/60/60/24);
+        //dd(($end_date - $start_date)/60/60/24);
 
-		// Temps en mn de disponibilité des applications
-    	$ex_tri1 = InterfaceServiceProvider::nombrejourstrimestre(1, $annee) * $nombreheuretravail * 60;
-    	$ex_tri2 = InterfaceServiceProvider::nombrejourstrimestre(2, $annee) * $nombreheuretravail * 60;
-    	$ex_tri3 = InterfaceServiceProvider::nombrejourstrimestre(3, $annee) * $nombreheuretravail * 60;
-    	$ex_tri4 = InterfaceServiceProvider::nombrejourstrimestre(4, $annee) * $nombreheuretravail * 60;
+        // Temps en mn de disponibilité des applications
+        $ex_tri1 = InterfaceServiceProvider::nombrejourstrimestre(1, $annee) * $nombreheuretravail * 60;
+        $ex_tri2 = InterfaceServiceProvider::nombrejourstrimestre(2, $annee) * $nombreheuretravail * 60;
+        $ex_tri3 = InterfaceServiceProvider::nombrejourstrimestre(3, $annee) * $nombreheuretravail * 60;
+        $ex_tri4 = InterfaceServiceProvider::nombrejourstrimestre(4, $annee) * $nombreheuretravail * 60;
 
-    	$entente1 = InterfaceServiceProvider::enAttente(1, $annee);
-    	$entente2 = InterfaceServiceProvider::enAttente(2, $annee);
-    	$entente3 = InterfaceServiceProvider::enAttente(3, $annee);
-    	$entente4 = InterfaceServiceProvider::enAttente(4, $annee);
+        $entente1 = InterfaceServiceProvider::enAttente(1, $annee);
+        $entente2 = InterfaceServiceProvider::enAttente(2, $annee);
+        $entente3 = InterfaceServiceProvider::enAttente(3, $annee);
+        $entente4 = InterfaceServiceProvider::enAttente(4, $annee);
 
-    	$resolu1 = InterfaceServiceProvider::resolue(1, $annee);
-    	$resolu2 = InterfaceServiceProvider::resolue(2, $annee);
-    	$resolu3 = InterfaceServiceProvider::resolue(3, $annee);
-    	$resolu4 = InterfaceServiceProvider::resolue(4, $annee);
+        $resolu1 = InterfaceServiceProvider::resolue(1, $annee);
+        $resolu2 = InterfaceServiceProvider::resolue(2, $annee);
+        $resolu3 = InterfaceServiceProvider::resolue(3, $annee);
+        $resolu4 = InterfaceServiceProvider::resolue(4, $annee);
 
-    	$indisp1 = InterfaceServiceProvider::indisponibiliteapplication(1, $annee);
-    	$indisp2 = InterfaceServiceProvider::indisponibiliteapplication(2, $annee);
-    	$indisp3 = InterfaceServiceProvider::indisponibiliteapplication(3, $annee);
-    	$indisp4 = InterfaceServiceProvider::indisponibiliteapplication(4, $annee);
-    	
-    	//dd($diff);
+        $indisp1 = InterfaceServiceProvider::indisponibiliteapplication(1, $annee);
+        $indisp2 = InterfaceServiceProvider::indisponibiliteapplication(2, $annee);
+        $indisp3 = InterfaceServiceProvider::indisponibiliteapplication(3, $annee);
+        $indisp4 = InterfaceServiceProvider::indisponibiliteapplication(4, $annee);
 
-        return view('viewadmindste.dash', compact("ex_tri1", "ex_tri2", "ex_tri3", "ex_tri4", "entente1", "entente2", "entente3", "entente4", 
-    									  "resolu1", "resolu2", "resolu3", "resolu4", "indisp1", "indisp2", "indisp3", "indisp4"));
+        //dd($diff);
+
+        return view('viewadmindste.dash', compact(
+            "ex_tri1",
+            "ex_tri2",
+            "ex_tri3",
+            "ex_tri4",
+            "entente1",
+            "entente2",
+            "entente3",
+            "entente4",
+            "resolu1",
+            "resolu2",
+            "resolu3",
+            "resolu4",
+            "indisp1",
+            "indisp2",
+            "indisp3",
+            "indisp4",
+        ));
     }
-    
-    public function getaide(){
+
+    public function getaide()
+    {
         return view('viewadmindste.aide');
     }
 
@@ -163,11 +114,11 @@ class GestionnaireController extends Controller
         $allmois = InterfaceServiceProvider::getallmoisinan(2024);
 
         $chart_data = array();
-        
+
         foreach ($allmois as $key => $value) {
-            $tpb = InterfaceServiceProvider::statis(($key+1), 2024 , 3);
-            $tpg = InterfaceServiceProvider::statis(($key+1), 2024 , 2);
-            $tpc = InterfaceServiceProvider::statis(($key+1), 2024 , 4);
+            $tpb = InterfaceServiceProvider::statis(($key + 1), 2024, 3);
+            $tpg = InterfaceServiceProvider::statis(($key + 1), 2024, 2);
+            $tpc = InterfaceServiceProvider::statis(($key + 1), 2024, 4);
 
             $array = ["MOIS" => $value, "genant" => $tpb, "moyen" => $tpg, "faible" => $tpc];
             array_push($chart_data, $array);
