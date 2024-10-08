@@ -453,7 +453,7 @@ class OutilController extends Controller
             // Récupérer la date actuelle pour l'exportation
             $dateExp = now()->format('d-m-Y');
 
-            // Générer le fichier en fonction du format demandé
+            // Générer le fichier en fonction du format demandée
             switch ($format) {
                 case 'pdf':
                     $pdfExporter = new OutilspdfExport($list);
