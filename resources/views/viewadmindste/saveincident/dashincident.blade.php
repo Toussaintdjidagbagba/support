@@ -26,18 +26,7 @@
                                 style="margin-right: 30px; float: right; padding-right: 30px; padding-left: 30px;"
                                 class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal"
                                 data-target="#add">Ajouter</button>
-                        </h2><br><br>
-                        <form action="{{ route('GI') }}" method="get" role="form">
-                            <div class="input-group">
-                                <div class="form-line">
-                                    <input type="search" name="q" id="searchForm" placeholder="Mot clé..."
-                                        class="form-control">
-                                </div>
-                                <div class="input-group-addon">
-                                    <button type="submit" class="btn btn-info btn-md"> Rechercher</button>
-                                </div>
-                            </div>
-                        </form>
+                        </h2>
                     </div>
                     <div class="body">
                         <div class="table-responsive" data-pattern="priority-columns">
@@ -82,7 +71,7 @@
                                             </td>
                                             </td>
                                             <td>{{ App\Providers\InterfaceServiceProvider::LibelleCat($inc->cat) }}</td>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::TempsCats($inc->cat, $inc->created_at) }}
+                                            <td>{{ App\Providers\InterfaceServiceProvider::TempsCats($inc->id, $inc->cat, $inc->created_at) }}
                                             </td>
                                             <td>{{ App\Providers\InterfaceServiceProvider::libetat($inc->etat) }}
                                             </td>
