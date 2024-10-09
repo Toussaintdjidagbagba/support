@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Categorie;
 use App\Models\Trace;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class CategorieController extends Controller
 {
@@ -42,7 +43,6 @@ class CategorieController extends Controller
             return Back();
         }
     }
-
 
     public function deletecat(Request $request)
     {
@@ -120,4 +120,5 @@ class CategorieController extends Controller
             return Back();
         }
     }
+    
 }

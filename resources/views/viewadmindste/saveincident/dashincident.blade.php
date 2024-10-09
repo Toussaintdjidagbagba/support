@@ -27,6 +27,18 @@
                                 class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal"
                                 data-target="#add">Ajouter</button>
                         </h2>
+                        <br>
+                        <form action="{{ route('GI') }}" method="get" role="form">
+                            <div class="input-group">
+                                <div class="form-line">
+                                    <input type="search" name="q" id="searchForm" placeholder="Mot clé..."
+                                        class="form-control">
+                                </div>
+                                <div class="input-group-addon">
+                                    <button type="submit" class="btn btn-info btn-md"> Rechercher</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                     <div class="body">
                         <div class="table-responsive" data-pattern="priority-columns">

@@ -28,7 +28,7 @@
                                     class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal"
                                     data-target="#add">Ajouter</button-->
                         </h2>
-                        {{-- <br>
+                        <br>
                         <form action="{{ route('GIA') }}" method="get" role="form">
                             <div class="input-group">
                                 <div class="form-line">
@@ -39,7 +39,7 @@
                                     <button type="submit" class="btn btn-info btn-md"> Rechercher</button>
                                 </div>
                             </div>
-                        </form> --}}
+                        </form>
                         <ul class="header-dropdown m-r--5">
                             <li class="dropdown">
                                 <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button"
