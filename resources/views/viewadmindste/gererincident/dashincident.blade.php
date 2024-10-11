@@ -6,7 +6,6 @@
 @endsection
 
 @section('content')
-
     <div class="container-fluid">
         <div class="block-header">
             @include('flash::message')
@@ -31,7 +30,7 @@
                         </div>
                         <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
                             <div class="body">
-                                <form action="{{ route('GIA') }}" method="get" role="form">
+                                <form role="form">
                                     <div class="row clearfix">
                                         <input type="hidden" name="q" id="qs">
                                         <div class="col-lg-6 col-md-6 col-sm-12">
@@ -91,14 +90,16 @@
                                             </div>
                                         </div>
                                         <div class="col-12 text-center">
-                                            <button onclick="" class="btn btn-info btn-md">Rechercher</button>
+                                            <button onclick="searchButton(event)"
+                                                class="btn btn-info btn-md">Rechercher</button>
                                         </div>
                                     </div>
                                     <div>
                                         <button type="button" class="btn btn-danger" style="margin-left: 25px; margin-bottom: 0px;"
                                             onclick="paramrech('pdf')">PDF</button>
                                         <button type="button" class="btn btn-success"
-                                            style="margin-left: 25px; margin-bottom: 0px;" onclick="paramrech('xlsx')">XLSX</button>
+                                            style="margin-left: 25px; margin-bottom: 0px;"
+                                            onclick="paramrech('xlsx')">XLSX</button>
                                     </div>
                                 </form>
                             </div>
@@ -148,150 +149,10 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tableContente">
-                                    @forelse($list as $inc)
-                                        <tr>
-                                            <th><span
-                                                    class="co-name">{{ App\Providers\InterfaceServiceProvider::formatDate($inc->DateEmission) }}</span>
-                                            </th>
-                                            <td>{{ $inc->Module }}</td>
-                                            <td>
-                                                @php
-                                                    $hiera = App\Providers\InterfaceServiceProvider::LibelleHier(
-                                                        $inc->hierarchie,
-                                                    );
-                                                @endphp
-                                                @if ($hiera)
-                                                    <span
-                                                        class="@if ($hiera == 'Bloquant') text-danger @elseif ($hiera == 'Gênant') text-warning @elseif ($hiera == 'Confort') text-primary @endif">
-                                                        {{ $hiera }}
-                                                    </span>
-                                                @else
-                                                    <span>Aucune hiérarchie</span>
-                                                @endif
-                                            </td>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::LibelleUser($inc->Emetteur) }}
-                                            </td>
-                                            <td class="d-flex justify-content-between align-items-center">
-                                                <span>
-                                                    {{ App\Providers\InterfaceServiceProvider::libetat($inc->etat) }}
-                                                </span>
-                                                @if (in_array('update_etat', session('auto_action')))
-                                                    <button class="btn bg-deep-orange btn-circle btn-xs ml-2"
-                                                        data-target="#etatincident" data-color="deep-orange"
-                                                        data-toggle="modal" title="Etat"
-                                                        onClick="getetat({{ $inc->id }})">
-                                                        <i class="material-icons">edit</i>
-                                                    </button>
-                                                @endif
-                                            </td>
-                                            <td>{{App\Providers\InterfaceServiceProvider::formatDate($inc->DateResolue) }}
-                                            </td>
-                                            <td class="d-flex justify-content-between align-items-center">
-                                                <span>
-                                                    {{ App\Providers\InterfaceServiceProvider::LibelleUser($inc->affecter) }}
-                                                </span>
-                                                @if (in_array('affec_incie', session('auto_action')))
-                                                    <button class="btn bg-deep-orange waves-effect btn-circle btn-xs ml-2"
-                                                        data-target="#affecteincident" data-color="deep-orange"
-                                                        data-toggle="modal" onClick="getaffectation({{ $inc->id }})"
-                                                        title="Affectation">
-                                                        <i class="material-icons">send</i>
-                                                    </button>
-                                                    @php
-                                                        $sers = App\Providers\InterfaceServiceProvider::alladminandsuperadmin();
-                                                    @endphp
-
-                                                    <script>
-                                                        function getetat(id) {
-                                                            document.getElementById('idincidentetat').value = id;
-                                                        }
-
-                                                        function getaffectation(id) {
-                                                            const serv =
-                                                                @json($sers); // Récupérer les données des administrateurs en JSON depuis la variable php et l'injecter dans le script
-                                                            let options = '<select type="text" class="form-control" name="tech" id="tech">';
-                                                            serv.forEach(function(item) {
-                                                                options +=
-                                                                    `<option value="${item.idUser}" >${item.nom} ${item.prenom}</option>`;
-                                                            });
-
-                                                            options += '</select>';
-
-                                                            document.getElementById('idaffecteincident').value = id;
-
-                                                            document.getElementById('selecttech').innerHTML = options;
-                                                        }
-                                                    </script>
-                                                @endif
-                                            </td>
-
-                                            <td class="d-flex justify-content-between align-items-center">
-                                                @if ($inc->piece != '')
-                                                    @if (in_array('viewdoc_incie', session('auto_action')))
-                                                        <button type="button"
-                                                            onClick="javascript:window.open('{{ $inc->piece }}', '');"
-                                                            title="Visualiser"
-                                                            class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                            <i class="material-icons">visibility</i>
-                                                        </button>
-                                                    @endif
-                                                @endif
-
-                                                @if (in_array('print_maint_pdf', session('auto_action')))
-                                                    <button onclick="getdeclaind(event,'pdf')"
-                                                        data-Id="{{ $inc->id }}" type="button" title="PDF"
-                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18"
-                                                            height="18" viewBox="0 0 24 24">
-                                                            <path fill="currentColor"
-                                                                d="M8.267 14.68c-.184 0-.308.018-.372.036v1.178c.076.018.
-                                                                                171.023.302.023c.479 0 .774-.242.774-.651c0-.366-.254-.586-.704-.586zm3.487.012c-.2
-                                                                                0-.33.018-.407.036v2.61c.077.018.201
-                                                                                .018.313.018c.817.006 1.349-.444 1.349-1.396c.006-.83-.479-1.268-1.255-1.268z" />
-                                                            <path fill="currentColor"
-                                                                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0
-                                                                                2-2V8l-6-6zM9.498 16.19c-.309.29-.765.42-1.296.42a2.23 2.23 0 0
-                                                                                1-.308-.018v1.426H7v-3.936A7.558 7.558 0 0 1 8.219 14c.557 0 .953.106
-                                                                                1.22.319c.254.202.426.533.426.923c-.001.392-.131.723-.367.948zm3.807
-                                                                                1.355c-.42.349-1.059.515-1.84.515c-.468 0-.799-.03-1.024-.06v-3.917A7.947
-                                                                                7.947 0 0 1 11.66 14c.757 0 1.249.136 1.633.426c.415.308.675.799.675 1.504c0
-                                                                                .763-.279 1.29-.663 1.615zM17 14.77h-1.532v.911H16.9v.734h-1.432v1.
-                                                                                604h-.906V14.03H17v.74zM14 9h-1V4l5 5h-4z" />
-                                                        </svg>
-                                                    </button>
-                                                @endif
-
-                                                @if (in_array('update_incie', session('auto_action')))
-                                                    <button type="button" title="Modifier"
-                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                        <a href="{{ route('MTIA', $inc->id) }}" style="color:white;"> <i
-                                                                class="material-icons">system_update_alt</i></a>
-                                                    </button>
-                                                @endif
-
-                                                @if ($inc->etat != null)
-                                                    @if (in_array('delete_incie', session('auto_action')))
-                                                        <button type="button" title="Supprimer" style="color:white;"
-                                                            onclick="Delete(event, '{{ route('DIA', $inc->id) }}')"
-                                                            class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                            <i class="material-icons">delete_sweep</i>
-                                                        </button>
-                                                    @endif
-                                                @endif
-
-
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="8">
-                                                <center>Pas d'incident enregistrer!!!</center>
-                                            </td>
-                                        </tr>
-                                    @endforelse
+                                  
                                 </tbody>
                             </table>
-                            {{ $list->links() }}
+                            {{-- {{ $list->links() }} --}}
                         </div>
 
                     </div>
@@ -302,6 +163,22 @@
     @endsection
     @section('js')
         <script type="text/javascript">
+            const sessionUpdateEtat = "{{ in_array('update_etat', session('auto_action')) }}";
+            const sessionUpdateIncie = "{{ in_array('update_incie', session('auto_action')) }}";
+            const sessionAffecIncie = "{{ in_array('affec_incie', session('auto_action')) }}";
+            const sessionViewDocIncie = "{{ in_array('viewdoc_incie', session('auto_action')) }}";
+            const sessionDeleteIncie = "{{ in_array('delete_incie', session('auto_action')) }}";
+            const sessionPrintPdfIncie = "{{ in_array('print_maint_pdf', session('auto_action')) }}";
+            const sessionDelete = "{{ in_array('delete_incident', session('auto_action')) }}";
+
+            let Gliste;
+
+            const router = {
+                Deletes: "{{ route('DIA', ':id') }}",
+                Updates: "{{ route('MTIA', ':id') }}",
+            }
+            let serve;
+
             function paramincident(format) {
                 var form = document.createElement('form');
                 form.method = 'POST';
@@ -323,13 +200,12 @@
                 form.submit();
             }
 
-            function paramrech(format) 
-            {
-                console.log(listData);
+            function paramrech(format) {
+                console.log(Gliste);
 
                 var form = document.createElement('form');
-                form.method = 'get';  
-                form.action = '{{ route('incidentrechexp') }}'; 
+                form.method = 'get';
+                form.action = '{{ route('incidentrechexp') }}';
 
                 var inputExport = document.createElement('input');
                 inputExport.type = 'hidden';
@@ -338,14 +214,14 @@
                 form.appendChild(inputExport);
 
                 // Ajouter le champ de recherche
-                var inputListData = document.createElement('input'); 
-                inputListData.type = 'hidden'; 
-                inputListData.name = 'listData'; 
-                inputListData.value = JSON.stringify(listData); 
+                var inputListData = document.createElement('input');
+                inputListData.type = 'hidden';
+                inputListData.name = 'Gliste';
+                inputListData.value = JSON.stringify(Gliste);
                 form.appendChild(inputListData);
 
                 document.body.appendChild(form);
-                form.submit();  
+                form.submit();
             }
 
 
@@ -415,6 +291,181 @@
 
                 document.body.appendChild(form);
                 form.submit();
+            }
+
+            window.onload = function() {
+                recupListGestionIncident();
+            };
+
+            async function searchButton(event) {
+                event.preventDefault();
+                const dateEmission = document.getElementById('dateEmission').value;
+                const hierarchie = document.getElementById('hierarchie').value;
+                const dateResolution = document.getElementById('dateResolution').value;
+                const affecter = document.getElementById('affecter').value;
+                const desc = document.getElementById('desc').value;
+                const modules = document.getElementById('modules').value;
+                const emetteur = document.getElementById('emetteur').value;
+                const etat = document.getElementById('etat').value;
+
+                const params = new URLSearchParams({
+                    date_emission: dateEmission,
+                    dateResolution: dateResolution,
+                    hierarchie: hierarchie,
+                    desc: desc,
+                    modules: modules,
+                    affecter: affecter,
+                    emetteur: emetteur,
+                    etat: etat,
+                }).toString();
+
+                try {
+                    let response = await fetch("{{ route('GIADTA') }}?" + params, {
+                        method: 'GET',
+                        headers: {
+                            'Access-Control-Allow-Credentials': true,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    if (response.status == 200) {
+                        if (!response.ok) {
+                            throw new Error("Erreur lors de la récupération des données: " + response.status);
+                        }
+                        let data = await response.json();
+                        let list = data.list;
+                        Gliste = data.list;
+                        afficherDonnees(list);
+                    } else {
+                        throw new Error("Erreur lors de la récupération des données: " + response.status);
+                    }
+                } catch (error) {
+                    console.error("Erreur attrapée:", error);
+                }
+            }
+
+            async function recupListGestionIncident() {
+                console.log("Toutes les ressources de la page sont chargées, la fonction est exécutée.");
+
+                try {
+                    let response = await fetch("{{ route('GIADTA') }}", {
+                        method: 'GET',
+                        headers: {
+                            'Access-Control-Allow-Credentials': true,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    if (response.status == 200) {
+                        if (!response.ok) {
+                            throw new Error("Erreur lors de la récupération des données: " + response.status);
+                        }
+
+                        data = await response.json();
+                        // console.log(data.list);
+                        serve = data.serv;
+                        console.log(serve);
+                        afficherDonnees(data.list);
+                    }
+                } catch (error) {
+                    console.error("Erreur attrapée:", error);
+                }
+            }
+
+            function afficherDonnees(list) {
+                const tbody = document.getElementById('tableContente');
+                tbody.innerHTML = '';
+
+                if (list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="9"><center>Pas d'incident enregistrés !!!</center></td></tr>`;
+                    return;
+                }
+                // console.log(list);
+                list.forEach((currentline, index, arry) => {
+                        const contenu = '<tr>' +
+                            '<th><span class="co-name">' + currentline["DateEmission"] + '</span></th>' +
+                            '<td>' + currentline["Module"] + '</td>' +
+                            '<td>' +
+                            '<span class="' +
+                            (currentline["hierarchie"] === 'Bloquant' ? 'text-danger' :
+                                currentline["hierarchie"] === 'Gênant' ? 'text-warning' :
+                                currentline["hierarchie"] === 'Confort' ? 'text-primary' : '') + '">' +
+                            (currentline["hierarchie"] || 'Aucune hiérarchie') +
+                            '</span>' +
+                            '</td>' +
+                            '<td>' + currentline["usersE"] + '</td>' +
+                            '<td class="d-flex justify-content-between align-items-center">' +
+                            '<span>' + currentline["etats"] +
+                            '</span>' +
+                            (sessionUpdateEtat ?
+                                '<button class="btn bg-deep-orange btn-circle btn-xs ml-2" data-target="#etatincident" data-color="deep-orange" data-toggle="modal" title="Etat" onClick="getetat(' +
+                                currentline["id"] + ')">' + '<i class="material-icons">edit</i>' +
+                                '</button>' : "") +
+                            '</td>' +
+                            '<td>' + currentline["DateResolue"] +
+                            '</td>' +
+                            '<td class="d-flex justify-content-between align-items-center">' +
+                            '<span>' + currentline["usersA"] + '</span>' +
+                            (sessionAffecIncie ?
+                                '<button class="btn bg-deep-orange waves-effect btn-circle btn-xs ml-2" data-target="#affecteincident" data-color="deep-orange" data-toggle="modal" onClick="getaffectation(' +
+                                currentline["id"] + ')" title="Affectation">' +
+                                '<i class="material-icons">send</i>' +
+                                '</button>' : "") +
+                            '</td>' +
+                            '<td class="d-flex justify-content-between align-items-center">' +
+                            (currentline["piece"] ?
+                                sessionViewDocIncie ?
+                                '<button type="button" onClick="javascript:window.open(\'' + currentline[
+                                    "piece"] +
+                                '\', \'\');" title="Visualiser" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
+                                '<i class="material-icons">visibility</i>' +
+                                '</button>' : "" :
+                                '') +
+                            (sessionPrintPdfIncie ?
+                                '<button onclick="getdeclaind(event,\'pdf\')" data-Id="' + currentline["id"] +
+                                '" type="button" title="PDF" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
+                                '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">' +
+                                '<path fill="currentColor" d="M8.267 14.68c-.184 0-.308.018-.372.036v1.178c.076.018.171.023.302.023c.479 0 .774-.242.774-.651c0-.366-.254-.586-.704-.586zm3.487.012c-.2 0-.33.018-.407.036v2.61c.077.018.201.018.313.018c.817.006 1.349-.444 1.349-1.396c.006-.83-.479-1.268-1.255-1.268z"/>' +
+                                '<path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM9.498 16.19c-.309.29-.765.42-1.296.42a2.23 2.23 0 0 1-.308-.018v1.426H7v-3.936A7.558 7.558 0 0 1 8.219 14c.557 0 .953.106 1.22.319c.254.202.426.533.426.923c-.001.392-.131.723-.367.948zm3.807 1.355c-.42.349-1.059.515-1.84.515c-.468 0-.799-.03-1.024-.06v-3.917A7.947 7.947 0 0 1 11.66 14c.757 0 1.249.136 1.633.426c.415.308.675.799.675 1.504c0 .763-.279 1.29-.663 1.615zM17 14.77h-1.532v.911H16.9v.734h-1.432v1.604h-.906V14.03H17v.74zM14 9h-1V4l5 5h-4z"/>' +
+                                '</svg>' +
+                                '</button>' : "") +
+                            (sessionUpdateIncie ?
+                                '<button type="button" title="Modifier" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
+                                '<a href="' + router.Updates.replace(':id', currentline["id"]) +
+                                '" style="color:white;"><i class="material-icons">system_update_alt</i></a>' +
+                                '</button>' : "") +
+                            (currentline["etats"] != null ?
+                                sessionDeleteIncie ?
+                                '<button type="button" title="Supprimer" style="color:white;" onclick="Delete(event, \'' +
+                                router.Deletes.replace(':id', currentline["id"]) +
+                                '\')" class="btn btn-danger btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
+                                '<i class="material-icons">delete_sweep</i>' +
+                                '</button>' : "" :
+                                "") +
+                            '</td>' +
+                            '</tr>';
+                        tbody.innerHTML += contenu;
+                });
+            }
+
+            function getetat(id) {
+                document.getElementById('idincidentetat').value = id;
+            }
+
+            function getaffectation(id) {
+                let options = '<select type="text" class="form-control" name="tech" id="tech">';
+                serve.forEach(function(item) {
+                    options += '<option value="' + item.idUser + '" ' + (item.idUser == id ? 'selected' : '') + '>' +
+                        item.nom + ' ' + item.prenom + '</option>';
+                });
+
+                options += '</select>';
+
+                document.getElementById('idaffecteincident').value = id;
+
+                document.getElementById('selecttech').innerHTML = options;
             }
         </script>
     @endsection

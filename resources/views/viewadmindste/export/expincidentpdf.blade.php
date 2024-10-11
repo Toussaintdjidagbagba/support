@@ -10,7 +10,7 @@
         border: 1px solid black;
         padding: 5px;
         text-align: left;
-        font-size: 13px;
+        font-size: 12px;
     }
     th {
         background-color: #f2f2f2;
@@ -33,17 +33,19 @@
             <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Emetteur</th>
             <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Etat</th>
             <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Date de résolution</th>
+            <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Affecter</th>
         </tr>
     </thead>
     <tbody>
         @foreach ($list as $inc)
             <tr>
-                <td style="vertical-align:middle; text-align: left; width: 80px;"><b>{{ $inc->DateEmission ?? 'N/A'}}</b></td>
-                <td style="vertical-align:middle; text-align: left; width: 60px;">{{ $inc->Module ?? 'N/A'}}</td>
-                <td style="vertical-align:middle; text-align: left; width: 70px;">{{ $inc->hierachie ?? 'N/A' }}</td>
-                <td style="vertical-align:middle; text-align: left; width: 178px;">{{ $inc->emetteur ?? 'N/A'}}</td>
-                <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc->etat ?? 'N/A'}}</td>
-                <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc->DateResolue ?? 'N/A'}}</td>
+                <td style="vertical-align:middle; text-align: left; width: 165px;"><b>{{ $inc['DateEmission']}}</b></td>
+                <td style="vertical-align:middle; text-align: left; width: 90px;">{{ $inc['Module'] }}</td>
+                <td style="vertical-align:middle; text-align: left; width: 100px;">{{ $inc['hierarchie'] ?? 'N/A' }}</td>
+                <td style="vertical-align:middle; text-align: left; width: 185px;">{{ $inc['emetteur'] ?? 'N/A'}}</td>
+                <td style="vertical-align:middle; text-align: left; width: 140px;">{{ $inc['etat'] ?? 'N/A'}}</td>
+                <td style="vertical-align:middle; text-align: left; width: 160px;">{{ $inc['DateResolue']}}</td>
+                <td style="vertical-align:middle; text-align: left; width: 120px;">{{ $inc['affecter']}}</td>
             </tr>
         @endforeach
     </tbody>

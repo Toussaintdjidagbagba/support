@@ -15,6 +15,7 @@
             <th style="vertical-align:middle; text-align: left; background-color: black; color: white; font-size: 11,8px; height: 30px;">Emetteur</th>
             <th style="vertical-align:middle; text-align: left; background-color: black; color: white; font-size: 11,8px; height: 30px;">Etat</th>
             <th style="vertical-align:middle; text-align: left; background-color: black; color: white; font-size: 11,8px; height: 30px;">Date de résolution</th>
+            <th style="vertical-align:middle; text-align: left; background-color: black; color: white; font-size: 11,8px; height: 30px;">Affecter</th>
         </tr>
     </thead>
     <tbody>
@@ -22,10 +23,11 @@
             <tr>
                 <td style="vertical-align:middle; text-align: left; width: 180px;"><b>{{ $inc['DateEmission']}}</b></td>
                 <td style="vertical-align:middle; text-align: left; width: 100px;">{{ $inc['Module'] }}</td>
-                <td style="vertical-align:middle; text-align: left; width: 100px;">{{ $inc['hierachie'] ?? 'N/A' }}</td>
+                <td style="vertical-align:middle; text-align: left; width: 100px;">{{ $inc['hierarchie'] ?? 'N/A' }}</td>
                 <td style="vertical-align:middle; text-align: left; width: 185px;">{{ $inc['emetteur'] ?? 'N/A'}}</td>
                 <td style="vertical-align:middle; text-align: left; width: 180px;">{{ $inc['etat'] ?? 'N/A'}}</td>
                 <td style="vertical-align:middle; text-align: left; width: 180px;">{{ $inc['DateResolue']}}</td>
+                <td style="vertical-align:middle; text-align: left; width: 180px;">{{ $inc['affecter']}}</td>
             </tr>
         @endforeach
     </tbody>

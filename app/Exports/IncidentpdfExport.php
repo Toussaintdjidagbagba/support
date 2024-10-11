@@ -23,10 +23,11 @@ class IncidentpdfExport
             return [
                 'DateEmission' => InterfaceServiceProvider::formatDate($incident->DateEmission), 
                 'Module' => $incident->Module, 
-                'hierachie' => InterfaceServiceProvider::LibelleHier($incident->hierarchie), 
+                'hierarchie' => InterfaceServiceProvider::LibelleHier($incident->hierarchie), 
                 'emetteur' => InterfaceServiceProvider::LibelleUser($incident->Emetteur), 
                 'etat' => InterfaceServiceProvider::libetat($incident->etat),
-                'DateResolue' => InterfaceServiceProvider::formatDate($incident->DateResolue), 
+                'DateResolue' => InterfaceServiceProvider::formatDate($incident->DateResolue),
+                'affecter' => $incident['usersA'],  
             ];
         });
         

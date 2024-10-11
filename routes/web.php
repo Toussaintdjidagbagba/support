@@ -132,6 +132,7 @@ Route::group([
 	///////////////////////////////////** Incident Admin **///////////////////////////////////////////////////////////
 
 	Route::get('/incidents', 'App\Http\Controllers\IncidentAdminController@getincident')->name('GIA');
+	Route::get('/incidentsAdminData', 'App\Http\Controllers\IncidentAdminController@getincidentData')->name('GIADTA');
 	Route::post('/incidents', 'App\Http\Controllers\IncidentAdminController@setincident')->name('GISA');
 	Route::get('/delete-incidents-{id}', 'App\Http\Controllers\IncidentAdminController@deleteincident')->name('DIA');
 	Route::get('/modif-incidents-{id}', 'App\Http\Controllers\IncidentAdminController@getmodifyincident')->name('MTIA');

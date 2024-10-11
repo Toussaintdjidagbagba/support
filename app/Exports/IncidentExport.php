@@ -22,10 +22,11 @@ class IncidentExport implements FromView
             return [
                 'DateEmission' => $incident->DateEmission, 
                 'Module' => $incident->Module, 
-                'hierachie' => InterfaceServiceProvider::LibelleHier($incident->hierarchie), 
+                'hierarchie' => InterfaceServiceProvider::LibelleHier($incident->hierarchie), 
                 'emetteur' => InterfaceServiceProvider::LibelleUser($incident->Emetteur), 
                 'etat' => InterfaceServiceProvider::libetat($incident->etat), 
-                'DateResolue' => $incident->DateResolue, 
+                'DateResolue' => $incident->DateResolue,
+                'affecter' => $incident['usersA'],  
             ];
         });
         return view('viewadmindste.export.expincident', [
