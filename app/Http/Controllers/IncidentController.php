@@ -6,13 +6,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\IncidentDeclarRech;
+use App\Exports\IncidentDeclarRechPdf;
 use Illuminate\Http\Request;
 use DB;
 use App\Models\Incident;
 use App\Models\Trace;
 use App\Providers\InterfaceServiceProvider;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class IncidentController extends Controller
 {
@@ -211,6 +215,42 @@ class IncidentController extends Controller
             dd($e);
             flash("Erreur serveur.")->error();
             return Back();
+        }
+    }
+
+
+    //export recherche incidents déclarés
+    public function exportincidentrech(Request $request)
+    {
+        try {
+
+            $lists = json_decode($request->input('listData'), true); 
+
+            $list = $lists['data'];
+
+            //dd($list);
+            
+            // Récupérer la date actuelle pour l'exportation
+            $dateExp = now()->format('d-m-Y');    
+
+            $format = $request->format;
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new IncidentDeclarRechPdf($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="Incident_'. $dateExp .'.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new IncidentDeclarRech($list), 'Incident_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
         }
     }
 

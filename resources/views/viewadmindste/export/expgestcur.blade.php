@@ -86,20 +86,24 @@
         <table>
             @foreach($list as $maint)
                 <tr>
-                    <td class="ser">Date réception :</td>
+                    <td class="ser">Date réception </td>
                     <td>{{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }}</td>
-                    <td class="ser">Durée d'arret prévisionnel :</td>
+                    <td class="ser">Durée d'arret prévisionnel </td>
                     <td>{{ App\Providers\InterfaceServiceProvider::formatTime($maint->periodefin) }}</td>
                 </tr>
                 <tr>
-                    <td class="ser">Outil sélectionné :</td>
+                    <td class="ser">Outil sélectionné </td>
                     <td>{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}</td>
-                    <td class="ser">Résultat :</td>
+                    <td class="ser">Résultat </td>
                     <td>{{ $maint->resultat}} </td>
                 </tr>
                 <tr>
-                    <td class="ser">Technicien :</td>
-                    <td colspan="3">{{App\Providers\InterfaceServiceProvider::LibelleUser($maint->user)}}</td>
+                    <td class="ser">Technicien </td>
+                    <td colspan="3">{{App\Providers\InterfaceServiceProvider::LibelleTechCurative($maint->maintenance)}}</td>
+                </tr>
+                <tr>
+                    <td class="ser">Utilisateur </td>
+                    <td colspan="3">{{ App\Providers\InterfaceServiceProvider::getUserOutil($maint->outil) }}</td>
                 </tr>
             @endforeach
         </table><br>

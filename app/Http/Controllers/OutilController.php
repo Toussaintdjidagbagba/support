@@ -7,6 +7,8 @@ use App\Exports\HistoExport;
 use App\Exports\OutilhistopdfExport;
 use App\Exports\OutilsExport;
 use App\Exports\OutilspdfExport;
+use App\Exports\OutilsRech;
+use App\Exports\OutilsRechPdf;
 use App\Models\ActionOutil;
 use Illuminate\Http\Request;
 use App\Models\Outil;
@@ -511,4 +513,40 @@ class OutilController extends Controller
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
         }
     }
+
+    //export recherche outils
+    public function exportoutilsrech(Request $request)
+    {
+        try {
+
+            $lists = json_decode($request->input('listData'), true); 
+
+            $list = $lists['data'];
+
+            //dd($list);
+            
+            // Récupérer la date actuelle pour l'exportation
+            $dateExp = now()->format('d-m-Y');    
+
+            $format = $request->format;
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new OutilsRechPdf($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="Outils_'. $dateExp .'.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new OutilsRech($list), 'Outils_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
+        }
+    }
+
 }

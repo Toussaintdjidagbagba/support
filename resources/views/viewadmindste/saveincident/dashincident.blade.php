@@ -38,6 +38,16 @@
                                     <button type="submit" class="btn btn-info btn-md"> Rechercher</button>
                                 </div>
                             </div>
+                            <div>
+                                <script>
+                                    var listData = @json($list);
+
+                                </script>
+                                <button type="button" class="btn btn-danger" style="margin-left: 25px; margin-bottom: 0px;"
+                                    onclick="paramrech('pdf')">PDF</button>
+                                <button type="button" class="btn btn-success"
+                                    style="margin-left: 25px; margin-bottom: 0px;" onclick="paramrech('xlsx')">XLSX</button>
+                            </div>
                         </form>
                     </div>
                     <div class="body">
@@ -268,6 +278,33 @@
                 event.target.value = ''; // réinitialiser le champ fichier
             }
         };
+
+
+        function paramrech(format) 
+        {
+            console.log(listData);
+
+            var form = document.createElement('form');
+            form.method = 'get';  
+            form.action = '{{ route('indrechexp') }}'; 
+
+            var inputExport = document.createElement('input');
+            inputExport.type = 'hidden';
+            inputExport.name = 'format';
+            inputExport.value = format;
+            form.appendChild(inputExport);
+
+            // Ajouter le champ de recherche
+            var inputListData = document.createElement('input'); 
+            inputListData.type = 'hidden'; 
+            inputListData.name = 'listData'; 
+            inputListData.value = JSON.stringify(listData); 
+            form.appendChild(inputListData);
+
+            document.body.appendChild(form);
+            form.submit();  
+        }
+
     </script>
 
 @endsection

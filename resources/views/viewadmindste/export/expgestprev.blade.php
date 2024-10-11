@@ -86,14 +86,18 @@
         <table>
             @foreach($list as $maint)
                 <tr>
-                    <td class="ser">Periode Début :</td>
-                    <td>{{App\Providers\InterfaceServiceProvider::formatDate($maint->periodedebut)}}</td>
-                    <td class="ser">Période Fin :</td>
-                    <td>{{ App\Providers\InterfaceServiceProvider::formatDate($maint->periodefin) }}</td>
+                    <td class="ser">Periode Début </td>
+                    <td>{{$maint->periodedebut}}</td>
+                    <td class="ser">Période Fin </td>
+                    <td>{{ $maint->periodefin}}</td>
                 </tr>
                 <tr>
-                    <td class="ser">Technicien :</td>
+                    <td class="ser">Technicien </td>
                     <td colspan="3">{{App\Providers\InterfaceServiceProvider::LibelleUser($maint->user)}}</td>
+                </tr>
+                <tr>
+                    <td class="ser">Utilisateur </td>
+                    <td colspan="3">{{App\Providers\InterfaceServiceProvider::getUserOutil($maint->outil)}}</td>
                 </tr>
             @endforeach
         </table><br>
