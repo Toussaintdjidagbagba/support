@@ -8,7 +8,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style type="text/css">
         .cumul {
             text-align: center;
@@ -52,7 +52,7 @@
                                     <label for="debut">Période début</label>
                                     <div class="form-group">
                                         <div class="form-line">
-                                            <input type="month" id="debut" name="debut" class="form-control">
+                                            <input type="month" id="debut" onblur="getstat()" name="debut" class="form-control">
                                         </div>
                                     </div>
                                 </div>
@@ -60,7 +60,7 @@
                                     <label for="fin">Période fin</label>
                                     <div class="form-group">
                                         <div class="form-line">
-                                            <input type="month" id="fin" name="fin" class="form-control">
+                                            <input type="month" id="fin" onblur="getstat()" name="fin" class="form-control">
                                         </div>
                                     </div>
                                 </div>
@@ -76,22 +76,16 @@
         </div>
 
     </div>
-@endsection
 
-@section('js')
     <script>
-        Morris.Bar({
-            element: 'hiear',
-            data: ,
-            xkey: 'MOIS',
-            ykeys: ['genant', 'moyen', 'faible'],
-            labels: ['Bloquant', 'Gênant', 'Confort'],
-            barColors: ["#FF0000", "#d29f13", "#001e60"],
-            hideHover: 'auto'
-        });
+        
+        getstat();
 
-        async function init() {
+        async function getstat() {
             try {
+                pdebut = document.getElementById('debut').value;
+                pfin = document.getElementById('fin').value;
+                let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
                 let response = await fetch("{{ route('getstatistique') }}", {
                     method: 'post',
@@ -99,10 +93,11 @@
                         'Access-Control-Allow-Credentials': true,
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
                     },
                     body: JSON.stringify({
-                        periodedebut: 0,
-                        periodefin: 0
+                        periodedebut: pdebut,
+                        periodefin: pfin
                     })
                 });
 
@@ -110,57 +105,20 @@
 
                     // Récupérer les données JSON de la réponse
 
+                    document.getElementById('hiear').innerHTML = "";
+
                     data = await response.json();
 
-                    depenseslist = data.data.depenses;
-
-                    let rowsHTML = '';
-
-                    let i = 1;
-                    let soldedepense = 0;
-                    let newRow = '';
-                    document.getElementById('titrepagedec').innerHTML = 'Décaissement > Exécution ';
-                    depenseslist.forEach(enc => {
-                        if (enc.etat == 0) {
-                            /*newRow += '<tr>';
-                            newRow += '<td>' + enc.description + '</td>';
-                            newRow += '<td style="text-align: right">' + formatNumberWithSpaces(enc.quantite) + '</td>';
-                            newRow += '<td style="text-align: right">' + new Intl.NumberFormat('fr-FR').format(enc.montant) + '</td>';
-                            newRow += '<td>' + enc.periode + '</td>';
-                            newRow += '<td>' + enc.date + '</td>'; */
-                            newRow += '<tr>';
-                            newRow += '<td>' + enc.description + '</td>';
-                            newRow += '<td style="text-align: right">' + new Intl.NumberFormat('fr-FR').format(
-                                Math.round(enc.montant)) + '</td>';
-                            newRow += '<td style="text-align: right">' + new Intl.NumberFormat('fr-FR').format(
-                                Math.round(enc.montantht)) + '</td>';
-                            newRow += '<td style="text-align: right">' + new Intl.NumberFormat('fr-FR').format(
-                                Math.round(enc.montanttva)) + '</td>';
-                            newRow += '<td>' + enc.numpiece + '</td>';
-                            newRow += '<td>' + enc.datefacture + '</td>';
-                            newRow += '<td>' + enc.dateexigibilite + '</td>';
-                            newRow += '<td> Non réglé </td>';
-                            newRow +=
-                                `<td> <button type="button" title="Exécuter"  class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light" data-toggle="modal" data-target="#exec" data-values='["${enc.id}","${escapeQuotes(enc.description)}", "${enc.montantht}" , "${enc.montanttva}", "${enc.montant}"]'  onclick="getexecute(this)"><i class="material-icons">play_circle_filled</i></a> </button> </td>`;
-
-                            // onclick="getexecutenew('+enc.id+', \''+enc.description+'\', \''+enc.montantht+'\', \''+enc.montanttva+'\', \''+enc.montant+'\')"
-                            newRow += '</tr>';
-
-                            //newRow += '<td>' + enc.date + '</td>';
-                            soldedepense = soldedepense + enc.montant;
-
-                            newRow += '</tr>';
-                        }
-                    });
-
-                    if (newRow == "") {
-                        document.getElementById('listdepens').innerHTML =
-                            '<tr> <td colspan="9"><center> Aucun décaissement réalisé disponible pour ce projet. </center> </td> </tr>';
-                    } else {
-                        document.getElementById('listdepens').innerHTML = newRow;
-                        //document.getElementById('soldetotauxdec').innerHTML = 'Montant Total des Dépenses réalisée : '+ new Intl.NumberFormat('fr-FR').format(soldedepense)+' F CFA';
-                    }
-
+                    Morris.Bar({
+                        element: 'hiear',
+                        data: data,
+                        xkey: 'MOIS',
+                        ykeys: ['Genant', 'Bloquant', 'Confort'],
+                        labels: ['Gênant', 'Bloquant', 'Confort'],
+                        barColors: ["#d29f13", "#FF0000", "#001e60"],
+                        hideHover: 'auto'
+                    }); 
+                    
                 } else {
                     return "";
                 }
@@ -170,3 +128,5 @@
         }
     </script>
 @endsection
+
+

@@ -12,36 +12,12 @@ use App\Exports\Export;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Import\ImportExcel;
 use App\Models\Incident;
+use App\Models\Hierarchie;
 
 class GestionnaireController extends Controller
 {
     public function dash(Request $request)
     {
-        // if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
-        //     $lists = Incident::query()->orderBy('incidents.created_at', 'desc');
-        //     if ($request->has('q') != "" && $request->has('q') != null) {
-        //         $recherche = htmlspecialchars(trim($request->q));
-        //         $list = $lists->where('Module', 'like', '%' . $recherche . '%')
-        //             ->orWhere('DateEmission', 'like', '%' . $recherche . '%')
-        //             ->orWhere('etat', 'like', '%' . $recherche . '%')
-        //             // ->orWhere('hierarchie', 'like', '%' . $recherche . '%')
-        //             ->paginate(100);
-        //     }
-        //     $list = $lists->paginate(100);
-        // } else {
-        //     // Afficher les incidents reçu
-        //     $lists = Incident::query()->where("affecter", session("utilisateur")->affecter)->orderBy('incidents.created_at', 'desc');
-        //     if ($request->has('q') != "" && $request->has('q') != null) {
-        //         $recherche = htmlspecialchars(trim($request->q));
-        //         $list = $lists->where('Module', 'like', '%' . $recherche . '%')
-        //             ->orWhere('DateEmission', 'like', '%' . $recherche . '%')
-        //             ->orWhere('etat', 'like', '%' . $recherche . '%')
-        //             // ->orWhere('hierarchie', 'like', '%' . $recherche . '%')
-        //             ->paginate(100);
-        //     }
-        //     $list = $lists->paginate(100);
-        // }
-
         setlocale(LC_ALL, 'fr_FR.UTF8', 'fr_FR', 'fr', 'fr', 'fra', 'fr_FR@euro');
         date_default_timezone_set('Africa/Porto-Novo');
 
@@ -63,7 +39,7 @@ class GestionnaireController extends Controller
         $ex_tri3 = InterfaceServiceProvider::nombrejourstrimestre(3, $annee) * $nombreheuretravail * 60;
         $ex_tri4 = InterfaceServiceProvider::nombrejourstrimestre(4, $annee) * $nombreheuretravail * 60;
 
-        $entente1 = InterfaceServiceProvider::enAttente(1, $annee);
+        /*$entente1 = InterfaceServiceProvider::enAttente(1, $annee);
         $entente2 = InterfaceServiceProvider::enAttente(2, $annee);
         $entente3 = InterfaceServiceProvider::enAttente(3, $annee);
         $entente4 = InterfaceServiceProvider::enAttente(4, $annee);
@@ -76,7 +52,7 @@ class GestionnaireController extends Controller
         $indisp1 = InterfaceServiceProvider::indisponibiliteapplication(1, $annee);
         $indisp2 = InterfaceServiceProvider::indisponibiliteapplication(2, $annee);
         $indisp3 = InterfaceServiceProvider::indisponibiliteapplication(3, $annee);
-        $indisp4 = InterfaceServiceProvider::indisponibiliteapplication(4, $annee);
+        $indisp4 = InterfaceServiceProvider::indisponibiliteapplication(4, $annee); */
 
         //dd($diff);
 
@@ -85,7 +61,7 @@ class GestionnaireController extends Controller
             "ex_tri2",
             "ex_tri3",
             "ex_tri4",
-            "entente1",
+            /*"entente1",
             "entente2",
             "entente3",
             "entente4",
@@ -96,7 +72,7 @@ class GestionnaireController extends Controller
             "indisp1",
             "indisp2",
             "indisp3",
-            "indisp4",
+            "indisp4", */
         ));
     }
 
@@ -111,49 +87,76 @@ class GestionnaireController extends Controller
         $datedebut = $request->periodedebut;
         $datefin = $request->periodefin;
 
-        $allmois = InterfaceServiceProvider::getallmoisinan(2024);
+        if($datedebut == "")
+        {
+            $datedebut = date("Y")."-01";
+        }
+
+        if($datefin == "")
+        {
+            $datefin = date("Y")."-12";
+        }
+
+
+
+        list($yeardebut, $monthdebut) = explode('-', $datedebut);
+
+        list($yearfin, $monthfin) = explode('-', $datefin);
+
+        $yeardebut = (int)$yeardebut;
+        $monthdebut = (int)$monthdebut;
+        $yearfin = (int)$yearfin;
+        $monthfin = (int)$monthfin;
+
+        $datesplage = [];
+
+        // Récupération de tous les mois dans l'interval
+
+        while ($yeardebut < $yearfin || ($yeardebut == $yearfin && $monthdebut <= $monthfin)) {
+            $datesplage[] = sprintf("%04d-%02d", $yeardebut, $monthdebut);
+            $monthdebut++;
+            if ($monthdebut > 12) {
+                $monthdebut = 1;
+                $yeardebut++;
+            }
+        }
 
         $chart_data = array();
 
-        foreach ($allmois as $key => $value) {
-            $tpb = InterfaceServiceProvider::statis(($key + 1), 2024, 3);
-            $tpg = InterfaceServiceProvider::statis(($key + 1), 2024, 2);
-            $tpc = InterfaceServiceProvider::statis(($key + 1), 2024, 4);
+        $allhie = Hierarchie::get();
 
-            $array = ["MOIS" => $value, "genant" => $tpb, "moyen" => $tpg, "faible" => $tpc];
-            array_push($chart_data, $array);
+        foreach ($datesplage as $key => $value) {
+            list($year, $month) = explode('-', $value);
+            $arraymois = ["MOIS" => self::getMonthName((int)$month)];
+            foreach ($allhie as $key => $valuehie) {
+                $tp = InterfaceServiceProvider::statis((int)$month, (int)$year, $valuehie->id);
+
+                $arraymois[self::stringtovariablename($valuehie->libelle)] = $tp;
+            }
+
+            array_push($chart_data, $arraymois);
         }
 
         return $chart_data;
-        /*
-        $tpb = InterfaceServiceProvider::statis(1, 3);
-        $tpg = InterfaceServiceProvider::statis(1, 2);
-        $tpc = InterfaceServiceProvider::statis(1, 4);
+    }
 
-        $tdb = InterfaceServiceProvider::statis(2, 3);
-        $tdg = InterfaceServiceProvider::statis(2, 2);
-        $tdc = InterfaceServiceProvider::statis(2, 4);
+    public static function stringtovariablename($str) {
+        // Supprimer les accents
+        $str = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
 
-        $ttb = InterfaceServiceProvider::statis(3, 3);
-        $ttg = InterfaceServiceProvider::statis(3, 2);
-        $ttc = InterfaceServiceProvider::statis(3, 4);
+        // Supprimer les espaces et les symboles spéciaux
+        $str = preg_replace('/[^a-zA-Z0-9]/', '', $str);
 
-        $tqb = InterfaceServiceProvider::statis(4, 3);
-        $tqg = InterfaceServiceProvider::statis(4, 2);
-        $tqc = InterfaceServiceProvider::statis(4, 4);
+        return $str;
+    }
 
-        $chart_data = "{ MOIS:'Janvier', genant:$tpb, moyen:$tpg, faible:$tpc},
-        { MOIS:'Février', genant:$tdb, moyen:$tdg, faible:$tdc}, 
-        { MOIS:'Mars', genant:$ttb, moyen:$ttg, faible:$ttc}, 
-        { MOIS:'Avril', genant:$tqb, moyen:$tqg, faible:$tqc}, 
-        { MOIS:'Mai', genant:5, moyen:2, faible:9},
-        { MOIS:'Juin', genant:2, moyen:8, faible:0},
-        { MOIS:'Juillet', genant:5, moyen:8, faible:7},
-        { MOIS:'Août', genant:5, moyen:5, faible:12},
-        { MOIS:'Septembre', genant:3, moyen:2, faible:1},
-        { MOIS:'Octobre', genant:$tqb, moyen:$tqg, faible:$tqc},
-        { MOIS:'Novembre', genant:$tqb, moyen:$tqg, faible:$tqc},
-        { MOIS:'Décembre', genant:$tqb, moyen:$tqg, faible:$tqc}
-        "; */
+    public static function getMonthName($monthNumber) {
+        $months = [
+            1 => 'Janvier', 2 => 'Fevrier', 3 => 'Mars', 4 => 'Avril',
+            5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Aout',
+            9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Decembre'
+        ];
+        
+        return $months[$monthNumber] ?? 'Mois invalide';
     }
 }
