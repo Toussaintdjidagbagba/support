@@ -5,14 +5,17 @@ namespace App\Exports;
 use App\Providers\InterfaceServiceProvider;
 use Illuminate\Support\Facades\Storage;
 use Dompdf\Dompdf;
+use Illuminate\Support\Collection;
 
-class IncidentpdfExport
+class IncidentDeclarRechPdf
 {
+ 
     protected $list;
 
     public function __construct($list)
     {
-        $this->list = $list;
+        // Convertir le tableau en collection
+        $this->list = collect($list);
     }
 
     public function generatePdf()
@@ -20,18 +23,18 @@ class IncidentpdfExport
         // Utilisation de map() sur la collection
         $list = $this->list->map(function ($incident) {
             return [
-                'DateEmission' => $incident->DateEmission, // Notation objet
-                'Module' => $incident->Module, 
-                'hierarchie' => $incident->hierarchie, 
-                'emetteur' => $incident->usersE, 
-                'etat' => $incident->etats,
-                'DateResolue' => $incident->DateResolue, 
-                'affecter' => $incident->usersA, 
+                'DateEmission' => $incident['DateEmission'], 
+                'Module' => $incident['Module'], 
+                'Description' => $incident['description'], 
+                'hierarchie' => $incident['hierarchie'], 
+                'categorie' => $incident['cat'], 
+                'temps' => $incident['tempsRestant'], 
+                'etat' => $incident['etat'],
             ];
         });
 
         $pdf = new Dompdf();
-        $pdf->loadHtml(view('viewadmindste.export.expincidentpdf', ['list' => $list])->render());
+        $pdf->loadHtml(view('viewadmindste.export.expincidentrechpdf', ['list' => $list])->render());
         $pdf->setPaper('A4', 'landscape');
         $pdf->render();
 
@@ -40,4 +43,5 @@ class IncidentpdfExport
 
         return $filePath;
     }
+
 }

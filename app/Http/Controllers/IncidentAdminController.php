@@ -16,6 +16,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportExcel;
 use App\Exports\IncidentExport;
 use App\Exports\IncidentpdfExport;
+use App\Exports\IncidentRech;
+use App\Exports\IncidentRechpdf;
 use App\Providers\InterfaceServiceProvider;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -25,18 +27,20 @@ use Illuminate\Support\Facades\Validator;
 class IncidentAdminController extends Controller
 {
 
-    // public static function getincident()
-    // {
-    //     return view('viewadmindste.gererincident.dashincident');
-    // }
+    public static function getincident()
+    {
+        return view('viewadmindste.gererincident.dashincident');
+    }
 
     public static function getincidentData(Request $request)
     {
-        if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
+        if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) 
+        { // super admin
             $query = DB::table('incidents as i')
                 ->leftJoin('hierarchies as h', 'i.hierarchie', '=', 'h.id')
                 ->leftJoin('categories as c', 'i.cat', '=', 'c.id')
                 ->leftJoin('utilisateurs as u', 'i.affecter', '=', 'u.idUser')
+                ->leftJoin('utilisateurs as uE', 'i.Emetteur', '=', 'uE.idUser')
                 ->leftJoin('settings as s', 'i.etat', '=', 's.id')
                 ->select(
                     'i.id',
@@ -45,18 +49,26 @@ class IncidentAdminController extends Controller
                     'i.etat',
                     'i.DateEmission',
                     'i.description',
+                'i.piece',
                     'h.libelle as hierarchie',
+                DB::raw('COALESCE(i.DateResolue, "Pas encore résolue") as DateResolue'),
                     DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
                     DB::raw('COALESCE(s.libelle, "En attente") as etats'),
-                    DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as users'),
+                DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersA'),
+                DB::raw('COALESCE(CONCAT(uE.nom, " ", uE.prenom), "En attente") as usersE'),
                     'i.created_at',
                     'u.idUser as user_id',
+                'uE.idUser as userE_id',
                 )
                 ->orderBy('i.created_at', 'asc');
-        } else {
+        } 
+        else 
+        {
             $query = DB::table('incidents as i')
                 ->leftJoin('hierarchies as h', 'i.hierarchie', '=', 'h.id')
                 ->leftJoin('categories as c', 'i.cat', '=', 'c.id')
+                ->leftJoin('utilisateurs as u', 'i.affecter', '=', 'u.idUser')
+                ->leftJoin('utilisateurs as uE', 'i.Emetteur', '=', 'uE.idUser')
                 ->leftJoin('settings as s', 'i.etat', '=', 's.id')
                 ->select(
                     'i.id',
@@ -65,72 +77,53 @@ class IncidentAdminController extends Controller
                     'i.etat',
                     'i.DateEmission',
                     'i.description',
+                'i.piece',
                     'h.libelle as hierarchie',
+                DB::raw('COALESCE(i.DateResolue, "Pas encore résolue") as DateResolue'),
                     DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
                     DB::raw('COALESCE(s.libelle, "En attente") as etats'),
+                DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersA'),
+                DB::raw('COALESCE(CONCAT(uE.nom, " ", uE.prenom), "En attente") as usersE'),
                     'i.created_at',
-                    'c.tmpCat'
+                'u.idUser as user_id',
+                'uE.idUser as userE_id',
                 )
-                ->where("i.Emetteur", session("utilisateur")->idUser)
-                ->orderBy('i.created_at', 'asc');
-        }
-        if ($request->filled('date_emission')) {
-            $query->whereDate('i.DateEmission', $request->date_emission);
+                ->where("i.Emetteur", session("utilisateur")->idUser);
         }
 
-        if ($request->filled('hierarchie')) {
-            $query->where('h.libelle', 'like', '%' . htmlspecialchars(trim($request->hierarchie)) . '%');
-        }
-
-        if ($request->filled('etat')) {
-            $query->where(DB::raw('COALESCE(s.libelle, "")'), 'like', '%' . htmlspecialchars(trim($request->etat)) . '%');
-        }
-
-        if ($request->filled('modules')) {
-            $query->where('i.Module', 'like', '%' . htmlspecialchars(trim($request->modules)) . '%');
-        }
-
-        if ($request->filled('date_resolution')) {
-            $query->where('i.DateResolue', 'like', '%' . htmlspecialchars(trim($request->date_resolution)) . '%');
-        }
-
-        if ($request->filled('affecter')) {
-            $query->where('i.affecter', 'like', '%' . htmlspecialchars(trim($request->affecter)) . '%');
-        }
-
-
-        $list = $query->get();
-
-        return json_encode(["list" => $list]);
-    }
-
-    public static function getincident(Request $request)
-    {
-        if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
-            $lists = Incident::query()->orderBy('incidents.created_at', 'desc');
-            if ($request->has('q') != "" && $request->has('q') != null) {
-                $recherche = htmlspecialchars(trim($request->q));
-                $list = $lists->where('Module', 'like', '%' . $recherche . '%')
-                    ->orWhere('DateEmission', 'like', '%' . $recherche . '%')
-                    ->orWhere('etat', 'like', '%' . $recherche . '%')
-                    // ->orWhere('hierarchie', 'like', '%' . $recherche . '%')
-                    ->paginate(100);
+        $query->where(function ($q) use ($request) {
+            if ($request->filled('date_emission')) {
+                $q->whereDate('i.DateEmission', $request->date_emission);
             }
-            $list = $lists->paginate(100);
-        } else {
-            // Afficher les incidents reçu
-            $lists = Incident::query()->where("affecter", session("utilisateur")->affecter)->orderBy('incidents.created_at', 'desc');
-            if ($request->has('q') != "" && $request->has('q') != null) {
-                $recherche = htmlspecialchars(trim($request->q));
-                $list = $lists->where('Module', 'like', '%' . $recherche . '%')
-                    ->orWhere('DateEmission', 'like', '%' . $recherche . '%')
-                    ->orWhere('etat', 'like', '%' . $recherche . '%')
-                    // ->orWhere('hierarchie', 'like', '%' . $recherche . '%')
-                    ->paginate(100);
+
+            if ($request->filled('hierarchie')) {
+                $q->orWhere('h.libelle', 'like', '%' . htmlspecialchars(trim($request->hierarchie)) . '%');
             }
-            $list = $lists->paginate(100);
-        }
-        return view('viewadmindste.gererincident.dashincident', compact('list'));
+
+            if ($request->filled('etat')) {
+                $q->orWhere(DB::raw('COALESCE(s.libelle, "")'), 'like', '%' . htmlspecialchars(trim($request->etat)) . '%');
+            }
+
+            if ($request->filled('modules')) {
+                $q->orWhere('i.Module', 'like', '%' . htmlspecialchars(trim($request->modules)) . '%');
+            }
+
+            if ($request->filled('date_resolution')) {
+                $q->orWhere('i.DateResolue', 'like', '%' . htmlspecialchars(trim($request->date_resolution)) . '%');
+            }
+
+            if ($request->filled('affecter')) {
+                $q->orWhere(DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->affecter)) . '%');
+            }
+
+            if ($request->filled('emetteur')) {
+                $q->orWhere(DB::raw('COALESCE(CONCAT(uE.nom, " ", uE.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->emetteur)) . '%');
+            }
+        });
+
+        $list = $query->orderBy('i.created_at', 'desc')->get();
+        $serv = InterfaceServiceProvider::alladminandsuperadmin();
+        return json_encode(["list" => $list, "serv" => $serv]);
     }
 
     public function setincident(Request $request)
@@ -427,17 +420,72 @@ class IncidentAdminController extends Controller
     {
         try {
 
-            if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
-                $list = Incident::orderBy('incidents.created_at', 'desc')->paginate(100);
-            } else {
-                // Afficher les incidents reçu
-                $list = Incident::where("affecter", session("utilisateur")->affecter)->orderBy('incidents.created_at', 'desc')->paginate(100);
+            if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) 
+            {
+                // super admin
+                $query = DB::table('incidents as i')
+                    ->leftJoin('hierarchies as h', 'i.hierarchie', '=', 'h.id')
+                    ->leftJoin('categories as c', 'i.cat', '=', 'c.id')
+                    ->leftJoin('utilisateurs as u', 'i.affecter', '=', 'u.idUser')
+                    ->leftJoin('utilisateurs as uE', 'i.Emetteur', '=', 'uE.idUser')
+                    ->leftJoin('settings as s', 'i.etat', '=', 's.id')
+                    ->select(
+                        'i.id',
+                        'i.Module',
+                        'i.affecter',
+                        'i.etat',
+                        'i.DateEmission',
+                        'i.description',
+                    'i.piece',
+                        'h.libelle as hierarchie',
+                    DB::raw('COALESCE(i.DateResolue, "Pas encore résolue") as DateResolue'),
+                        DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
+                        DB::raw('COALESCE(s.libelle, "En attente") as etats'),
+                    DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersA'),
+                    DB::raw('COALESCE(CONCAT(uE.nom, " ", uE.prenom), "En attente") as usersE'),
+                        'i.created_at',
+                        'u.idUser as user_id',
+                    'uE.idUser as userE_id',
+                    )
+                    ->orderBy('i.created_at', 'asc');
+            } 
+            else 
+            {
+                $query = DB::table('incidents as i')
+                    ->leftJoin('hierarchies as h', 'i.hierarchie', '=', 'h.id')
+                    ->leftJoin('categories as c', 'i.cat', '=', 'c.id')
+                    ->leftJoin('utilisateurs as u', 'i.affecter', '=', 'u.idUser')
+                    ->leftJoin('utilisateurs as uE', 'i.Emetteur', '=', 'uE.idUser')
+                    ->leftJoin('settings as s', 'i.etat', '=', 's.id')
+                    ->select(
+                        'i.id',
+                        'i.Module',
+                        'i.affecter',
+                        'i.etat',
+                        'i.DateEmission',
+                        'i.description',
+                    'i.piece',
+                        'h.libelle as hierarchie',
+                    DB::raw('COALESCE(i.DateResolue, "Pas encore résolue") as DateResolue'),
+                        DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
+                        DB::raw('COALESCE(s.libelle, "En attente") as etats'),
+                    DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersA'),
+                    DB::raw('COALESCE(CONCAT(uE.nom, " ", uE.prenom), "En attente") as usersE'),
+                        'i.created_at',
+                    'u.idUser as user_id',
+                    'uE.idUser as userE_id',
+                    )
+                    ->where("i.Emetteur", session("utilisateur")->idUser)
+                    ->orderBy('i.created_at', 'asc');
             }
 
-            $format = $request->format;
+            $list = $query->get();
+            
 
             // Récupérer la date actuelle pour l'exportation
             $dateExp = now()->format('d-m-Y');
+
+            $format = $request->format;
 
             // Générer le fichier en fonction du format demandé
             switch ($format) {
@@ -458,26 +506,111 @@ class IncidentAdminController extends Controller
         }
     }
 
+    //incident export recherche
+    public function exportincidentrech(Request $request)
+    {
+        try {
+
+            $list = json_decode($request->input('Gliste'), true); 
+
+            // Récupérer la date actuelle pour l'exportation
+            $dateExp = now()->format('d-m-Y');
+
+            $format = $request->format;
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new IncidentRechpdf($list);
+                    //dd($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="IncidentExport_'. $dateExp .'.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new IncidentRech($list), 'IncidentExport_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
+        }
+    }
+
     //export declaration incident
     public function expdeclincident(Request $request)
     {
         try {
 
-            if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
-                $list = Incident::where('id', $request->idlin)->orderBy('incidents.created_at', 'desc')->paginate(100);
+            if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) {
+                // Super admin ou autres utilisateurs spécifiques
+                $query = DB::table('incidents as i')
+                    ->leftJoin('hierarchies as h', 'i.hierarchie', '=', 'h.id')
+                    ->leftJoin('categories as c', 'i.cat', '=', 'c.id')
+                    ->leftJoin('utilisateurs as u', 'i.affecter', '=', 'u.idUser')
+                    ->leftJoin('utilisateurs as uE', 'i.Emetteur', '=', 'uE.idUser')
+                    ->leftJoin('settings as s', 'i.etat', '=', 's.id')
+                    ->select(
+                        'i.id',
+                        'i.Module',
+                        'i.affecter',
+                        'i.etat',
+                        'i.DateEmission',
+                        'i.description',
+                        'i.piece',
+                        'h.libelle as hierarchie',
+                        DB::raw('COALESCE(i.DateResolue, "Pas encore résolue") as DateResolue'),
+                        DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
+                        DB::raw('COALESCE(s.libelle, "En attente") as etats'),
+                        DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersA'),
+                        DB::raw('COALESCE(CONCAT(uE.nom, " ", uE.prenom), "En attente") as usersE'),
+                        'i.created_at',
+                        'u.idUser as user_id',
+                        'uE.idUser as userE_id'
+                    )
+                    ->where('i.id', $request->idlin)
+                    ->orderBy('i.created_at', 'asc');
             } else {
-                // Afficher les incidents reçu
-                $list = Incident::where('affecter', session("utilisateur")->affecter)
-                    ->where('id', $request->idlin)
-                    ->orderBy('incidents.created_at', 'desc')
-                    ->paginate(100);
+                // Autres utilisateurs (non admin)
+                $query = DB::table('incidents as i')
+                    ->leftJoin('hierarchies as h', 'i.hierarchie', '=', 'h.id')
+                    ->leftJoin('categories as c', 'i.cat', '=', 'c.id')
+                    ->leftJoin('utilisateurs as u', 'i.affecter', '=', 'u.idUser')
+                    ->leftJoin('utilisateurs as uE', 'i.Emetteur', '=', 'uE.idUser')
+                    ->leftJoin('settings as s', 'i.etat', '=', 's.id')
+                    ->select(
+                        'i.id',
+                        'i.Module',
+                        'i.affecter',
+                        'i.etat',
+                        'i.DateEmission',
+                        'i.description',
+                        'i.piece',
+                        'h.libelle as hierarchie',
+                        DB::raw('COALESCE(i.DateResolue, "Pas encore résolue") as DateResolue'),
+                        DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
+                        DB::raw('COALESCE(s.libelle, "En attente") as etats'),
+                        DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersA'),
+                        DB::raw('COALESCE(CONCAT(uE.nom, " ", uE.prenom), "En attente") as usersE'),
+                        'i.created_at',
+                        'u.idUser as user_id',
+                        'uE.idUser as userE_id'
+                    )
+                    ->where('i.Emetteur', session("utilisateur")->idUser)
+                    ->where('i.id', $request->idlin)
+                    ->orderBy('i.created_at', 'asc');
             }
+            
+            // Récupérer la liste des incidents
+            $list = $query->get();
+            
             //dd($list);       
 
-            $format = $request->format;
-
             // Récupérer la date actuelle pour l'exportation
-            $dateExp = now()->format('d-m-Y');
+            $dateExp = now()->format('d-m-Y');    
+
+            $format = $request->format;
 
             // Générer le fichier en fonction du format demandé
             switch ($format) {

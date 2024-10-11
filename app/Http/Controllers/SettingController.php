@@ -18,6 +18,12 @@ class SettingController extends Controller
         return view('viewadmindste.setting.list', compact('list'));
     }
 
+    public function listentete()
+    {
+        $list = Setting::all();
+        return view('viewadmindste.setting.listentete', compact('list'));
+    }
+
     public function add(Request $request)
     {
         try {
@@ -86,7 +92,6 @@ class SettingController extends Controller
 
     public function modif(Request $request)
     {
-
         try {
             if (!in_array("update_service", session("auto_action"))) {
                 return view("vendor.error.649");

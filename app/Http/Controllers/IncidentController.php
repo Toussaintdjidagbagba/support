@@ -6,13 +6,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\IncidentDeclarRech;
+use App\Exports\IncidentDeclarRechPdf;
 use Illuminate\Http\Request;
 use App\Models\Incident;
 use App\Models\Trace;
 use App\Providers\InterfaceServiceProvider;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class IncidentController extends Controller
 {
@@ -38,48 +42,49 @@ class IncidentController extends Controller
             DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
             DB::raw('COALESCE(s.libelle, "En attente") as etat'),
             'i.created_at',
+            'i.avis',
             'c.tmpCat'
         )
-            ->where("i.Emetteur", session("utilisateur")->idUser)
-            ->orderBy('i.created_at', 'desc');
+            ->where("i.Emetteur", session("utilisateur")->idUser);
 
-        if ($request->filled('date_emission')) {
-            $query->whereDate('i.DateEmission', $request->date_emission);
-        }
+        $query->where(function ($q) use ($request) {
+            if ($request->filled('date_emission')) {
+                $q->whereDate('i.DateEmission', $request->date_emission);
+            }
 
-        if ($request->filled('hierarchie')) {
-            $query->where('h.libelle', 'like', '%' . htmlspecialchars(trim($request->hierarchie)) . '%');
-        }
+            if ($request->filled('hierarchie')) {
+                $q->orWhere('h.libelle', 'like', '%' . htmlspecialchars(trim($request->hierarchie)) . '%');
+            }
 
-        if ($request->filled('desc')) {
-            $query->where('i.description', 'like', '%' . htmlspecialchars(trim($request->desc)) . '%');
-        }
+            if ($request->filled('desc')) {
+                $q->orWhere('i.description', 'like', '%' . htmlspecialchars(trim($request->desc)) . '%');
+            }
 
-        if ($request->filled('modules')) {
-            $query->where('i.Module', 'like', '%' . htmlspecialchars(trim($request->modules)) . '%');
-        }
+            if ($request->filled('modules')) {
+                $q->orWhere('i.Module', 'like', '%' . htmlspecialchars(trim($request->modules)) . '%');
+            }
 
-        if ($request->filled('categorie')) {
-            $query->where(DB::raw('COALESCE(c.libelle, "")'), 'like', '%' . htmlspecialchars(trim($request->categorie)) . '%');
-        }
+            if ($request->filled('categorie')) {
+                $q->orWhere(DB::raw('COALESCE(c.libelle, "")'), 'like', '%' . htmlspecialchars(trim($request->categorie)) . '%');
+            }
+        });
 
-        $list = $query->get();
+        $list = $query->orderBy('i.created_at', 'desc')->get();
 
         // Calcul du temps restant pour chaque incident
         $list->transform(function ($incident) {
             // Récupération du délai
             $valeurDelai = (int)$incident->tmpCat;
-
             $secondesDelai = $valeurDelai * 3600;
-
+            
             $timestampEmission = strtotime($incident->created_at);
             $timestampLimite = $timestampEmission + $secondesDelai;
-
+            
             $timestampNow = time();
-
+            
             $tempsRestant = $timestampLimite - $timestampNow;
             $etat = Incident::where('id', $incident->id)->first(); // Vérification de l'état actuel de l'incident
-
+            
             // Formatage du temps restant
             $tempsRestantFormate = "Non défini";
             if ($etat) {
@@ -90,7 +95,7 @@ class IncidentController extends Controller
                         $heuresRestantes = floor($tempsRestant / 3600);
                         $minutesRestantes = floor(($tempsRestant % 3600) / 60);
                         $secondesRestantes = $tempsRestant % 60;
-                        $tempsRestantFormate = sprintf('%02d h %02d m %02d s', $heuresRestantes, $minutesRestantes, $secondesRestantes);
+                        $tempsRestantFormate = sprintf('%02d h', $heuresRestantes);
                     } else {
                         $tempsRestantFormate = "Temps écoulé";
                     }
@@ -281,4 +286,38 @@ class IncidentController extends Controller
             return Back();
         }
     }
+
+    //export recherche incidents déclarés
+    public function exportincidentrech(Request $request)
+    {
+        try {
+
+            $list = json_decode($request->input('Gliste'), true); 
+
+            //dd($list);
+            
+            // Récupérer la date actuelle pour l'exportation
+            $dateExp = now()->format('d-m-Y');    
+
+            $format = $request->format;
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new IncidentDeclarRechPdf($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="Incident_'. $dateExp .'.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new IncidentDeclarRech($list), 'Incident_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
+        }
+    }
+
 }

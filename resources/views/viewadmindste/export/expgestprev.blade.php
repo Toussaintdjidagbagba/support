@@ -78,6 +78,28 @@
             color: #111111;
         }
 
+        /* Footer styles */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: #fff;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .footer .title-footer {
+            flex: 1;
+            font-size: 12px;
+            white-space: normal;
+            padding: 0 10px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -86,14 +108,21 @@
         <table>
             @foreach($list as $maint)
                 <tr>
-                    <td class="ser">Periode Début :</td>
-                    <td>{{App\Providers\InterfaceServiceProvider::formatDate($maint->periodedebut)}}</td>
-                    <td class="ser">Période Fin :</td>
-                    <td>{{ App\Providers\InterfaceServiceProvider::formatDate($maint->periodefin) }}</td>
+                    <td class="ser">Periode Début </td>
+                    <td>{{$maint->periodedebut}}</td>
+                    <td class="ser">Période Fin </td>
+                    <td>{{ $maint->periodefin}}</td>
                 </tr>
                 <tr>
-                    <td class="ser">Technicien :</td>
+                    <td class="ser">Technicien </td>
                     <td colspan="3">{{App\Providers\InterfaceServiceProvider::LibelleUser($maint->user)}}</td>
+                </tr>
+                <tr>
+                    <td class="ser">Utilisateur </td>
+                    <td colspan="3">{{App\Providers\InterfaceServiceProvider::getUserOutil($maint->outil)
+                        
+                        
+                        }}</td>
                 </tr>
             @endforeach
         </table><br>
@@ -114,6 +143,12 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+    <!-- Footer -->
+    <div class="footer">
+        <div class="title-footer">
+            Date d'exportation : {{ now()->format('d/m/Y') }}
+        </div>
     </div>
 </body>
 </html>

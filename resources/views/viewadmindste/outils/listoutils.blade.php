@@ -16,7 +16,53 @@
             </h2>
         </div>
         <div class="row clearfix">
-
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                <div id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="card">
+                        <div class="header" style="padding: 0; border-radius: 0;" role="tab" id="headingOne">
+                            <div role="button" class="filter-toggle" data-toggle="collapse" data-parent="#accordion"
+                                href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <div class="filter-content">
+                                    <i class="material-icons">folder_open</i>
+                                    <span class="filter-text">Filtre</span>
+                                </div>
+                                <i class="material-icons chevron-icon">expand_more</i>
+                            </div>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                            <div class="body">
+                                <form role="form">
+                                    <div class="row clearfix">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="input-group">
+                                                <label for="outils">Outils :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="outils" id="outils"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- <div class="col-12 text-center">
+                                            <button onclick="searchButton(event)"
+                                                class="btn btn-info btn-md">Rechercher</button> --}}
+                                        </div>
+                                    </div>
+                                    {{-- <div>
+                                        <button type="button" class="btn btn-danger"
+                                            style="margin-left: 25px; margin-bottom: 0px;"
+                                            onclick="paramrech('pdf')">PDF</button>
+                                        <button type="button" class="btn btn-success"
+                                            style="margin-left: 25px; margin-bottom: 0px;"
+                                            onclick="paramrech('xlsx')">XLSX</button>
+                                    </div> --}}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="card">
                     <div class="header">
@@ -45,18 +91,7 @@
                                     </li>
                                 </ul>
                             </li>
-                        </ul><br><br>
-                        <form action="{{ route('GO') }}" method="get" role="form">
-                            <div class="input-group">
-                                <div class="form-line">
-                                    <input type="search" name="q" id="searchForm" placeholder="Mot clé..."
-                                        class="form-control">
-                                </div>
-                                <div class="input-group-addon">
-                                    <button type="submit" class="btn btn-info btn-md"> Rechercher</button>
-                                </div>
-                            </div>
-                        </form>
+                        </ul>
                     </div>
                     <div class="body">
                         <div class="table-responsive" data-pattern="priority-columns">
@@ -183,7 +218,6 @@
                 document.getElementById('infosaveoutil').innerHTML =
                 "<div class='alert alert-danger alert-block'>Veuillez sélectionner une catégorie d'outil avant de continuer.. </div>";
             else {
-                // Récuperer tous les champ possible dans la catégorie
                 try {
                     let response = await fetch("{{ route('GCCO') }}?cat=" + catchoisi, {
                         method: 'get',
@@ -206,7 +240,6 @@
                             contenu += '<input type="' + currentline["type"] + '" id="' + currentline["code"] +
                                 '" name="' + currentline["code"] +
                                 '" class="form-control outiladd" placeholder="">';
-                            //contenu += ;
                             contenu += '</div>';
                             contenu += '</div>';
                             contenu += '</div>';
@@ -726,6 +759,31 @@
             csrfToken.name = '_token';
             csrfToken.value = '{{ csrf_token() }}';
             form.appendChild(csrfToken);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+
+        function paramrech(format) {
+            console.log(listData);
+
+            var form = document.createElement('form');
+            form.method = 'get';
+            form.action = '{{ route('outilsrechexp') }}';
+
+            var inputExport = document.createElement('input');
+            inputExport.type = 'hidden';
+            inputExport.name = 'format';
+            inputExport.value = format;
+            form.appendChild(inputExport);
+
+            // Ajouter le champ de recherche
+            var inputListData = document.createElement('input');
+            inputListData.type = 'hidden';
+            inputListData.name = 'listData';
+            inputListData.value = JSON.stringify(listData);
+            form.appendChild(inputListData);
 
             document.body.appendChild(form);
             form.submit();

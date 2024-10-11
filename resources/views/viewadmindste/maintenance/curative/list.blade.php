@@ -43,9 +43,9 @@
                                 <tbody>
                                     @forelse($list as $maint)
                                         <tr>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }}
+                                            <td>{{ $maint->periodedebut }}
                                             </td>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::formatTime($maint->periodefin) }}
+                                            <td>{{ $maint->periodefin }}
                                             </td>
                                             <td>{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}
                                             </td>
@@ -56,7 +56,7 @@
                                                     <button type="button" title="Etat"
                                                         class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#etatmaintenance"
-                                                        onclick="setetatmaintenance({{ $maint->id }},'{{ $maint->etat }}','{{ $maint->commentaire }}', '{{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }} au {{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodefin) }}')">
+                                                        onclick="setetatmaintenance({{ $maint->id }},'{{ $maint->etat }}','{{ $maint->commentaire }}', '{{ $maint->periodedebut }} au {{ $maint->periodefin }}')">
                                                         <i class="material-icons">gps_fixed</i></a> </button>
                                                 @endif
                                             </td>
@@ -96,7 +96,7 @@
                                                 @if (in_array('delete_maint_prog', session('auto_action')))
                                                     <button type="button" title="Supprimer"
                                                         data-token="{{ csrf_token() }}" data-Id="{{ $maint->id }}"
-                                                        onclick="Delete(event, '{{ route('DMCR') }}','{{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }} au {{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodefin) }}')"
+                                                        onclick="Delete(event, '{{ route('DMCR') }}','{{ $maint->periodedebut }} au {{ $maint->periodefin }}')"
                                                         class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
                                                         <i class="material-icons">delete_sweep</i></a> </button>
                                                 @endif

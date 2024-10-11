@@ -3,6 +3,7 @@
 use App\Exports\MaintPreventiveExport;
 use App\Http\Controllers\CategorieOutilsController;
 use App\Http\Controllers\IncidentAdminController;
+use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\OutilController;
 use Illuminate\Support\Facades\Artisan;
@@ -130,6 +131,7 @@ Route::group([
 	///////////////////////////////////** Incident Admin **///////////////////////////////////////////////////////////
 
 	Route::get('/incidents', 'App\Http\Controllers\IncidentAdminController@getincident')->name('GIA');
+	Route::get('/incidentsAdminData', 'App\Http\Controllers\IncidentAdminController@getincidentData')->name('GIADTA');
 	Route::post('/incidents', 'App\Http\Controllers\IncidentAdminController@setincident')->name('GISA');
 	Route::get('/delete-incidents-{id}', 'App\Http\Controllers\IncidentAdminController@deleteincident')->name('DIA');
 	Route::get('/modif-incidents-{id}', 'App\Http\Controllers\IncidentAdminController@getmodifyincident')->name('MTIA');
@@ -188,7 +190,15 @@ Route::group([
 	Route::get('/commentaire', 'App\Http\Controllers\MaintenanceController@validecommentaire')->name('CMU');
 
 	//////////////////////////////////** Les Exports **//////////////////////////
+	
 	Route::post('export-incident', [IncidentAdminController::class, 'exportincident'])->name('incident.export');
+
+	Route::get('export-incidentgestionrecherche', [IncidentAdminController::class, 'exportincidentrech'])->name('incidentrechexp');
+	
+	Route::get('export-incidentdeclarationrecherche', [IncidentController::class, 'exportincidentrech'])->name('indrechexp');
+	
+	Route::get('export-outilsrecherche', [OutilController::class, 'exportoutilsrech'])->name('outilsrechexp');
+
 	Route::post('export-outils', [OutilController::class, 'exportoutils'])->name('outils.export');
 	
 	Route::get('/outilshisto/export', 'App\Http\Controllers\OutilController@expoutilhisto')->name('outilshisto.export');
@@ -203,9 +213,9 @@ Route::group([
 	
 	Route::get('export-gestionpreventive', [MaintenanceController::class, 'expgestprev'])->name('export.gestprev');
 
+	// /////////////////////////////  Paramétrage des entêtes  ///////////////////////////////////////
 
-
-
+	Route::get('/settings-entete', 'App\Http\Controllers\SettingController@listentete')->name('GERAP');
 });
 	
 /* 

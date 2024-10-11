@@ -32,7 +32,6 @@
                             <div class="body">
                                 <form role="form">
                                     <div class="row clearfix">
-                                        <input type="hidden" name="q" id="qs">
                                         <div class="col-lg-6 col-md-6 col-sm-12">
                                             <div class="input-group">
                                                 <label for="dateEmission">Date Emission :</label>
@@ -78,6 +77,15 @@
                                             <button onclick="searchButton(event)"
                                                 class="btn btn-info btn-md">Rechercher</button>
                                         </div>
+                                    </div>
+                                    <br>
+                                    <div>
+                                        <button type="button" class="btn btn-danger"
+                                            style="margin-left: 25px; margin-bottom: 0px;"
+                                            onclick="paramrech('pdf')">PDF</button>
+                                        <button type="button" class="btn btn-success"
+                                            style="margin-left: 25px; margin-bottom: 0px;"
+                                            onclick="paramrech('xlsx')">XLSX</button>
                                     </div>
                                 </form>
                             </div>
@@ -134,6 +142,7 @@
             Deletes: "{{ route('DI', ':id') }}",
             Updates: "{{ route('MTI', ':id') }}",
         }
+        let Gliste;
 
         function getid(id) {
             document.getElementById("anoid").value = id;
@@ -261,12 +270,13 @@
                     URL.revokeObjectURL(output.src);
                 }
             } else {
-                alert('Seules les images JPG ou PNG sont autorisées.');
+                Swal.fire("Succès", "Seules les images JPG ou PNG sont autorisées.", "success");
                 event.target.value = ''; // réinitialiser le champ fichier
             }
         };
+
         window.onload = function() {
-            maFonction();
+            recupListIncident();
         };
 
         async function searchButton(event) {
@@ -301,7 +311,9 @@
                     }
                     let data = await response.json();
                     let list = data.list;
-
+                    console.log(list);
+                    
+                    Gliste = data.list;
                     afficherDonnees(list);
                 } else {
                     throw new Error("Erreur lors de la récupération des données: " + response.status);
@@ -311,7 +323,7 @@
             }
         }
 
-        async function maFonction() {
+        async function recupListIncident() {
             console.log("Toutes les ressources de la page sont chargées, la fonction est exécutée.");
 
             try {
@@ -330,7 +342,6 @@
                     }
 
                     data = await response.json();
-                    // console.log(data.list);
                     afficherDonnees(data.list);
                 }
             } catch (error) {
@@ -346,7 +357,7 @@
                 tbody.innerHTML = `<tr><td colspan="9"><center>Pas d'incident enregistrés !!!</center></td></tr>`;
                 return;
             }
-            console.log(list);
+
             list.forEach((currentline, index, arry) => {
 
                 const contenu = '<tr>' +
@@ -375,8 +386,7 @@
                             ')" data-id="getid(' + currentline["id"] +
                             ')" data-color="deep-orange" data-toggle="modal" data-target="#avis"><i class="material-icons">grade</i></a>'
                         ) :
-                        ''
-                    ) +
+                        '') +
                     '</td>' +
                     '<td>' +
                     (currentline["statut"] !== 1 ? (sessionUpdate ?
@@ -394,6 +404,29 @@
                     '</tr>';
                 tbody.innerHTML += contenu;
             });
+        }
+
+        function paramrech(format) {
+
+            var form = document.createElement('form');
+            form.method = 'get';
+            form.action = '{{ route('indrechexp') }}';
+
+            var inputExport = document.createElement('input');
+            inputExport.type = 'hidden';
+            inputExport.name = 'format';
+            inputExport.value = format;
+            form.appendChild(inputExport);
+
+            // Ajouter le champ de recherche
+            var inputListData = document.createElement('input');
+            inputListData.type = 'hidden';
+            inputListData.name = 'Gliste';
+            inputListData.value = JSON.stringify(Gliste);
+            form.appendChild(inputListData);
+
+            document.body.appendChild(form);
+            form.submit();
         }
     </script>
 @endsection

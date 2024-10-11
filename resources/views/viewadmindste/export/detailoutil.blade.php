@@ -5,51 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fiche d'intervention</title>
     <style>
+        .details-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+        }
 
-.details-container {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-    font-family: Arial, sans-serif;
-}
+        h4 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
 
-h4 {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
+        h5 {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
 
-h5 {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
+        .details-section {
+            margin-top: 10px;
+        }
 
-.details-section {
-    margin-top: 10px;
-}
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
 
-.details-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
+        .details-grid div {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
 
-.details-grid div {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-}
+        .details-grid div strong {
+            font-weight: 600;
+            display: block;
+        }
 
-.details-grid div strong {
-    font-weight: 600;
-    display: block;
-}
+        .details-grid div p {
+            margin: 5px 0 0;
+            font-size: 14px;
+            color: #333;
+        }
 
-.details-grid div p {
-    margin: 5px 0 0;
-    font-size: 14px;
-    color: #333;
-}
+        /* Footer styles */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: #fff;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .footer .title-footer {
+            flex: 1;
+            font-size: 12px;
+            white-space: normal;
+            padding: 0 10px;
+            font-weight: bold;
+        }
 
     </style>
 </head>
@@ -71,6 +93,11 @@ h5 {
         </div>
        
     </div>
-    
+    <!-- Footer -->
+    <div class="footer">
+        <div class="title-footer">
+            Date d'exportation : {{ now()->format('d/m/Y') }}
+        </div>
+    </div>
 </body>
 </html>
