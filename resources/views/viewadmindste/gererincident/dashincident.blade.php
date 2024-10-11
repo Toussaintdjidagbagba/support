@@ -406,7 +406,7 @@
                             '<td>' + currentline["DateResolue"] +
                             '</td>' +
                             '<td class="d-flex justify-content-between align-items-center">' +
-                            '<span>' + currentline["usersE"] + '</span>' +
+                            '<span>' + currentline["usersA"] + '</span>' +
                             (sessionAffecIncie ?
                                 '<button class="btn bg-deep-orange waves-effect btn-circle btn-xs ml-2" data-target="#affecteincident" data-color="deep-orange" data-toggle="modal" onClick="getaffectation(' +
                                 currentline["id"] + ')" title="Affectation">' +

@@ -38,17 +38,6 @@
             </h2>
         </div>
         <div class="row clearfix">
-            <div class="">
-                <form action="{{ route('dashboard') }}" method="get" role="form" class="">
-                    <div class="pull-left justify-content-between align-items-center">
-                        <input type="search" name="q" id="searchForm" placeholder="Mot clé..." class="form-control"
-                            aria-label="Search">
-                        <button type="submit" class="btn btn-info btn-md">Rechercher</button>
-                    </div>
-                </form>
-            </div>
-        </div> 
-        <div class="row clearfix">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <div class="card">
                     <div class="header">
