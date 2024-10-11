@@ -97,7 +97,10 @@
                 </tr>
                 <tr>
                     <td class="ser">Utilisateur </td>
-                    <td colspan="3">{{App\Providers\InterfaceServiceProvider::getUserOutil($maint->outil)}}</td>
+                    <td colspan="3">{{App\Providers\InterfaceServiceProvider::getUserOutil($maint->outil)
+                        
+                        
+                        }}</td>
                 </tr>
             @endforeach
         </table><br>

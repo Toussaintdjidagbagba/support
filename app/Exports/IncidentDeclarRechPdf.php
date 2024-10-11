@@ -43,4 +43,5 @@ class IncidentDeclarRechPdf
 
         return $filePath;
     }
+
 }

@@ -450,6 +450,7 @@
                     data = await response.text();
                     contenu = "";
                     list = JSON.parse(data).data;
+                    console.log(list);
                     list.forEach(function(currentline, index, arry) {
                         contenu += '<tr>';
                         contenu += '<td>' + currentline["created_at"] + '</td>';

@@ -6,7 +6,6 @@
 @endsection
 
 @section('content')
-
     <div class="container-fluid">
         <div class="block-header">
             @include('flash::message')
@@ -16,7 +15,88 @@
             </h2>
         </div>
         <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="card">
+                        <div class="header" style="padding: 0; border-radius: 0;" role="tab" id="headingOne">
+                            <div role="button" class="filter-toggle" data-toggle="collapse" data-parent="#accordion"
+                                href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <div class="filter-content">
+                                    <i class="material-icons">folder_open</i>
+                                    <span class="filter-text">Filtre</span>
+                                </div>
+                                <i class="material-icons chevron-icon">expand_more</i>
+                            </div>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                            <div class="body">
+                                <form role="form">
+                                    <div class="row clearfix">
+                                        <input type="hidden" name="q" id="qs">
+                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                            <div class="input-group">
+                                                <label for="dateEmission">Date Emission :</label>
+                                                <div class="form-line">
+                                                    <input type="date" name="date_emission" id="dateEmission"
+                                                        placeholder="Date d'émission..."
+                                                        class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <label for="hierarchie">Hiérarchie :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="hierarchie" id="hierarchie"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <label for="desc">Description :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="desc" id="desc"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                        </div>
 
+                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                            <div class="input-group">
+                                                <label for="modules">Modules :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="modules" id="modules"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <label for="categorie">Catégorie :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="categorie" id="categorie"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 text-center">
+                                            <button onclick="searchButton(event)"
+                                                class="btn btn-info btn-md">Rechercher</button>
+                                        </div>
+                                    </div>
+
+                                    <br>
+                                    <div>
+                                        <button type="button" class="btn btn-danger"
+                                            style="margin-left: 25px; margin-bottom: 0px;"
+                                            onclick="paramrech('pdf')">PDF</button>
+                                        <button type="button" class="btn btn-success"
+                                            style="margin-left: 25px; margin-bottom: 0px;"
+                                            onclick="paramrech('xlsx')">XLSX</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="card">
                     <div class="header">
@@ -27,30 +107,9 @@
                                 class="btn bg-deep-orange waves-effect" data-color="deep-orange" data-toggle="modal"
                                 data-target="#add">Ajouter</button>
                         </h2>
-                        <br>
-                        <form action="{{ route('GI') }}" method="get" role="form">
-                            <div class="input-group">
-                                <div class="form-line">
-                                    <input type="search" name="q" id="searchForm" placeholder="Mot clé..."
-                                        class="form-control">
-                                </div>
-                                <div class="input-group-addon">
-                                    <button type="submit" class="btn btn-info btn-md"> Rechercher</button>
-                                </div>
-                            </div>
-                            <div>
-                                <script>
-                                    var listData = @json($list);
-
-                                </script>
-                                <button type="button" class="btn btn-danger" style="margin-left: 25px; margin-bottom: 0px;"
-                                    onclick="paramrech('pdf')">PDF</button>
-                                <button type="button" class="btn btn-success"
-                                    style="margin-left: 25px; margin-bottom: 0px;" onclick="paramrech('xlsx')">XLSX</button>
-                            </div>
-                        </form>
                     </div>
                     <div class="body">
+                        <input type="hidden" name="idH" id="idH">
                         <div class="table-responsive" data-pattern="priority-columns">
                             <table id="tech-companies-1" class="table table-small-font table-bordered table-striped">
                                 <thead>
@@ -66,79 +125,10 @@
                                         <th data-priority="6">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @forelse($list as $inc)
-                                        <tr>
-                                            <th>
-                                                <span
-                                                    class="co-name">{{ App\Providers\InterfaceServiceProvider::formatDate($inc->DateEmission) }}
-                                                </span>
-                                            </th>
-                                            <td>{{ $inc->Module }}</td>
-                                            <td>{{ $inc->description ?? '---' }}</td>
-                                            <td>
-                                                @php
-                                                    $hiera = App\Providers\InterfaceServiceProvider::LibelleHier(
-                                                        $inc->hierarchie,
-                                                    );
-                                                @endphp
-                                                @if ($hiera)
-                                                    <span
-                                                        class="@if ($hiera == 'Bloquant') text-danger @elseif ($hiera == 'Gênant') text-warning @elseif ($hiera == 'Confort') text-primary @endif">
-                                                        {{ $hiera }}
-                                                    </span>
-                                                @else
-                                                    <span>Aucune hiérarchie</span>
-                                                @endif
-                                            </td>
-                                            </td>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::LibelleCat($inc->cat) }}</td>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::TempsCats($inc->id, $inc->cat, $inc->created_at) }}
-                                            </td>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::libetat($inc->etat) }}
-                                            </td>
-                                            <td class="d-flex justify-content-between align-items-center">
-                                                @if ($inc->avis == '' || $inc->avis == null)
-                                                    <a class="btn bg-blue btn-circle btn-xs ml-2 item-center"
-                                                        onclick="getid({{ $inc->id }})"
-                                                        data-id="getid({{ $inc->id }})" data-color="deep-orange"
-                                                        data-toggle="modal" data-target="#avis"><i
-                                                            class="material-icons">grade</i></a>
-                                                @else
-                                                    {{ $inc->avis }}
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if ($inc->statut != 1)
-                                                    @if (in_array('update_incident', session('auto_action')))
-                                                        <button type="button" title="Modifier"
-                                                            class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                            <a href="{{ route('MTI', $inc->id) }}" style="color:white;"> <i
-                                                                    class="material-icons">system_update_alt</i></a>
-
-                                                        </button>
-                                                    @endif
-
-                                                    @if (in_array('delete_incident', session('auto_action')))
-                                                        <button type="button" title="Supprimer" style="color:white;"
-                                                            onclick="Delete(event,'{{ route('DI', $inc->id) }}')"
-                                                            class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"><i
-                                                                class="material-icons">delete_sweep</i>
-                                                        </button>
-                                                    @endif
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="9">
-                                                <center>Pas d'incident enregistrer!!!</center>
-                                            </td>
-                                        </tr>
-                                    @endforelse
+                                <tbody id="data-tbody">
                                 </tbody>
                             </table>
-                            {{ $list->links() }}
+                            {{-- {{ $list->links() }} --}}
                         </div>
 
                     </div>
@@ -148,6 +138,14 @@
         </div>
     </div>
     <script>
+        const sessionUpdate = "{{ in_array('update_incident', session('auto_action')) }}";
+        const sessionDelete = "{{ in_array('delete_incident', session('auto_action')) }}";
+        const router = {
+            Deletes: "{{ route('DI', ':id') }}",
+            Updates: "{{ route('MTI', ':id') }}",
+        }
+        let Gliste;
+
         function getid(id) {
             document.getElementById("anoid").value = id;
         }
@@ -267,7 +265,7 @@
             var output = document.getElementById('output');
             var file = event.target.files[0];
 
-                                            // Vérification du type de fichier avant de charger l'image
+            // Vérification du type de fichier avant de charger l'image
             if (file.type === "image/jpeg" || file.type === "image/png") {
                 output.src = URL.createObjectURL(file);
                 output.onload = function() {
@@ -279,14 +277,143 @@
             }
         };
 
+        window.onload = function() {
+            maFonction();
+        };
 
-        function paramrech(format) 
-        {
-            console.log(listData);
+        async function searchButton(event) {
+            event.preventDefault();
+            const dateEmission = document.getElementById('dateEmission').value;
+            const hierarchie = document.getElementById('hierarchie').value;
+            const desc = document.getElementById('desc').value;
+            const modules = document.getElementById('modules').value;
+            const categorie = document.getElementById('categorie').value;
+
+            const params = new URLSearchParams({
+                date_emission: dateEmission,
+                hierarchie: hierarchie,
+                desc: desc,
+                modules: modules,
+                categorie: categorie
+            }).toString();
+
+            try {
+                let response = await fetch("{{ route('GIDTA') }}?" + params, {
+                    method: 'GET',
+                    headers: {
+                        'Access-Control-Allow-Credentials': true,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (response.status == 200) {
+                    if (!response.ok) {
+                        throw new Error("Erreur lors de la récupération des données: " + response.status);
+                    }
+                    let data = await response.json();
+                    let list = data.list;
+                    Gliste = data.list;
+                    afficherDonnees(list);
+                } else {
+                    throw new Error("Erreur lors de la récupération des données: " + response.status);
+                }
+            } catch (error) {
+                console.error("Erreur attrapée:", error);
+            }
+        }
+
+        async function maFonction() {
+            console.log("Toutes les ressources de la page sont chargées, la fonction est exécutée.");
+
+            try {
+                let response = await fetch("{{ route('GIDTA') }}", {
+                    method: 'GET',
+                    headers: {
+                        'Access-Control-Allow-Credentials': true,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (response.status == 200) {
+                    if (!response.ok) {
+                        throw new Error("Erreur lors de la récupération des données: " + response.status);
+                    }
+
+                    data = await response.json();
+                   
+                    afficherDonnees(data.list);
+                }
+            } catch (error) {
+                console.error("Erreur attrapée:", error);
+            }
+        }
+
+        function afficherDonnees(list) {
+            const tbody = document.getElementById('data-tbody');
+            tbody.innerHTML = '';
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9"><center>Pas d'incident enregistrés !!!</center></td></tr>`;
+                return;
+            }
+            console.log(list);
+            list.forEach((currentline, index, arry) => {
+
+                const contenu = '<tr>' +
+                    '<th><span class="co-name">' + currentline["DateEmission"] + '</span></th>' +
+                    '<td>' + currentline["Module"] + '</td>' +
+                    '<td>' + (currentline["description"] || '---') + '</td>' +
+                    '<td>' +
+                    '<span class="' +
+                    (currentline["hierarchie"] === 'Bloquant' ? 'text-danger' :
+                        currentline["hierarchie"] === 'Gênant' ? 'text-warning' :
+                        currentline["hierarchie"] === 'Confort' ? 'text-primary' : '') +
+                    '">' +
+                    (currentline["hierarchie"] || 'Aucune hiérarchie') +
+                    '</span>' +
+                    '</td>' +
+                    '<td>' + currentline["cat"] + '</td>' +
+                    '<td>' + currentline["tempsRestant"] +
+                    '</td>' +
+                    '<td>' + currentline["etat"] + '</td>' +
+                    '<td class="d-flex justify-content-between align-items-center">' +
+                    (
+                        ((currentline["etat"] != "En attente") && (currentline["etat"] === "Incident résolu")) ?
+                        (currentline["avis"] ? currentline["avis"] :
+                            '<a class="btn bg-blue btn-circle btn-xs ml-2 item-center" onclick="getid(' +
+                            currentline["id"] +
+                            ')" data-id="getid(' + currentline["id"] +
+                            ')" data-color="deep-orange" data-toggle="modal" data-target="#avis"><i class="material-icons">grade</i></a>'
+                        ) :
+                        ''
+                    ) +
+                    '</td>' +
+                    '<td>' +
+                    (currentline["statut"] !== 1 ? (sessionUpdate ?
+                            '<button type="button" title="Modifier" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
+                            '<a href="' + router.Updates.replace(':id', currentline["id"]) +
+                            '" style="color:white;"><i class="material-icons">system_update_alt</i></a>' +
+                            '</button>' : ''
+                        ) + (sessionDelete ?
+                            '<button type="button" title="Supprimer" style="color:white;" onclick="Delete(event, \'' +
+                            router.Deletes.replace(':id', currentline["id"]) +
+                            '\')" class="btn btn-danger btn-circle btn-xs margin-bottom-10 waves-effect waves-light"><i class="material-icons">delete_sweep</i></button>' :
+                            '') :
+                        '') +
+                    '</td>' +
+                    '</tr>';
+                tbody.innerHTML += contenu;
+            });
+        }
+
+        function paramrech(format) {
+            console.log(Gliste);
 
             var form = document.createElement('form');
-            form.method = 'get';  
-            form.action = '{{ route('indrechexp') }}'; 
+            form.method = 'get';
+            form.action = '{{ route('indrechexp') }}';
 
             var inputExport = document.createElement('input');
             inputExport.type = 'hidden';
@@ -295,18 +422,16 @@
             form.appendChild(inputExport);
 
             // Ajouter le champ de recherche
-            var inputListData = document.createElement('input'); 
-            inputListData.type = 'hidden'; 
-            inputListData.name = 'listData'; 
-            inputListData.value = JSON.stringify(listData); 
+            var inputListData = document.createElement('input');
+            inputListData.type = 'hidden';
+            inputListData.name = 'Gliste';
+            inputListData.value = JSON.stringify(Gliste);
             form.appendChild(inputListData);
 
             document.body.appendChild(form);
-            form.submit();  
+            form.submit();
         }
-
     </script>
-
 @endsection
 
 @section('model')
@@ -338,7 +463,8 @@
                                         $cats = App\Providers\InterfaceServiceProvider::AllCat();
                                     @endphp
                                     <div class="form-line">
-                                        <select type="text" id="cat" name="cat" class="form-control" required>
+                                        <select type="text" id="cat" name="cat" class="form-control"
+                                            required>
                                             <option></option>
                                             @foreach ($cats as $cat)
                                                 <option value="{{ $cat->id }}">{{ $cat->libelle }}</option>
@@ -373,7 +499,8 @@
                                 <label for="piece">Pièce jointe</label>
                                 <div class="form-group">
                                     <div class="form-line">
-                                        <input type="file" class="form-control" id="piece" name="piece" accept=".jpg, .jpeg, .png" onchange="loadImage(event)">
+                                        <input type="file" class="form-control" id="piece" name="piece"
+                                            accept=".jpg, .jpeg, .png" onchange="loadImage(event)">
                                     </div>
                                 </div>
                             </div>
@@ -383,7 +510,8 @@
                             <div class="col-md-6">
                                 <label for="piece">Aperçu</label>
                                 <div class="form-group">
-                                    <img id="output" src="user.png" style="width: 70px; height: 70px; border-radius: 50%;" />
+                                    <img id="output" src="user.png"
+                                        style="width: 70px; height: 70px; border-radius: 50%;" />
                                 </div>
                             </div>
                         </div>

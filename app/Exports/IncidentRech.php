@@ -15,13 +15,15 @@ class IncidentRech implements FromView
     {
         // Convertir le tableau en collection
         $this->list = collect($list);
+        dd($list);
     }
 
     public function view(): View
     {
-       
+        
        // Utilisation de map() sur la collection
        $list = $this->list->map(function ($incident) {
+        
             return [
                 'DateEmission' => $incident['DateEmission'], 
                 'Module' => $incident['Module'], 
