@@ -73,7 +73,7 @@ class MaintenanceController extends Controller
                     $add->action = session("utilisateur")->idUser;
                     $add->save();
 
-                    $message = "Vous avez programmer une maintenance pour la période du " . InterfaceServiceProvider::Dateformat($request->pdm) . " au " . InterfaceServiceProvider::Dateformat($request->pfm) . " .";
+                    $message = "Vous avez programmer une maintenance pour la période du " . $request->pdm . " au " . $request->pfm . " .";
 
                     TraceController::setTrace($message, session("utilisateur")->idUser);
                     flash("Succès : " . $message)->success();
@@ -334,7 +334,7 @@ class MaintenanceController extends Controller
                     "detailjson" => $request->maint
                 ]);
 
-                $message = "Vous avez modifiée les informations de la période du " . InterfaceServiceProvider::Dateformat($periode->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($periode->periodefin) . " sur l'outil " . $ordinateur->nameoutils . ".";
+                $message = "Vous avez modifiée les informations de la période du " . $periode->periodedebut . " au " . $periode->periodefin . " sur l'outil " . $ordinateur->nameoutils . ".";
                 TraceController::setTrace($message, session("utilisateur")->idUser);
                 flash($message)->success();
                 return $message;
@@ -597,7 +597,7 @@ class MaintenanceController extends Controller
                     $add->action = session("utilisateur")->idUser;
                     $add->save();
 
-                    $message = "Vous avez enregistrer une maintenance curative réçu le " . InterfaceServiceProvider::Dateformat($request->pdm) . " dont la durée d'arrêt est " . $request->dam . " .";
+                    $message = "Vous avez enregistrer une maintenance curative réçu le " . $request->pdm . " dont la durée d'arrêt est " . $request->dam . " .";
 
                     TraceController::setTrace($message, session("utilisateur")->idUser);
                     flash("Succès : " . $message)->success();
@@ -646,7 +646,7 @@ class MaintenanceController extends Controller
                     $add->action = session("utilisateur")->idUser;
                     $add->save();
 
-                    $message = "Vous avez enregistrée l'exécution de la maintenance curative de la période du " . InterfaceServiceProvider::Dateformat($periode->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($periode->periodefin) . " sur l'outil " . $ordinateur->nameoutils ?? "" . ".";
+                    $message = "Vous avez enregistrée l'exécution de la maintenance curative de la période du " . $periode->periodedebut . " au " . $periode->periodefin . " sur l'outil " . $ordinateur->nameoutils ?? "" . ".";
 
                     TraceController::setTrace($message, session("utilisateur")->idUser);
 
@@ -727,7 +727,7 @@ class MaintenanceController extends Controller
                     ]);
                 }
 
-                $message = "Vous avez modifiée les informations de la maintenace curative du " . InterfaceServiceProvider::Dateformat($maintencancesexistant->periodedebut) . " en " . InterfaceServiceProvider::Dateformat($request->pdm) . " " . InterfaceServiceProvider::formatTime($request->damu);
+                $message = "Vous avez modifiée les informations de la maintenace curative du " . $maintencancesexistant->periodedebut . " en " . $request->pdm . " " . $request->damu;
                 TraceController::setTrace($message, session("utilisateur")->idUser);
                 flash($message)->success();
                 return $message;
@@ -752,7 +752,7 @@ class MaintenanceController extends Controller
                 $maintenance = MaintenanceCurative::find($request->id);
                 if ($maintenance) {
                     $libs = MaintenanceCurative::where('id', $request->id)->first();
-                    $lib = InterfaceServiceProvider::Dateformat($libs->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($libs->periodefin);
+                    $lib = $libs->periodedebut . " au " . $libs->periodefin;
                     $occurence = json_encode(MaintenanceCurative::where('id', $request->id)->first());
 
                     TraceController::setTrace("Data delete MC : " . $occurence, session("utilisateur")->idUser);
@@ -807,7 +807,7 @@ class MaintenanceController extends Controller
                     "action_effectuer" => $request->maint
                 ]);
 
-                $message = "Vous avez modifiée les informations de la période du " . InterfaceServiceProvider::Dateformat($periode->periodedebut) . " au " . InterfaceServiceProvider::Dateformat($periode->periodefin) . " sur l'outils " . $ordinateur->nameoutils . ".";
+                $message = "Vous avez modifiée les informations de la période du " . $periode->periodedebut . " au " . $periode->periodefin . " sur l'outils " . $ordinateur->nameoutils . ".";
                 TraceController::setTrace($message, session("utilisateur")->idUser);
                 flash($message)->success();
                 return $message;
