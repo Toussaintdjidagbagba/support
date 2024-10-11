@@ -85,9 +85,15 @@
         <h2 class="title">Maintenance currative</h2><br>
         <table>
             @foreach($list as $maint)
-                <tr>
+                {{-- <tr>
                     <td class="ser">Période </td>
                     <td colspan="3">{{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($maint->maintenance) }}</td>
+                </tr> --}}
+                <tr>
+                    <td class="ser">Date d'éxécution </td>
+                    <td>{{ $maint->periodedebut }}</td>
+                    <td class="ser">Durée d'arret prévisionnel </td>
+                    <td>{{ $maint->periodefin }}</td>
                 </tr>
                 <tr>
                     <td class="ser">Outils </td>
