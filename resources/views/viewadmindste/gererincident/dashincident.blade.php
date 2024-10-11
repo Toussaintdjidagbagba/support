@@ -382,8 +382,8 @@
                     tbody.innerHTML = `<tr><td colspan="9"><center>Pas d'incident enregistrés !!!</center></td></tr>`;
                     return;
                 }
-                // console.log(list);
-                list.forEach((currentline, index, arry) => {
+                console.log(list);
+                    list.forEach((currentline, index, arry) => {
                         const contenu = '<tr>' +
                             '<th><span class="co-name">' + currentline["DateEmission"] + '</span></th>' +
                             '<td>' + currentline["Module"] + '</td>' +
@@ -447,7 +447,7 @@
                             '</td>' +
                             '</tr>';
                         tbody.innerHTML += contenu;
-                });
+                    });
             }
 
             function getetat(id) {

@@ -45,27 +45,7 @@
                                     </li>
                                 </ul>
                             </li>
-                        </ul><br><br>
-                        <form action="{{ route('GO') }}" method="get" role="form">
-                            <div class="input-group">
-                                <div class="form-line">
-                                    <input type="search" name="q" id="searchForm" placeholder="Mot clé..."
-                                        class="form-control">
-                                </div>
-                                <div class="input-group-addon">
-                                    <button type="submit" class="btn btn-info btn-md"> Rechercher</button>
-                                </div>
-                            </div>
-                            <div>
-                                <script>
-                                    var listData = @json($list);
-                                </script>
-                                <button type="button" class="btn btn-danger" style="margin-left: 25px; margin-bottom: 0px;"
-                                    onclick="paramrech('pdf')">PDF</button>
-                                <button type="button" class="btn btn-success"
-                                    style="margin-left: 25px; margin-bottom: 0px;" onclick="paramrech('xlsx')">XLSX</button>
-                            </div>
-                        </form>
+                        </ul>
                     </div>
                     <div class="body">
                         <div class="table-responsive" data-pattern="priority-columns">

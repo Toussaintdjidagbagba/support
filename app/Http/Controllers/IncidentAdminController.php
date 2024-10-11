@@ -124,35 +124,6 @@ class IncidentAdminController extends Controller
         return json_encode(["list" => $list, "serv" => $serv]);
     }
 
-    // public static function getincident(Request $request)
-    // {
-    //     if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
-    //         $lists = Incident::query()->orderBy('incidents.created_at', 'desc');
-    //         if ($request->has('q') != "" && $request->has('q') != null) {
-    //             $recherche = htmlspecialchars(trim($request->q));
-    //             $list = $lists->where('Module', 'like', '%' . $recherche . '%')
-    //                 ->orWhere('DateEmission', 'like', '%' . $recherche . '%')
-    //                 ->orWhere('etat', 'like', '%' . $recherche . '%')
-    //                 // ->orWhere('hierarchie', 'like', '%' . $recherche . '%')
-    //                 ->paginate(100);
-    //         }
-    //         $list = $lists->paginate(100);
-    //     } else {
-    //         // Afficher les incidents reçu
-    //         $lists = Incident::query()->where("affecter", session("utilisateur")->affecter)->orderBy('incidents.created_at', 'desc');
-    //         if ($request->has('q') != "" && $request->has('q') != null) {
-    //             $recherche = htmlspecialchars(trim($request->q));
-    //             $list = $lists->where('Module', 'like', '%' . $recherche . '%')
-    //                 ->orWhere('DateEmission', 'like', '%' . $recherche . '%')
-    //                 ->orWhere('etat', 'like', '%' . $recherche . '%')
-    //                 // ->orWhere('hierarchie', 'like', '%' . $recherche . '%')
-    //                 ->paginate(100);
-    //         }
-    //         $list = $lists->paginate(100);
-    //     }
-    //     return view('viewadmindste.gererincident.dashincident', compact('list'));
-    // }
-
     public function setincident(Request $request)
     {
         try {

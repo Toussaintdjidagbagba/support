@@ -91,10 +91,10 @@ class IncidentController extends Controller
                     $tempsRestantFormate = "Prise en compte";
                 } else {
                     if ($tempsRestant > 0) {
-                        $heuresRestantes = floor(($tempsRestant % 86400) / 3600);
+                        $heuresRestantes = floor($tempsRestant / 3600);
                         $minutesRestantes = floor(($tempsRestant % 3600) / 60);
                         $secondesRestantes = $tempsRestant % 60;
-                        $tempsRestantFormate = sprintf('%02d h %02d m %02d s', $heuresRestantes, $minutesRestantes, $secondesRestantes);
+                        $tempsRestantFormate = sprintf('%02d h', $heuresRestantes);
                     } else {
                         $tempsRestantFormate = "Temps écoulé";
                     }
@@ -285,7 +285,6 @@ class IncidentController extends Controller
             return Back();
         }
     }
-
 
     //export recherche incidents déclarés
     public function exportincidentrech(Request $request)
