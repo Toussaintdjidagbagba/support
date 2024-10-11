@@ -95,10 +95,6 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <script>
-                                            var listData = @json($list);
-            
-                                        </script>
                                         <button type="button" class="btn btn-danger" style="margin-left: 25px; margin-bottom: 0px;"
                                             onclick="paramrech('pdf')">PDF</button>
                                         <button type="button" class="btn btn-success"
