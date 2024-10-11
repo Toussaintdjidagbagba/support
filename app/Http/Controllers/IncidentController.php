@@ -286,7 +286,6 @@ class IncidentController extends Controller
         }
     }
 
-
     //export recherche incidents déclarés
     public function exportincidentrech(Request $request)
     {

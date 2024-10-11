@@ -272,7 +272,7 @@
                     URL.revokeObjectURL(output.src);
                 }
             } else {
-                alert('Seules les images JPG ou PNG sont autorisées.');
+                 Swal.fire("Succès", "Seules les images JPG ou PNG sont autorisées.", "success");
                 event.target.value = ''; // réinitialiser le champ fichier
             }
         };
