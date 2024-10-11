@@ -19,17 +19,16 @@ class IncidentDeclarRech implements FromView
 
     public function view(): View
     {
-       
-       // Utilisation de map() sur la collection
+        // Utilisation de map() sur la collection
         $list = $this->list->map(function ($incident) {
             return [
                 'DateEmission' => $incident['DateEmission'], 
                 'Module' => $incident['Module'], 
                 'Description' => $incident['description'], 
-                'hierarchie' => InterfaceServiceProvider::LibelleHier($incident['hierarchie']), 
-                'categorie' => InterfaceServiceProvider::LibelleCat($incident['cat']), 
-                'temps' => InterfaceServiceProvider::TempsCats($incident['id'], $incident['cat'], $incident['created_at']), 
-                'etat' => InterfaceServiceProvider::libetat($incident['etat']),
+                'hierarchie' => $incident['hierarchie'], 
+                'categorie' => $incident['cat'], 
+                'temps' => $incident['tempsRestant'], 
+                'etat' => $incident['etat'],
             ];
         });
 
