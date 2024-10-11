@@ -32,7 +32,6 @@
                             <div class="body">
                                 <form role="form">
                                     <div class="row clearfix">
-                                        <input type="hidden" name="q" id="qs">
                                         <div class="col-lg-6 col-md-6 col-sm-12">
                                             <div class="input-group">
                                                 <label for="dateEmission">Date Emission :</label>

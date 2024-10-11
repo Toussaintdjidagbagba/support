@@ -32,7 +32,6 @@
                             <div class="body">
                                 <form role="form">
                                     <div class="row clearfix">
-                                        <input type="hidden" name="q" id="qs">
                                         <div class="col-lg-6 col-md-6 col-sm-12">
                                             <div class="input-group">
                                                 <label for="dateEmission">Date Emission :</label>
@@ -79,7 +78,6 @@
                                                 class="btn btn-info btn-md">Rechercher</button>
                                         </div>
                                     </div>
-
                                     <br>
                                     <div>
                                         <button type="button" class="btn btn-danger"
@@ -272,7 +270,7 @@
                     URL.revokeObjectURL(output.src);
                 }
             } else {
-                 Swal.fire("Succès", "Seules les images JPG ou PNG sont autorisées.", "success");
+                Swal.fire("Succès", "Seules les images JPG ou PNG sont autorisées.", "success");
                 event.target.value = ''; // réinitialiser le champ fichier
             }
         };
@@ -342,7 +340,6 @@
                     }
 
                     data = await response.json();
-                   
                     afficherDonnees(data.list);
                 }
             } catch (error) {
@@ -358,7 +355,7 @@
                 tbody.innerHTML = `<tr><td colspan="9"><center>Pas d'incident enregistrés !!!</center></td></tr>`;
                 return;
             }
-            
+
             list.forEach((currentline, index, arry) => {
 
                 const contenu = '<tr>' +
@@ -386,8 +383,7 @@
                             currentline["id"] +
                             ')" data-id="getid(' + currentline["id"] +
                             ')" data-color="deep-orange" data-toggle="modal" data-target="#avis"><i class="material-icons">grade</i></a>'
-                        )
-                        :
+                        ) :
                         '') +
                     '</td>' +
                     '<td>' +
@@ -409,7 +405,6 @@
         }
 
         function paramrech(format) {
-            console.log(Gliste);
 
             var form = document.createElement('form');
             form.method = 'get';

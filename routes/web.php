@@ -214,9 +214,9 @@ Route::group([
 	
 	Route::get('export-gestionpreventive', [MaintenanceController::class, 'expgestprev'])->name('export.gestprev');
 
+	// /////////////////////////////  Paramétrage des entêtes  ///////////////////////////////////////
 
-
-
+	Route::get('/settings-entete', 'App\Http\Controllers\SettingController@listentete')->name('GERAP');
 });
 	
 /* 
