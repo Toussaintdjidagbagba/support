@@ -120,7 +120,7 @@ Route::group([
 	Route::post('/modif-settings-etat', 'App\Http\Controllers\SettingController@modif')->name('SMETAT');
 
 	///////////////////////////////////** Incident Client **//////////////////////////////////////////////////////////
-
+	Route::get('/incidentData', 'App\Http\Controllers\IncidentController@getincidentData')->name('GIDTA');
 	Route::get('/incident', 'App\Http\Controllers\IncidentController@getincident')->name('GI');
 	Route::post('/incident', 'App\Http\Controllers\IncidentController@setincident')->name('GIS');
 	Route::get('/delete-incident-{id}', 'App\Http\Controllers\IncidentController@deleteincident')->name('DI');
