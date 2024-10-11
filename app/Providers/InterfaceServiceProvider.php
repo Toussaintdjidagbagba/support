@@ -39,28 +39,6 @@ class InterfaceServiceProvider extends ServiceProvider
         //return DB::table('settings')->where("id", $id)->get();
     }
 
-    public static function formatDate($date)
-    {
-        if ($date != "" || $date != null) {
-            $dates = Carbon::parse($date)->locale('fr')->translatedFormat('d F Y \à H\h i\m');
-        } else {
-            $dates = "Pas encore résolution";
-        }
-        return $dates;
-    }
-
-    public static function formatTime($time)
-    {
-        $times = Carbon::parse($time)->locale('fr')->translatedFormat(' H\h i\m');
-        return $times;
-    }
-
-    public static function Dateformat($date)
-    {
-        $dates = Carbon::parse($date)->locale('fr')->translatedFormat('d F Y');
-        return $dates;
-    }
-
     public static function allutilisateurs()
     {
         return DB::table('utilisateurs')->get();
@@ -116,7 +94,7 @@ class InterfaceServiceProvider extends ServiceProvider
         $maintenance = DB::table('maintenances')->where('id', $id)->first();
 
         if (isset($maintenance->id)) {
-            return InterfaceServiceProvider::Dateformat($maintenance->periodedebut) . ' au ' . InterfaceServiceProvider::Dateformat($maintenance->periodefin);
+            return $maintenance->periodedebut . ' au ' . $maintenance->periodefin;
         } else {
             return '';
         }
@@ -127,7 +105,7 @@ class InterfaceServiceProvider extends ServiceProvider
         $maintenance = DB::table('maintenance_curatives')->where('id', $id)->first();
 
         if (isset($maintenance->id)) {
-            return InterfaceServiceProvider::Dateformat($maintenance->periodedebut) . ' au ' . InterfaceServiceProvider::Dateformat($maintenance->periodefin);
+            return $maintenance->periodedebut . ' au ' . $maintenance->periodefin;
         } else {
             return '';
         }

@@ -43,9 +43,9 @@
                                         <tr>
                                             <td>
                                                 Du
-                                                {{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }}
+                                                {{ $maint->periodedebut }}
                                                 au
-                                                {{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodefin) }}
+                                                {{ $maint->periodefin }}
                                             </td>
                                             <td>{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->user) }}</td>
                                             <td class="d-flex justify-content-between align-items-center">
@@ -54,7 +54,7 @@
                                                     <button type="button" title="Etat"
                                                         class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
                                                         data-toggle="modal" data-target="#etatmaintenance"
-                                                        onclick="setetatmaintenance({{ $maint->id }},'{{ $maint->etat }}','{{ $maint->commentaire }}', '{{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodedebut) }} au {{ App\Providers\InterfaceServiceProvider::Dateformat($maint->periodefin) }}')">
+                                                        onclick="setetatmaintenance({{ $maint->id }},'{{ $maint->etat }}','{{ $maint->commentaire }}', '{{ $maint->periodedebut }} au {{ $maint->periodefin }}')">
                                                         <i class="material-icons">gps_fixed</i></a> </button>
                                                 @endif
                                             </td>
