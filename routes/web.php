@@ -3,6 +3,7 @@
 use App\Exports\MaintPreventiveExport;
 use App\Http\Controllers\CategorieOutilsController;
 use App\Http\Controllers\IncidentAdminController;
+use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\OutilController;
 use Illuminate\Support\Facades\Artisan;
@@ -190,7 +191,15 @@ Route::group([
 	Route::get('/commentaire', 'App\Http\Controllers\MaintenanceController@validecommentaire')->name('CMU');
 
 	//////////////////////////////////** Les Exports **//////////////////////////
+	
 	Route::post('export-incident', [IncidentAdminController::class, 'exportincident'])->name('incident.export');
+
+	Route::get('export-incidentgestionrecherche', [IncidentAdminController::class, 'exportincidentrech'])->name('incidentrechexp');
+	
+	Route::get('export-incidentdeclarationrecherche', [IncidentController::class, 'exportincidentrech'])->name('indrechexp');
+	
+	Route::get('export-outilsrecherche', [OutilController::class, 'exportoutilsrech'])->name('outilsrechexp');
+
 	Route::post('export-outils', [OutilController::class, 'exportoutils'])->name('outils.export');
 	
 	Route::get('/outilshisto/export', 'App\Http\Controllers\OutilController@expoutilhisto')->name('outilshisto.export');

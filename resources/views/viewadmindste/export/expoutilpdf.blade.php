@@ -32,6 +32,7 @@
             <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Libelle</th>
             <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Catégorie d'outil</th>
             <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Utilisateur</th>
+            <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Etat</th>
         </tr>
     </thead>
     <tbody>
@@ -42,6 +43,7 @@
                 <td style="vertical-align:middle; text-align: left; width: 70px;">{{ $out['nameoutils'] ?? '___' }}</td>
                 <td style="vertical-align:middle; text-align: left; width: 100px;">{{ $out['categorie'] ?? '___'}}</td>
                 <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $out['user'] ?? '___'}}</td>
+                <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $out['etat'] ?? 'N/A'}}</td>
             </tr>
         @endforeach
     </tbody>

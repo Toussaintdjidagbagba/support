@@ -86,19 +86,19 @@
         <table>
             @foreach($list as $inc)
                 <tr>
-                    <td class="ser">Date Emission :</td>
-                    <td>{{App\Providers\InterfaceServiceProvider::formatDate($inc->DateEmission)}}</td>
-                    <td class="ser">Date de résolution :</td>
+                    <td class="ser">Date Emission </td>
+                    <td>{{$inc->DateEmission}}</td>
+                    <td class="ser">Date de résolution </td>
                     <td>{{ App\Providers\InterfaceServiceProvider::formatDate($inc->DateResolue) }}</td>
                 </tr>
                 <tr>
-                    <td class="ser">Modules :</td>
+                    <td class="ser">Modules </td>
                     <td>{{ $inc->Module }}</td>
-                    <td class="ser">Hiérachisation :</td>
+                    <td class="ser">Hiérachisation </td>
                     <td>{{ App\Providers\InterfaceServiceProvider::LibelleHier($inc->hierarchie) }}</td>
                 </tr>
                 <tr>
-                    <td class="ser">Emetteur :</td>
+                    <td class="ser">Emetteur </td>
                     <td colspan="3">{{App\Providers\InterfaceServiceProvider::LibelleUser($inc->Emetteur)}}</td>
                 </tr>
             @endforeach

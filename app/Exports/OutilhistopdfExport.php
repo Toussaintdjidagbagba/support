@@ -5,7 +5,6 @@ namespace App\Exports;
 use Illuminate\Support\Facades\Storage;
 use Dompdf\Dompdf;
 
-
 class OutilhistopdfExport
 {
     protected $data;

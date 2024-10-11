@@ -38,12 +38,12 @@
     <tbody>
         @foreach ($list as $inc)
             <tr>
-                <td style="vertical-align:middle; text-align: left; width: 80px;"><b>{{ $inc['DateEmission']}}</b></td>
-                <td style="vertical-align:middle; text-align: left; width: 60px;">{{ $inc['Module'] }}</td>
-                <td style="vertical-align:middle; text-align: left; width: 70px;">{{ $inc['hierachie'] ?? 'N/A' }}</td>
-                <td style="vertical-align:middle; text-align: left; width: 178px;">{{ $inc['emetteur'] ?? 'N/A'}}</td>
-                <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['etat'] ?? 'N/A'}}</td>
-                <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['DateResolue']}}</td>
+                <td style="vertical-align:middle; text-align: left; width: 80px;"><b>{{ $inc->DateEmission ?? 'N/A'}}</b></td>
+                <td style="vertical-align:middle; text-align: left; width: 60px;">{{ $inc->Module ?? 'N/A'}}</td>
+                <td style="vertical-align:middle; text-align: left; width: 70px;">{{ $inc->hierachie ?? 'N/A' }}</td>
+                <td style="vertical-align:middle; text-align: left; width: 178px;">{{ $inc->emetteur ?? 'N/A'}}</td>
+                <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc->etat ?? 'N/A'}}</td>
+                <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc->DateResolue ?? 'N/A'}}</td>
             </tr>
         @endforeach
     </tbody>

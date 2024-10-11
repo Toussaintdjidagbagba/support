@@ -86,17 +86,17 @@
         <table>
             @foreach($list as $maint)
                 <tr>
-                    <td class="ser">Période :</td>
+                    <td class="ser">Période </td>
                     <td colspan="3">{{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($maint->maintenance) }}</td>
                 </tr>
                 <tr>
-                    <td class="ser">Outils :</td>
+                    <td class="ser">Outils </td>
                     <td>{{App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil)}}</td>
-                    <td class="ser">Avis :</td>
+                    <td class="ser">Avis </td>
                     <td>{{ $maint->avisuser }}</td>
                 </tr>
                 <tr>
-                    <td class="ser">Technicien :</td>
+                    <td class="ser">Technicien </td>
                     <td colspan="3">{{App\Providers\InterfaceServiceProvider::LibelleUser($maint->action)}}</td>
                 </tr>
             @endforeach

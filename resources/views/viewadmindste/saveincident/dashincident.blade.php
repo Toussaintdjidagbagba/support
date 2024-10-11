@@ -79,6 +79,16 @@
                                                 class="btn btn-info btn-md">Rechercher</button>
                                         </div>
                                     </div>
+
+                                    <br>
+                                    <div>
+                                        <button type="button" class="btn btn-danger"
+                                            style="margin-left: 25px; margin-bottom: 0px;"
+                                            onclick="paramrech('pdf')">PDF</button>
+                                        <button type="button" class="btn btn-success"
+                                            style="margin-left: 25px; margin-bottom: 0px;"
+                                            onclick="paramrech('xlsx')">XLSX</button>
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -134,6 +144,7 @@
             Deletes: "{{ route('DI', ':id') }}",
             Updates: "{{ route('MTI', ':id') }}",
         }
+        let Gliste;
 
         function getid(id) {
             document.getElementById("anoid").value = id;
@@ -265,6 +276,7 @@
                 event.target.value = ''; // réinitialiser le champ fichier
             }
         };
+
         window.onload = function() {
             recupListIncident();
         };
@@ -301,7 +313,7 @@
                     }
                     let data = await response.json();
                     let list = data.list;
-
+                    Gliste = data.list;
                     afficherDonnees(list);
                 } else {
                     throw new Error("Erreur lors de la récupération des données: " + response.status);
@@ -330,7 +342,7 @@
                     }
 
                     data = await response.json();
-                    // console.log(data.list);
+                   
                     afficherDonnees(data.list);
                 }
             } catch (error) {
@@ -394,6 +406,30 @@
                     '</tr>';
                 tbody.innerHTML += contenu;
             });
+        }
+
+        function paramrech(format) {
+            console.log(Gliste);
+
+            var form = document.createElement('form');
+            form.method = 'get';
+            form.action = '{{ route('indrechexp') }}';
+
+            var inputExport = document.createElement('input');
+            inputExport.type = 'hidden';
+            inputExport.name = 'format';
+            inputExport.value = format;
+            form.appendChild(inputExport);
+
+            // Ajouter le champ de recherche
+            var inputListData = document.createElement('input');
+            inputListData.type = 'hidden';
+            inputListData.name = 'Gliste';
+            inputListData.value = JSON.stringify(Gliste);
+            form.appendChild(inputListData);
+
+            document.body.appendChild(form);
+            form.submit();
         }
     </script>
 @endsection

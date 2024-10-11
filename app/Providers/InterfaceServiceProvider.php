@@ -452,14 +452,26 @@ class InterfaceServiceProvider extends ServiceProvider
             return "Aucun technicien";
     }
 
+    // public static function LibelleTechCurative($id)
+    // {
+    //     $users = DB::table('maintenance_curatives')->where('id', $id)->first()->user;
+
+    //     if (isset($users))
+    //         return InterfaceServiceProvider::LibelleUser($users);
+    //     else
+    //         return "Aucun technicien";
+    // }
+
     public static function LibelleTechCurative($id)
     {
-        $users = DB::table('maintenance_curatives')->where('id', $id)->first()->user;
+        
+        $maintenance = DB::table('maintenance_curatives')->where('id', $id)->first();
 
-        if (isset($users))
-            return InterfaceServiceProvider::LibelleUser($users);
-        else
+        if ($maintenance && isset($maintenance->user)) {
+            return InterfaceServiceProvider::LibelleUser($maintenance->user);
+        } else {
             return "Aucun technicien";
+        }
     }
 
     public static function LibelleUser($id)
