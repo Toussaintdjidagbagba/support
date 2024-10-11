@@ -31,5 +31,11 @@
             </tr>
         @endforeach
     </tbody>
-    
 </table>
+
+<!-- Footer -->
+<div class="footer">
+    <div class="title-footer">
+        Date d'exportation : {{ now()->format('d/m/Y') }}
+    </div>
+</div>

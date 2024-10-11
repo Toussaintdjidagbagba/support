@@ -542,15 +542,68 @@ class IncidentAdminController extends Controller
     {
         try {
 
-            if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
-                $list = Incident::where('id', $request->idlin)->orderBy('incidents.created_at', 'desc')->paginate(100);
+            if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) {
+                // Super admin ou autres utilisateurs spécifiques
+                $query = DB::table('incidents as i')
+                    ->leftJoin('hierarchies as h', 'i.hierarchie', '=', 'h.id')
+                    ->leftJoin('categories as c', 'i.cat', '=', 'c.id')
+                    ->leftJoin('utilisateurs as u', 'i.affecter', '=', 'u.idUser')
+                    ->leftJoin('utilisateurs as uE', 'i.Emetteur', '=', 'uE.idUser')
+                    ->leftJoin('settings as s', 'i.etat', '=', 's.id')
+                    ->select(
+                        'i.id',
+                        'i.Module',
+                        'i.affecter',
+                        'i.etat',
+                        'i.DateEmission',
+                        'i.description',
+                        'i.piece',
+                        'h.libelle as hierarchie',
+                        DB::raw('COALESCE(i.DateResolue, "Pas encore résolue") as DateResolue'),
+                        DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
+                        DB::raw('COALESCE(s.libelle, "En attente") as etats'),
+                        DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersA'),
+                        DB::raw('COALESCE(CONCAT(uE.nom, " ", uE.prenom), "En attente") as usersE'),
+                        'i.created_at',
+                        'u.idUser as user_id',
+                        'uE.idUser as userE_id'
+                    )
+                    ->where('i.id', $request->idlin)
+                    ->orderBy('i.created_at', 'asc');
             } else {
-                // Afficher les incidents reçu
-                $list = Incident::where('affecter', session("utilisateur")->affecter)
-                    ->where('id', $request->idlin)
-                    ->orderBy('incidents.created_at', 'desc')
-                    ->paginate(100);
+                // Autres utilisateurs (non admin)
+                $query = DB::table('incidents as i')
+                    ->leftJoin('hierarchies as h', 'i.hierarchie', '=', 'h.id')
+                    ->leftJoin('categories as c', 'i.cat', '=', 'c.id')
+                    ->leftJoin('utilisateurs as u', 'i.affecter', '=', 'u.idUser')
+                    ->leftJoin('utilisateurs as uE', 'i.Emetteur', '=', 'uE.idUser')
+                    ->leftJoin('settings as s', 'i.etat', '=', 's.id')
+                    ->select(
+                        'i.id',
+                        'i.Module',
+                        'i.affecter',
+                        'i.etat',
+                        'i.DateEmission',
+                        'i.description',
+                        'i.piece',
+                        'h.libelle as hierarchie',
+                        DB::raw('COALESCE(i.DateResolue, "Pas encore résolue") as DateResolue'),
+                        DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
+                        DB::raw('COALESCE(s.libelle, "En attente") as etats'),
+                        DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersA'),
+                        DB::raw('COALESCE(CONCAT(uE.nom, " ", uE.prenom), "En attente") as usersE'),
+                        'i.created_at',
+                        'u.idUser as user_id',
+                        'uE.idUser as userE_id'
+                    )
+                    ->where('i.Emetteur', session("utilisateur")->idUser)
+                    ->where('i.id', $request->idlin)
+                    ->orderBy('i.created_at', 'asc');
             }
+            
+            // Récupérer la liste des incidents
+            $list = $query->get();
+            
             //dd($list);       
 
             // Récupérer la date actuelle pour l'exportation
