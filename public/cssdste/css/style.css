@@ -11201,3 +11201,69 @@ html.ie11 .bs-searchbox .form-control {
   background-color: #f44336 !important;
   color: white !important;
 }
+/* Accordion */
+
+.filter-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  text-decoration: none;
+}
+
+.filter-content {
+  display: flex;
+  align-items: center;
+}
+
+.filter-content i.material-icons {
+  margin-right: 8px;
+}
+
+.filter-text {
+  font-weight: bold;
+}
+
+.chevron-icon {
+  font-size: 24px;
+}
+
+@media (max-width: 768px) {
+  .filter-toggle {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .filter-content i.material-icons {
+    margin-right: 8px;
+  }
+
+  .chevron-icon {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 576px) {
+  .filter-toggle {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .filter-content i.material-icons {
+    margin-right: 8px;
+  }
+
+  .chevron-icon {
+    font-size: 24px;
+  }
+}
+
+.filter-input-width {
+  width: 80%;
+}
+
+@media (max-width: 768px) {
+  .col-xs-12 {
+    width: 100%;
+  }
+}

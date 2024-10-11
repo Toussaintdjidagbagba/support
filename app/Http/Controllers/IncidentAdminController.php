@@ -25,6 +25,85 @@ use Illuminate\Support\Facades\Validator;
 class IncidentAdminController extends Controller
 {
 
+    // public static function getincident()
+    // {
+    //     return view('viewadmindste.gererincident.dashincident');
+    // }
+
+    public static function getincidentData(Request $request)
+    {
+        if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
+            $query = DB::table('incidents as i')
+                ->leftJoin('hierarchies as h', 'i.hierarchie', '=', 'h.id')
+                ->leftJoin('categories as c', 'i.cat', '=', 'c.id')
+                ->leftJoin('utilisateurs as u', 'i.affecter', '=', 'u.idUser')
+                ->leftJoin('settings as s', 'i.etat', '=', 's.id')
+                ->select(
+                    'i.id',
+                    'i.Module',
+                    'i.affecter',
+                    'i.etat',
+                    'i.DateEmission',
+                    'i.description',
+                    'h.libelle as hierarchie',
+                    DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
+                    DB::raw('COALESCE(s.libelle, "En attente") as etats'),
+                    DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as users'),
+                    'i.created_at',
+                    'u.idUser as user_id',
+                )
+                ->orderBy('i.created_at', 'asc');
+        } else {
+            $query = DB::table('incidents as i')
+                ->leftJoin('hierarchies as h', 'i.hierarchie', '=', 'h.id')
+                ->leftJoin('categories as c', 'i.cat', '=', 'c.id')
+                ->leftJoin('settings as s', 'i.etat', '=', 's.id')
+                ->select(
+                    'i.id',
+                    'i.Module',
+                    'i.affecter',
+                    'i.etat',
+                    'i.DateEmission',
+                    'i.description',
+                    'h.libelle as hierarchie',
+                    DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
+                    DB::raw('COALESCE(s.libelle, "En attente") as etats'),
+                    'i.created_at',
+                    'c.tmpCat'
+                )
+                ->where("i.Emetteur", session("utilisateur")->idUser)
+                ->orderBy('i.created_at', 'asc');
+        }
+        if ($request->filled('date_emission')) {
+            $query->whereDate('i.DateEmission', $request->date_emission);
+        }
+
+        if ($request->filled('hierarchie')) {
+            $query->where('h.libelle', 'like', '%' . htmlspecialchars(trim($request->hierarchie)) . '%');
+        }
+
+        if ($request->filled('etat')) {
+            $query->where(DB::raw('COALESCE(s.libelle, "")'), 'like', '%' . htmlspecialchars(trim($request->etat)) . '%');
+        }
+
+        if ($request->filled('modules')) {
+            $query->where('i.Module', 'like', '%' . htmlspecialchars(trim($request->modules)) . '%');
+        }
+
+        if ($request->filled('date_resolution')) {
+            $query->where('i.DateResolue', 'like', '%' . htmlspecialchars(trim($request->date_resolution)) . '%');
+        }
+
+        if ($request->filled('affecter')) {
+            $query->where('i.affecter', 'like', '%' . htmlspecialchars(trim($request->affecter)) . '%');
+        }
+
+
+        $list = $query->get();
+
+        return json_encode(["list" => $list]);
+    }
+
     public static function getincident(Request $request)
     {
         if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
@@ -369,10 +448,10 @@ class IncidentAdminController extends Controller
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
-                        ->header('Content-Disposition', 'attachment; filename="IncidentExport_'. $dateExp .'.pdf"');
+                    ->header('Content-Disposition', 'attachment; filename="IncidentExport_' . $dateExp . '.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new IncidentExport($list), 'IncidentExport_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new IncidentExport($list), 'IncidentExport_' . $dateExp . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
@@ -409,10 +488,10 @@ class IncidentAdminController extends Controller
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
-                        ->header('Content-Disposition', 'attachment; filename="DeclarationsIncident_'. $dateExp .'.pdf"');
+                    ->header('Content-Disposition', 'attachment; filename="DeclarationsIncident_' . $dateExp . '.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new DeclarIncidentpdfExport($list), 'DeclarationIncident_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new DeclarIncidentpdfExport($list), 'DeclarationIncident_' . $dateExp . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);

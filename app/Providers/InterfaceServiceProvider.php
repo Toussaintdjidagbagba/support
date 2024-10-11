@@ -508,15 +508,18 @@ class InterfaceServiceProvider extends ServiceProvider
         return ($lib) ? $lib->libelle : '';
     }
 
+
+    // a supprimer
     public static function TempsCat($id)
     {
         $lib = DB::table('categories')->where('id', $id)->first();
         return ($lib) ? $lib->tmpCat : '';
     }
 
+    // a supprimer
     public static function TempsCats($idIncid, $idCat, $created_at)
     {
-        $delai = DB::table('categories')->where('id', $idCat)->first()->tmpCat; //recuperation du délai
+        $delai = DB::table('categories')->where('id', $idCat)->first()->tmpCat ?? ""; //recuperation du délai
         $valeurDelai = (int)$delai;
         $uniteDelai = 'h';
 
@@ -529,17 +532,20 @@ class InterfaceServiceProvider extends ServiceProvider
 
         // Calculer le temps restant
         $tempsRestant = $timestampLimite - $timestampNow;
-        $etat = Incident::where('id', $idIncid)->first(); // On verifie l'état actuel ou l'utilisateur actuel affecter de l'incident
-        if (($etat->etat != 0 || $etat->etat != null) || ($etat->affecter != 0 || $etat->affecter != null)) {
-            $tempsRestantFormate = "Prise en compte";
-        } else {
-            if ($tempsRestant > 0) {
-                $heuresRestantes = floor($tempsRestant / 3600);
-                $minutesRestantes = floor(($tempsRestant % 3600) / 60);
-                $secondesRestantes = $tempsRestant % 60;
-                $tempsRestantFormate = sprintf('%02d h %02d m %02d s', $heuresRestantes, $minutesRestantes, $secondesRestantes);
+        $etat = Incident::where('id', $idIncid)->first() ?? ""; // On verifie l'état actuel ou l'utilisateur actuel affecter de l'incident
+        $tempsRestantFormate = "Non definire";
+        if (!isset($etat)) {
+            if (($etat->etat != 0 || $etat->etat != null) || ($etat->affecter != 0 || $etat->affecter != null)) {
+                $tempsRestantFormate = "Prise en compte";
             } else {
-                $tempsRestantFormate = "Temps écoulé";
+                if ($tempsRestant > 0) {
+                    $heuresRestantes = floor($tempsRestant / 3600);
+                    $minutesRestantes = floor(($tempsRestant % 3600) / 60);
+                    $secondesRestantes = $tempsRestant % 60;
+                    $tempsRestantFormate = sprintf('%02d h %02d m %02d s', $heuresRestantes, $minutesRestantes, $secondesRestantes);
+                } else {
+                    $tempsRestantFormate = "Temps écoulé";
+                }
             }
         }
         return $tempsRestantFormate;
@@ -550,10 +556,11 @@ class InterfaceServiceProvider extends ServiceProvider
         return DB::table('hierarchies')->get();
     }
 
-    public static function LibelleHier($id)
+    public static function LibelleHier()
     {
+        $id = $_COOKIE['hierarchie'] ?? "";
         $lib = DB::table('hierarchies')->where('id', $id)->first();
-        return ($lib) ? $lib->libelle : '';
+        return ($lib) ? $lib->libelle : 'R';
     }
 
     public static function libmenu($id)
