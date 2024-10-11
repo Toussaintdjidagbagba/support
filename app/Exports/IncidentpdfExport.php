@@ -17,19 +17,18 @@ class IncidentpdfExport
 
     public function generatePdf()
     {
-        
-
+        // Utilisation de map() sur la collection
         $list = $this->list->map(function ($incident) {
             return [
-                'DateEmission' => InterfaceServiceProvider::formatDate($incident->DateEmission), 
+                'DateEmission' => $incident->DateEmission, // Notation objet
                 'Module' => $incident->Module, 
-                'hierachie' => InterfaceServiceProvider::LibelleHier($incident->hierarchie), 
-                'emetteur' => InterfaceServiceProvider::LibelleUser($incident->Emetteur), 
-                'etat' => InterfaceServiceProvider::libetat($incident->etat),
-                'DateResolue' => InterfaceServiceProvider::formatDate($incident->DateResolue), 
+                'hierarchie' => $incident->hierarchie, 
+                'emetteur' => $incident->usersE, 
+                'etat' => $incident->etats,
+                'DateResolue' => $incident->DateResolue, 
+                'affecter' => $incident->usersA, 
             ];
         });
-        
 
         $pdf = new Dompdf();
         $pdf->loadHtml(view('viewadmindste.export.expincidentpdf', ['list' => $list])->render());

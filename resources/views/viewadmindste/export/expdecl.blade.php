@@ -78,6 +78,29 @@
             color: #111111;
         }
 
+        /* Footer styles */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: #fff;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .footer .title-footer {
+            flex: 1;
+            font-size: 12px;
+            white-space: normal;
+            padding: 0 10px;
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body>
@@ -89,17 +112,17 @@
                     <td class="ser">Date Emission </td>
                     <td>{{$inc->DateEmission}}</td>
                     <td class="ser">Date de résolution </td>
-                    <td>{{ App\Providers\InterfaceServiceProvider::formatDate($inc->DateResolue) }}</td>
+                    <td>{{ $inc->DateResolue}}</td>
                 </tr>
                 <tr>
                     <td class="ser">Modules </td>
                     <td>{{ $inc->Module }}</td>
                     <td class="ser">Hiérachisation </td>
-                    <td>{{ App\Providers\InterfaceServiceProvider::LibelleHier($inc->hierarchie) }}</td>
+                    <td>{{ $inc->hierarchie}}</td>
                 </tr>
                 <tr>
                     <td class="ser">Emetteur </td>
-                    <td colspan="3">{{App\Providers\InterfaceServiceProvider::LibelleUser($inc->Emetteur)}}</td>
+                    <td colspan="3">{{$inc->usersE}}</td>
                 </tr>
             @endforeach
         </table><br>
@@ -115,7 +138,7 @@
                 @foreach($list as $inc)
                     <tr>
                         <td style="height: 40px;">
-                            {{ App\Providers\InterfaceServiceProvider::libetat($inc->etat) }} 
+                            {{ $inc->etats }} 
                         </td>
                         <td style="height: 40px;">
                             {{ $inc->description }}
@@ -125,23 +148,12 @@
             </tbody>
         </table><br>
 
-
-        <table class="description-table">
-            <thead>
-                <tr>
-                    <th colspan="2">Suggestion</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($list as $inc)
-                    <tr>
-                        <td colspan="2" style="height: 40px;">
-                            {{ $inc->sugg }}
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+    </div>
+    <!-- Footer -->
+    <div class="footer">
+        <div class="title-footer">
+            Date d'exportation : {{ now()->format('d/m/Y') }}
+        </div>
     </div>
 </body>
 </html>

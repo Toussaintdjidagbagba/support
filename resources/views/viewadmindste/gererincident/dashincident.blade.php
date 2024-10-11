@@ -94,8 +94,7 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <button type="button" class="btn btn-danger"
-                                            style="margin-left: 25px; margin-bottom: 0px;"
+                                        <button type="button" class="btn btn-danger" style="margin-left: 25px; margin-bottom: 0px;"
                                             onclick="paramrech('pdf')">PDF</button>
                                         <button type="button" class="btn btn-success"
                                             style="margin-left: 25px; margin-bottom: 0px;"
@@ -171,6 +170,8 @@
             const sessionPrintPdfIncie = "{{ in_array('print_maint_pdf', session('auto_action')) }}";
             const sessionDelete = "{{ in_array('delete_incident', session('auto_action')) }}";
 
+            let Gliste;
+
             const router = {
                 Deletes: "{{ route('DIA', ':id') }}",
                 Updates: "{{ route('MTIA', ':id') }}",
@@ -199,7 +200,7 @@
             }
 
             function paramrech(format) {
-                console.log(listData);
+                console.log(Gliste);
 
                 var form = document.createElement('form');
                 form.method = 'get';
@@ -214,8 +215,8 @@
                 // Ajouter le champ de recherche
                 var inputListData = document.createElement('input');
                 inputListData.type = 'hidden';
-                inputListData.name = 'listData';
-                inputListData.value = JSON.stringify(listData);
+                inputListData.name = 'Gliste';
+                inputListData.value = JSON.stringify(Gliste);
                 form.appendChild(inputListData);
 
                 document.body.appendChild(form);
@@ -333,7 +334,7 @@
                         }
                         let data = await response.json();
                         let list = data.list;
-
+                        Gliste = data.list;
                         afficherDonnees(list);
                     } else {
                         throw new Error("Erreur lors de la récupération des données: " + response.status);

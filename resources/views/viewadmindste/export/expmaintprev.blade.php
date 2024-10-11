@@ -78,6 +78,29 @@
             color: #111111;
         }
 
+        /* Footer styles */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: #fff;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .footer .title-footer {
+            flex: 1;
+            font-size: 12px;
+            white-space: normal;
+            padding: 0 10px;
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body>
@@ -132,6 +155,12 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+    <!-- Footer -->
+    <div class="footer">
+        <div class="title-footer">
+            Date d'exportation : {{ now()->format('d/m/Y') }}
+        </div>
     </div>
 </body>
 </html>

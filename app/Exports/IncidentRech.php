@@ -15,24 +15,25 @@ class IncidentRech implements FromView
     {
         // Convertir le tableau en collection
         $this->list = collect($list);
-        dd($list);
+        //dd($list);
     }
 
     public function view(): View
     {
         
-       // Utilisation de map() sur la collection
-       $list = $this->list->map(function ($incident) {
-        
+        // Utilisation de map() sur la collection
+        $list = $this->list->map(function ($incident) {
             return [
                 'DateEmission' => $incident['DateEmission'], 
                 'Module' => $incident['Module'], 
-                'hierarchie' => InterfaceServiceProvider::LibelleHier($incident['hierarchie']), 
-                'emetteur' => InterfaceServiceProvider::LibelleUser($incident['Emetteur']), 
-                'etat' => InterfaceServiceProvider::libetat($incident['etat']),
-                'DateResolue' => InterfaceServiceProvider::formatDate($incident['DateResolue']), 
+                'hierarchie' => $incident['hierarchie'], 
+                'emetteur' => $incident['usersE'], 
+                'etat' => $incident['etats'],
+                'DateResolue' => $incident['DateResolue'], 
+                'affecter' => $incident['usersA'], 
             ];
         });
+
         return view('viewadmindste.export.expincident', [
             'list' => $list,
         ]);
