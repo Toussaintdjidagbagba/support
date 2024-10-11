@@ -154,47 +154,7 @@
                 }
             }
         }
-
-        // async function confirmesuppression() {
-        //     token = document.getElementById("_token").value;
-        //     iddel = document.getElementById("iddel").value;
-
-        //     document.getElementById("infosdel").innerHTML =
-        //         '<div class="alert alert-warning alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>En cours de traitement.. <br> Veuillez patienter! </strong></div>';
-
-        //     try {
-        //         let response = await fetch("{{ route('DCO') }}?_token=" + token + "&id=" + iddel, {
-        //             method: 'GET',
-        //             headers: {
-        //                 'Access-Control-Allow-Credentials': true,
-        //                 'Content-Type': 'application/json',
-        //                 'Accept': 'application/json',
-        //             },
-        //         });
-        //         let html = "";
-        //         if (response.status == 200) {
-        //             html = "";
-        //             data = await response.text();
-        //             document.getElementById("infosdel").innerHTML =
-        //                 '<div class="alert alert-success alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>' +
-        //                 data + '</strong></div>';
-        //             setTimeout(function() {
-        //                 window.location.reload();
-        //             }, 3000);
-
-        //         } else {
-        //             document.getElementById("infosdel").innerHTML =
-        //                 '<div class="alert alert-danger alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong>Une erreur s\'est produite </strong></div>';
-        //         }
-        //     } catch (error) {
-
-        //         html += "";
-        //         console.log(error);
-        //         document.getElementById("infosdel").innerHTML = html;
-        //     }
-
-        // }
-
+        
         function avisupdate(ident, lib) {
             document.getElementById('infolib').value = lib;
             document.getElementById('idupdate').value = ident;
