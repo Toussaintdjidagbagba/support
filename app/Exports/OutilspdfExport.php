@@ -25,6 +25,7 @@ class OutilspdfExport
                 'nameoutils' => $outils->nameoutils, 
                 'categorie' => InterfaceServiceProvider::LibelleCategorie($outils->categorie), 
                 'user' => InterfaceServiceProvider::LibelleUser($outils->user) , 
+                'etat' => $outils['etat'],
             ];
         });
         

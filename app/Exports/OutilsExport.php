@@ -24,7 +24,8 @@ class OutilsExport implements FromView
                 'dateacquisition' => $outils->dateacquisition, 
                 'nameoutils' => $outils->nameoutils, 
                 'categorie' => InterfaceServiceProvider::LibelleCategorie($outils->categorie), 
-                'user' => InterfaceServiceProvider::LibelleUser($outils->user) , 
+                'user' => InterfaceServiceProvider::LibelleUser($outils->user),
+                'etat' => $outils['etat'], 
             ];
         });
         return view('viewadmindste.export.expoutil', [
