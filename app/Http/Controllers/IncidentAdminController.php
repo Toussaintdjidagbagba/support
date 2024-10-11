@@ -25,10 +25,10 @@ use Illuminate\Support\Facades\Validator;
 class IncidentAdminController extends Controller
 {
 
-    // public static function getincident()
-    // {
-    //     return view('viewadmindste.gererincident.dashincident');
-    // }
+    public static function getincident()
+    {
+        return view('viewadmindste.gererincident.dashincident');
+    }
 
     public static function getincidentData(Request $request)
     {
@@ -37,6 +37,7 @@ class IncidentAdminController extends Controller
                 ->leftJoin('hierarchies as h', 'i.hierarchie', '=', 'h.id')
                 ->leftJoin('categories as c', 'i.cat', '=', 'c.id')
                 ->leftJoin('utilisateurs as u', 'i.affecter', '=', 'u.idUser')
+                ->leftJoin('utilisateurs as uE', 'i.Emetteur', '=', 'uE.idUser')
                 ->leftJoin('settings as s', 'i.etat', '=', 's.id')
                 ->select(
                     'i.id',
@@ -45,18 +46,24 @@ class IncidentAdminController extends Controller
                     'i.etat',
                     'i.DateEmission',
                     'i.description',
+                'i.piece',
                     'h.libelle as hierarchie',
+                DB::raw('COALESCE(i.DateResolue, "Pas encore résolue") as DateResolue'),
                     DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
                     DB::raw('COALESCE(s.libelle, "En attente") as etats'),
-                    DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as users'),
+                DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersA'),
+                DB::raw('COALESCE(CONCAT(uE.nom, " ", uE.prenom), "En attente") as usersE'),
                     'i.created_at',
                     'u.idUser as user_id',
+                'uE.idUser as userE_id',
                 )
                 ->orderBy('i.created_at', 'asc');
         } else {
             $query = DB::table('incidents as i')
                 ->leftJoin('hierarchies as h', 'i.hierarchie', '=', 'h.id')
                 ->leftJoin('categories as c', 'i.cat', '=', 'c.id')
+                ->leftJoin('utilisateurs as u', 'i.affecter', '=', 'u.idUser')
+                ->leftJoin('utilisateurs as uE', 'i.Emetteur', '=', 'uE.idUser')
                 ->leftJoin('settings as s', 'i.etat', '=', 's.id')
                 ->select(
                     'i.id',
@@ -65,11 +72,16 @@ class IncidentAdminController extends Controller
                     'i.etat',
                     'i.DateEmission',
                     'i.description',
+                'i.piece',
                     'h.libelle as hierarchie',
+                DB::raw('COALESCE(i.DateResolue, "Pas encore résolue") as DateResolue'),
                     DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
                     DB::raw('COALESCE(s.libelle, "En attente") as etats'),
+                DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersA'),
+                DB::raw('COALESCE(CONCAT(uE.nom, " ", uE.prenom), "En attente") as usersE'),
                     'i.created_at',
-                    'c.tmpCat'
+                'u.idUser as user_id',
+                'uE.idUser as userE_id',
                 )
                 ->where("i.Emetteur", session("utilisateur")->idUser)
                 ->orderBy('i.created_at', 'asc');
@@ -95,43 +107,46 @@ class IncidentAdminController extends Controller
         }
 
         if ($request->filled('affecter')) {
-            $query->where('i.affecter', 'like', '%' . htmlspecialchars(trim($request->affecter)) . '%');
+            $query->where(DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->affecter)) . '%');
         }
 
+        if ($request->filled('emetteur')) {
+            $query->where(DB::raw('COALESCE(CONCAT(uE.nom, " ", uE.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->emetteur)) . '%');
+        }
 
         $list = $query->get();
-
-        return json_encode(["list" => $list]);
+        $serv = InterfaceServiceProvider::alladminandsuperadmin();
+        return json_encode(["list" => $list, "serv" => $serv]);
     }
 
-    public static function getincident(Request $request)
-    {
-        if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
-            $lists = Incident::query()->orderBy('incidents.created_at', 'desc');
-            if ($request->has('q') != "" && $request->has('q') != null) {
-                $recherche = htmlspecialchars(trim($request->q));
-                $list = $lists->where('Module', 'like', '%' . $recherche . '%')
-                    ->orWhere('DateEmission', 'like', '%' . $recherche . '%')
-                    ->orWhere('etat', 'like', '%' . $recherche . '%')
-                    // ->orWhere('hierarchie', 'like', '%' . $recherche . '%')
-                    ->paginate(100);
-            }
-            $list = $lists->paginate(100);
-        } else {
-            // Afficher les incidents reçu
-            $lists = Incident::query()->where("affecter", session("utilisateur")->affecter)->orderBy('incidents.created_at', 'desc');
-            if ($request->has('q') != "" && $request->has('q') != null) {
-                $recherche = htmlspecialchars(trim($request->q));
-                $list = $lists->where('Module', 'like', '%' . $recherche . '%')
-                    ->orWhere('DateEmission', 'like', '%' . $recherche . '%')
-                    ->orWhere('etat', 'like', '%' . $recherche . '%')
-                    // ->orWhere('hierarchie', 'like', '%' . $recherche . '%')
-                    ->paginate(100);
-            }
-            $list = $lists->paginate(100);
-        }
-        return view('viewadmindste.gererincident.dashincident', compact('list'));
-    }
+    // public static function getincident(Request $request)
+    // {
+    //     if (session("utilisateur")->Role == 1 || session("utilisateur")->Role == 8 || session("utilisateur")->activereceiveincident == 0) { // super admin
+    //         $lists = Incident::query()->orderBy('incidents.created_at', 'desc');
+    //         if ($request->has('q') != "" && $request->has('q') != null) {
+    //             $recherche = htmlspecialchars(trim($request->q));
+    //             $list = $lists->where('Module', 'like', '%' . $recherche . '%')
+    //                 ->orWhere('DateEmission', 'like', '%' . $recherche . '%')
+    //                 ->orWhere('etat', 'like', '%' . $recherche . '%')
+    //                 // ->orWhere('hierarchie', 'like', '%' . $recherche . '%')
+    //                 ->paginate(100);
+    //         }
+    //         $list = $lists->paginate(100);
+    //     } else {
+    //         // Afficher les incidents reçu
+    //         $lists = Incident::query()->where("affecter", session("utilisateur")->affecter)->orderBy('incidents.created_at', 'desc');
+    //         if ($request->has('q') != "" && $request->has('q') != null) {
+    //             $recherche = htmlspecialchars(trim($request->q));
+    //             $list = $lists->where('Module', 'like', '%' . $recherche . '%')
+    //                 ->orWhere('DateEmission', 'like', '%' . $recherche . '%')
+    //                 ->orWhere('etat', 'like', '%' . $recherche . '%')
+    //                 // ->orWhere('hierarchie', 'like', '%' . $recherche . '%')
+    //                 ->paginate(100);
+    //         }
+    //         $list = $lists->paginate(100);
+    //     }
+    //     return view('viewadmindste.gererincident.dashincident', compact('list'));
+    // }
 
     public function setincident(Request $request)
     {

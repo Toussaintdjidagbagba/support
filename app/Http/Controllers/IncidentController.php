@@ -38,6 +38,7 @@ class IncidentController extends Controller
             DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
             DB::raw('COALESCE(s.libelle, "En attente") as etat'),
             'i.created_at',
+            'i.avis',
             'c.tmpCat'
         )
             ->where("i.Emetteur", session("utilisateur")->idUser)
@@ -69,17 +70,16 @@ class IncidentController extends Controller
         $list->transform(function ($incident) {
             // Récupération du délai
             $valeurDelai = (int)$incident->tmpCat;
-
             $secondesDelai = $valeurDelai * 3600;
-
+            
             $timestampEmission = strtotime($incident->created_at);
             $timestampLimite = $timestampEmission + $secondesDelai;
-
+            
             $timestampNow = time();
-
+            
             $tempsRestant = $timestampLimite - $timestampNow;
             $etat = Incident::where('id', $incident->id)->first(); // Vérification de l'état actuel de l'incident
-
+            
             // Formatage du temps restant
             $tempsRestantFormate = "Non défini";
             if ($etat) {
@@ -87,7 +87,7 @@ class IncidentController extends Controller
                     $tempsRestantFormate = "Prise en compte";
                 } else {
                     if ($tempsRestant > 0) {
-                        $heuresRestantes = floor($tempsRestant / 3600);
+                        $heuresRestantes = floor(($tempsRestant % 86400) / 3600);
                         $minutesRestantes = floor(($tempsRestant % 3600) / 60);
                         $secondesRestantes = $tempsRestant % 60;
                         $tempsRestantFormate = sprintf('%02d h %02d m %02d s', $heuresRestantes, $minutesRestantes, $secondesRestantes);

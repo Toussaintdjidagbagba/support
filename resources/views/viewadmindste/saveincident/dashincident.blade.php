@@ -266,7 +266,7 @@
             }
         };
         window.onload = function() {
-            maFonction();
+            recupListIncident();
         };
 
         async function searchButton(event) {
@@ -311,7 +311,7 @@
             }
         }
 
-        async function maFonction() {
+        async function recupListIncident() {
             console.log("Toutes les ressources de la page sont chargées, la fonction est exécutée.");
 
             try {
@@ -346,7 +346,7 @@
                 tbody.innerHTML = `<tr><td colspan="9"><center>Pas d'incident enregistrés !!!</center></td></tr>`;
                 return;
             }
-            console.log(list);
+            
             list.forEach((currentline, index, arry) => {
 
                 const contenu = '<tr>' +
@@ -374,9 +374,9 @@
                             currentline["id"] +
                             ')" data-id="getid(' + currentline["id"] +
                             ')" data-color="deep-orange" data-toggle="modal" data-target="#avis"><i class="material-icons">grade</i></a>'
-                        ) :
-                        ''
-                    ) +
+                        )
+                        :
+                        '') +
                     '</td>' +
                     '<td>' +
                     (currentline["statut"] !== 1 ? (sessionUpdate ?
