@@ -17,18 +17,19 @@ class IncidentExport implements FromView
 
     public function view(): View
     {
-       
+        // Utilisation de map() sur la collection
         $list = $this->list->map(function ($incident) {
             return [
-                'DateEmission' => $incident->DateEmission, 
+                'DateEmission' => $incident->DateEmission, // Notation objet
                 'Module' => $incident->Module, 
-                'hierarchie' => InterfaceServiceProvider::LibelleHier($incident->hierarchie), 
-                'emetteur' => InterfaceServiceProvider::LibelleUser($incident->Emetteur), 
-                'etat' => InterfaceServiceProvider::libetat($incident->etat), 
-                'DateResolue' => $incident->DateResolue,
-                'affecter' => $incident['usersA'],  
+                'hierarchie' => $incident->hierarchie, 
+                'emetteur' => $incident->usersE, 
+                'etat' => $incident->etats,
+                'DateResolue' => $incident->DateResolue, 
+                'affecter' => $incident->usersA, 
             ];
         });
+        
         return view('viewadmindste.export.expincident', [
             'list' => $list,
         ]);

@@ -1,6 +1,6 @@
 <table>
     <tr>
-        <th class="modal-title font-14" colspan="6"
+        <th class="modal-title font-14" colspan="7"
             style="vertical-align:middle; text-align: center; background-color: black; color: white; font-size: 13px;">
             Liste des incidents déclarés
         </th>
