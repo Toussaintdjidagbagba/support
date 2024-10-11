@@ -311,6 +311,8 @@
                     }
                     let data = await response.json();
                     let list = data.list;
+                    console.log(list);
+                    
                     Gliste = data.list;
                     afficherDonnees(list);
                 } else {
