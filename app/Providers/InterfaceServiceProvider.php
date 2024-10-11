@@ -98,7 +98,7 @@ class InterfaceServiceProvider extends ServiceProvider
         $maintenance = DB::table('maintenance_curatives')->where('id', $id)->first();
 
         if (isset($maintenance->id)) {
-            return $maintenance->periodedebut . ' au ' . $maintenance->periodefin;
+            return $maintenance->periodedebut;
         } else {
             return '';
         }
