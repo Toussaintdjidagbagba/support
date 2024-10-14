@@ -256,16 +256,72 @@ class MaintenanceController extends Controller
     public function listordinateurmaintenance(Request $request)
     {
         try {
-            $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
-                ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
-                ->where("outils.user", session("utilisateur")->idUser)
-                ->get();
-
-            return view('viewadmindste.maintenance.listmaintenance', compact('list'));
+            return view('viewadmindste.maintenance.listmaintenance');
         } catch (\Exception $e) {
             $errorString = "Erreur serveur.";
             flash($errorString)->error();
             return Back();
+        }
+    }
+
+    public function listordinateurmaintenancedata(Request $request)
+    {
+        try {
+            $query = DB::table('gestionmaintenances as gm')
+            ->leftJoin('outils as o', 'o.id', '=', 'gm.outil')
+            ->leftJoin('maintenances as m', 'm.id', '=', 'gm.maintenance')
+            ->leftJoin('categorieoutils as co', 'co.id', '=', 'o.categorie')
+            ->leftJoin('utilisateurs as u', 'gm.action', '=', 'u.idUser')
+            ->leftJoin('services as s', 'm.service', '=', 's.id')
+            ->select(
+                'gm.id as gestion_id',
+                'o.id as id_outil',
+                'co.libelle as co_libelle',
+                'gm.detailjson',
+                'gm.outil as gm_outil',
+                DB::raw('COALESCE(CONCAT(m.periodedebut, " au ", m.periodefin), "Aucune période") as periode'),
+                DB::raw('COALESCE(gm.commentaireuser, "Aucune Obs") as commentaireuser'),
+                DB::raw('COALESCE(gm.commentaireinf, "Aucune Obs") as commentaireinf'),
+                DB::raw('COALESCE(gm.avisuser, "Pas d\'avis") as avisuser'),
+                DB::raw('COALESCE(gm.etat, "") as etat'),
+                DB::raw('COALESCE(o.nameoutils, "") as nameoutils'),
+                DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersL'),
+            )->where("o.user", session("utilisateur")->idUser);
+
+            $query->where(function ($q) use ($request) {
+
+                if ($request->filled('periodedebut')) {
+                    $q->orWhere('m.periodedebut', 'like', '%' . htmlspecialchars(trim($request->periodedebut)) . '%');
+                }
+
+                if ($request->filled('periodefin')) {
+                    $q->orWhere('m.periodefin', 'like', '%' . htmlspecialchars(trim($request->periodefin)) . '%');
+                }
+
+                if ($request->filled('technicien')) {
+                    $q->orWhere(DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->technicien)) . '%');
+                }
+
+                if ($request->filled('outil')) {
+                    $q->orWhere(DB::raw('COALESCE(o.nameoutils, "")'), 'like', '%' . htmlspecialchars(trim($request->outil)) . '%');
+                }
+
+                if ($request->filled('avis')) {
+                    $q->orWhere(DB::raw('COALESCE(gm.avisuser, "")'), 'like', '%' . htmlspecialchars(trim($request->avis)) . '%');
+                }
+
+                if ($request->filled('etat')) {
+                    $q->orWhere('m.etat', 'like', '%' . htmlspecialchars(trim($request->etat)) . '%');
+                }
+            });
+
+            $list = $query->get();
+            return json_encode(["list" => $list]);
+        } catch (\Exception $e) {
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
+            $list = "";
+            return json_encode(["list" => $list]);
         }
     }
 

@@ -95,6 +95,7 @@
                 </div>
             </div>
         </div>
+
         <div class="row clearfix">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="card">
@@ -141,7 +142,7 @@
         const router = {
             Deletes: "{{ route('DPC', ':id') }}",
             Updates: "{{ route('MTI', ':id') }}",
-            ListeDetail: "{{ route('GMDPC', ['id' => ':id']) }}",
+            ListeDetail: "{{ route('GMDPC', ':id') }}",
         }
 
         async function validemaintenance() {
@@ -514,10 +515,10 @@
         }
 
         window.onload = function() {
-            recupListMP();
+            recupListGMP();
         };
 
-        async function recupListMP() {
+        async function recupListGMP() {
             console.log("Toutes les ressources de la page sont chargées, la fonction est exécutée.");
 
             try {
