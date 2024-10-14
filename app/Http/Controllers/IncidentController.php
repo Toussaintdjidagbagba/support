@@ -45,30 +45,31 @@ class IncidentController extends Controller
             'i.avis',
             'c.tmpCat'
         )
-            ->where("i.Emetteur", session("utilisateur")->idUser)
-            ->orderBy('i.created_at', 'desc');
+            ->where("i.Emetteur", session("utilisateur")->idUser);
 
-        if ($request->filled('date_emission')) {
-            $query->whereDate('i.DateEmission', $request->date_emission);
-        }
+        $query->where(function ($q) use ($request) {
+            if ($request->filled('date_emission')) {
+                $q->whereDate('i.DateEmission', $request->date_emission);
+            }
 
-        if ($request->filled('hierarchie')) {
-            $query->where('h.libelle', 'like', '%' . htmlspecialchars(trim($request->hierarchie)) . '%');
-        }
+            if ($request->filled('hierarchie')) {
+                $q->orWhere('h.libelle', 'like', '%' . htmlspecialchars(trim($request->hierarchie)) . '%');
+            }
 
-        if ($request->filled('desc')) {
-            $query->where('i.description', 'like', '%' . htmlspecialchars(trim($request->desc)) . '%');
-        }
+            if ($request->filled('desc')) {
+                $q->orWhere('i.description', 'like', '%' . htmlspecialchars(trim($request->desc)) . '%');
+            }
 
-        if ($request->filled('modules')) {
-            $query->where('i.Module', 'like', '%' . htmlspecialchars(trim($request->modules)) . '%');
-        }
+            if ($request->filled('modules')) {
+                $q->orWhere('i.Module', 'like', '%' . htmlspecialchars(trim($request->modules)) . '%');
+            }
 
-        if ($request->filled('categorie')) {
-            $query->where(DB::raw('COALESCE(c.libelle, "")'), 'like', '%' . htmlspecialchars(trim($request->categorie)) . '%');
-        }
+            if ($request->filled('categorie')) {
+                $q->orWhere(DB::raw('COALESCE(c.libelle, "")'), 'like', '%' . htmlspecialchars(trim($request->categorie)) . '%');
+            }
+        });
 
-        $list = $query->get();
+        $list = $query->orderBy('i.created_at', 'desc')->get();
 
         // Calcul du temps restant pour chaque incident
         $list->transform(function ($incident) {

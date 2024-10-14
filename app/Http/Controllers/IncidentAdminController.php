@@ -88,39 +88,40 @@ class IncidentAdminController extends Controller
                 'u.idUser as user_id',
                 'uE.idUser as userE_id',
                 )
-                ->where("i.Emetteur", session("utilisateur")->idUser)
-                ->orderBy('i.created_at', 'asc');
+                ->where("i.Emetteur", session("utilisateur")->idUser);
         }
 
-        if ($request->filled('date_emission')) {
-            $query->whereDate('i.DateEmission', $request->date_emission);
-        }
+        $query->where(function ($q) use ($request) {
+            if ($request->filled('date_emission')) {
+                $q->whereDate('i.DateEmission', $request->date_emission);
+            }
 
-        if ($request->filled('hierarchie')) {
-            $query->where('h.libelle', 'like', '%' . htmlspecialchars(trim($request->hierarchie)) . '%');
-        }
+            if ($request->filled('hierarchie')) {
+                $q->orWhere('h.libelle', 'like', '%' . htmlspecialchars(trim($request->hierarchie)) . '%');
+            }
 
-        if ($request->filled('etat')) {
-            $query->where(DB::raw('COALESCE(s.libelle, "")'), 'like', '%' . htmlspecialchars(trim($request->etat)) . '%');
-        }
+            if ($request->filled('etat')) {
+                $q->orWhere(DB::raw('COALESCE(s.libelle, "")'), 'like', '%' . htmlspecialchars(trim($request->etat)) . '%');
+            }
 
-        if ($request->filled('modules')) {
-            $query->where('i.Module', 'like', '%' . htmlspecialchars(trim($request->modules)) . '%');
-        }
+            if ($request->filled('modules')) {
+                $q->orWhere('i.Module', 'like', '%' . htmlspecialchars(trim($request->modules)) . '%');
+            }
 
-        if ($request->filled('date_resolution')) {
-            $query->where('i.DateResolue', 'like', '%' . htmlspecialchars(trim($request->date_resolution)) . '%');
-        }
+            if ($request->filled('date_resolution')) {
+                $q->orWhere('i.DateResolue', 'like', '%' . htmlspecialchars(trim($request->date_resolution)) . '%');
+            }
 
-        if ($request->filled('affecter')) {
-            $query->where(DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->affecter)) . '%');
-        }
+            if ($request->filled('affecter')) {
+                $q->orWhere(DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->affecter)) . '%');
+            }
 
-        if ($request->filled('emetteur')) {
-            $query->where(DB::raw('COALESCE(CONCAT(uE.nom, " ", uE.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->emetteur)) . '%');
-        }
+            if ($request->filled('emetteur')) {
+                $q->orWhere(DB::raw('COALESCE(CONCAT(uE.nom, " ", uE.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->emetteur)) . '%');
+            }
+        });
 
-        $list = $query->get();
+        $list = $query->orderBy('i.created_at', 'desc')->get();
         $serv = InterfaceServiceProvider::alladminandsuperadmin();
         return json_encode(["list" => $list, "serv" => $serv]);
     }

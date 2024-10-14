@@ -145,12 +145,27 @@
             document.getElementById("ulibelle").value = libelle;
             document.getElementById("infotype").innerHTML = "l'" + id + " :";
         }
+
+        function loadImage(event) {
+            var output = document.getElementById('output');
+            var file = event.target.files[0];
+
+            if (file.type === "image/png") {
+                output.src = URL.createObjectURL(file);
+                output.onload = function() {
+                    URL.revokeObjectURL(output.src);
+                }
+            } else {
+                Swal.fire("Erreur", "Seules les images au format PNG sont autorisées.", "error");
+                event.target.value = '';
+            }
+        };
     </script>
 @endsection
 
 @section('model')
     <div class="modal fade" id="addentete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-dialog modal-md" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -160,15 +175,56 @@
                 <form method="post" action="{{ route('AETAT') }}">
                     <div class="modal-body">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                        <input type="hidden" name="type" value="Etat" />
                         <div class="row clearfix">
-                            <div class="col-lg-12">
-                                <label for="libelle">Libellé :</label>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label for="libelle">Logo :</label>
+                                    <div class="form-line">
+                                        <input type="file" class="form-control" id="piece" name="piece"
+                                            accept=".jpg, .jpeg, .png" onchange="loadImage(event)">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label for="libelle">Titre :</label>
+                                        <div class="form-line">
+                                            <input type="text" id="libelle" name="lib" class="form-control"
+                                                placeholder="" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
                                 <div class="form-group">
                                     <div class="form-line">
+                                        <label for="libelle">Contenu :</label>
                                         <input type="text" id="libelle" name="lib" class="form-control"
                                             placeholder="" required>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label for="alignment">Alignement du texte :</label>
+                                    <div class="form-line">
+                                        <select id="alignment" name="alignment" class="form-control">
+                                            <option value="left">Aligner à gauche</option>
+                                            <option value="center">Aligner au centre</option>
+                                            <option value="right">Aligner à droite</option>
+                                            <option value="justify">Justifier</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label for="piece">Aperçu</label>
+                                <div class="form-group">
+                                    <img id="output" src="logo.png" alt="logo"
+                                        style="width: 70px; height: 70px; border-radius: 50%;" />
                                 </div>
                             </div>
                         </div>

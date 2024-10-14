@@ -153,12 +153,10 @@ class InterfaceServiceProvider extends ServiceProvider
     public static function statis($mois, $an, $heri)
     {
         $result = Incident::where("hierarchie", $heri);
-        //if(session('utilisateur')->Role != 1 || session('utilisateur')->Role != 2)
-        //  $result = $result->where("Emetteur", session("utilisateur")->idUser);
 
         $result = $result->whereMonth('created_at', $mois)
-        ->whereYear('created_at', $an)
-        ->get()->count();
+            ->whereYear('created_at', $an)
+            ->get()->count();
 
         return $result;
     }
