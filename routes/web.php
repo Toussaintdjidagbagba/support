@@ -173,8 +173,10 @@ Route::group([
 	
 	//////////////////////////////////** Maintenance Curative **/////////////////////////////////////
 	Route::get('/listmaintenancecurative', 'App\Http\Controllers\MaintenanceController@listmaintenancecurative')->name('LMC');
+	Route::get('/listmaintenancecurativeData', 'App\Http\Controllers\MaintenanceController@listmaintenancecurativedata')->name('LMCDATA');
 	Route::get('/detailmaintenancescurative', 'App\Http\Controllers\MaintenanceController@detailsmaintenacecurative')->name('GDMC');
 	Route::get('/gestionmaintenancecurative', 'App\Http\Controllers\MaintenanceController@listgestionmaintenancecurative')->name('GMC');
+	Route::get('/gestionmaintenancecurativeData', 'App\Http\Controllers\MaintenanceController@listgestionmaintenancecurativedata')->name('GMCDATA');
 	Route::post('/maintenancescurative', 'App\Http\Controllers\MaintenanceController@addmaintenancecuartive')->name('ADDMC');
 	Route::post('/traitement/maintenancescurative', 'App\Http\Controllers\MaintenanceController@traitementmaintenancecurative')->name('TMC');
 	Route::post('/definitionetatmaintenancecurative', 'App\Http\Controllers\MaintenanceController@setdefinitionetatmaintenancecurative')->name('DEMC');

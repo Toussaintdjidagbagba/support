@@ -15,7 +15,110 @@
             </h2>
         </div>
         <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="card">
+                        <div class="header" style="padding: 0; border-radius: 0;" role="tab" id="headingOne">
+                            <div role="button" class="filter-toggle" data-toggle="collapse" data-parent="#accordion"
+                                href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <div class="filter-content">
+                                    <i class="material-icons">folder_open</i>
+                                    <span class="filter-text">Filtre</span>
+                                </div>
+                                <i class="material-icons chevron-icon">expand_more</i>
+                            </div>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                            <div class="body">
+                                <form role="form">
+                                    <div class="row clearfix">
+                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                            <div class="input-group">
+                                                <label for="periodedebut_r">Du :</label>
+                                                <div class="form-line">
+                                                    <input type="date" name="periodedebut_r" id="periodedebut_r"
+                                                        placeholder="Date d'émission..."
+                                                        class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <label for="technicien_r">Technicien :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="technicien_r" id="technicien_r"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <label for="cause_r">Cause :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="cause_r" id="cause_r"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
 
+                                            <div class="input-group">
+                                                <label for="resultat_r">Resultat :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="resultat_r" id="resultat_r"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                            <div class="input-group">
+                                                <label for="periodefin_r"> à :</label>
+                                                <div class="form-line">
+                                                    <input type="time" name="periodefin_r" id="periodefin_r"
+                                                        placeholder="Date d'émission..."
+                                                        class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <label for="etat_r">Etat :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="etat_r" id="etat_r"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <label for="outil_r">Outils :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="outil_r" id="outil_r"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+
+                                            <div class="input-group">
+                                                <label for="diagnostique_r">Diagnostique :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="diagnostique_r" id="diagnostique_r"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 text-center">
+                                            <button onclick="searchButton(event)"
+                                                class="btn btn-info btn-md">Rechercher</button>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div>
+                                        <button type="button" class="btn btn-danger"
+                                            style="margin-left: 25px; margin-bottom: 0px;"
+                                            onclick="paramrech('pdf')">PDF</button>
+                                        <button type="button" class="btn btn-success"
+                                            style="margin-left: 25px; margin-bottom: 0px;"
+                                            onclick="paramrech('xlsx')">XLSX</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="card">
                     <div class="header">
@@ -40,76 +143,8 @@
                                         <th data-priority="6">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @forelse($list as $maint)
-                                        <tr>
-                                            <td>{{ $maint->periodedebut }}
-                                            </td>
-                                            <td>{{ $maint->periodefin }}
-                                            </td>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}
-                                            </td>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->user) }}</td>
-                                            <td class="d-flex justify-content-between align-items-center">
-                                                <span>{{ $maint->etat }}</span>
-                                                @if (in_array('define_etat_maint', session('auto_action')))
-                                                    <button type="button" title="Etat"
-                                                        class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        data-toggle="modal" data-target="#etatmaintenance"
-                                                        onclick="setetatmaintenance({{ $maint->id }},'{{ $maint->etat }}','{{ $maint->commentaire }}', '{{ $maint->periodedebut }} au {{ $maint->periodefin }}')">
-                                                        <i class="material-icons">gps_fixed</i></a> </button>
-                                                @endif
-                                            </td>
-                                            <td class="d-flex justify-content-between align-items-center">
+                                <tbody id="tbodymc">
 
-                                                @if (in_array('etat_pdf_maint_global', session('auto_action')))
-                                                    <button type="button" title="PDF" onclick="getmaintcur(event,'pdf')"
-                                                        data-Id="{{ $maint->id }}"
-                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                            height="24" viewBox="0 0 24 24">
-                                                            <path fill="currentColor"
-                                                                d="M8.267 14.68c-.184 0-.308.018-.372.036v1.178c.076.018.171.023.302.023c.479 0 .774-.242.774-.651c0-.366-.254-.586-.704-.586zm3.487.012c-.2 0-.33.018-.407.036v2.61c.077.018.201.018.313.018c.817.006 1.349-.444 1.349-1.396c.006-.83-.479-1.268-1.255-1.268z" />
-                                                            <path fill="currentColor"
-                                                                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM9.498 16.19c-.309.29-.765.42-1.296.42a2.23 2.23 0 0 1-.308-.018v1.426H7v-3.936A7.558 7.558 0 0 1 8.219 14c.557 0 .953.106 1.22.319c.254.202.426.533.426.923c-.001.392-.131.723-.367.948zm3.807 1.355c-.42.349-1.059.515-1.84.515c-.468 0-.799-.03-1.024-.06v-3.917A7.947 7.947 0 0 1 11.66 14c.757 0 1.249.136 1.633.426c.415.308.675.799.675 1.504c0 .763-.279 1.29-.663 1.615zM17 14.77h-1.532v.911H16.9v.734h-1.432v1.604h-.906V14.03H17v.74zM14 9h-1V4l5 5h-4z" />
-                                                        </svg>
-                                                    </button>
-                                                @endif
-                                                @if (in_array('update_maint_prog', session('auto_action')))
-                                                    <button type="button" title="Modifier"
-                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        data-toggle="modal" data-target="#update"
-                                                        onclick="setupdatemaintenance({{ $maint->id }},
-                                                         '{{ $maint->resultat }}', '{{ $maint->outil }}',
-                                                         '{{ $maint->diagnostique }}',
-                                                         '{{ $maint->commentaire }}',
-                                                          '{{ $maint->cause }}',
-                                                          '{{ $maint->periodedebut }}',
-                                                           '{{ $maint->periodefin }}',
-                                                            {{ $maint->user }},
-                                                             '{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->user) }}')
-                                                             ">
-                                                        <i class="material-icons">system_update_alt</i>
-                                                    </button>
-                                                @endif
-
-                                                @if (in_array('delete_maint_prog', session('auto_action')))
-                                                    <button type="button" title="Supprimer"
-                                                        data-token="{{ csrf_token() }}" data-Id="{{ $maint->id }}"
-                                                        onclick="Delete(event, '{{ route('DMCR') }}','{{ $maint->periodedebut }} au {{ $maint->periodefin }}')"
-                                                        class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                        <i class="material-icons">delete_sweep</i></a> </button>
-                                                @endif
-
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="4">
-                                                <center>Pas de maintenance enregistrer!!!</center>
-                                            </td>
-                                        </tr>
-                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -122,6 +157,14 @@
     </div>
 
     <script type="text/javascript">
+        const sessionEtatMaint = "{{ in_array('define_etat_maint', session('auto_action')) }}";
+        const sessionPdfMaint = "{{ in_array('etat_pdf_maint_global', session('auto_action')) }}";
+        const sessionUpdate = "{{ in_array('update_maint_prog', session('auto_action')) }}";
+        const sessionDelete = "{{ in_array('delete_maint_prog', session('auto_action')) }}";
+        const sessionTocken = "{{ csrf_token() }}";
+        const router = {
+            Deletes: "{{ route('DMCR', ':id') }}",
+        }
         async function validemaintenancecurative() {
             // récupération des données du formulaire 
             token = document.getElementById("_token").value;
@@ -331,7 +374,8 @@
             allUsercharge.forEach(function(Usercharge) {
                 const utilisateurSelected = (Usercharge.idUser == technicien) ? 'selected' :
                     '';
-                selectutilisateurHTML += '<option value="' + Usercharge.idUser + '" ' + utilisateurSelected + '>' + Usercharge.nom +
+                selectutilisateurHTML += '<option value="' + Usercharge.idUser + '" ' + utilisateurSelected +
+                    '>' + Usercharge.nom +
                     ' ' + Usercharge.prenom +
                     '</option>';
             });
@@ -522,6 +566,142 @@
 
             document.body.appendChild(form);
             form.submit();
+        }
+
+        window.onload = function() {
+            recupListGMC();
+        };
+
+        async function recupListGMC() {
+            console.log("Toutes les ressources de la page sont chargées, la fonction est exécutée.");
+
+            try {
+                let response = await fetch("{{ route('GMCDATA') }}", {
+                    method: 'GET',
+                    headers: {
+                        'Access-Control-Allow-Credentials': true,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (response.status == 200) {
+                    if (!response.ok) {
+                        throw new Error("Erreur lors de la récupération des données: " + response.status);
+                    }
+                    data = await response.json();
+                    afficherDonnees(data.list);
+                }
+            } catch (error) {
+                console.error("Erreur attrapée:", error);
+            }
+        }
+
+        function afficherDonnees(list) {
+            const tbody = document.getElementById('tbodymc');
+            tbody.innerHTML = '';
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9"><center>Pas de maintenance enregistrer!!!</center></td></tr>`;
+                return;
+            }
+
+            list.forEach((currentline, index, arry) => {
+                const contenu = '<tr>' +
+                    '<th><span class="co-name">' + currentline["date_debut"] + '</span></th>' +
+                    '<td>' + currentline["heures"] + '</td>' +
+                    '<td>' + currentline["nameoutils"] + '</td>' +
+                    '<td>' + currentline["usersL"] + '</td>' +
+                    '<td class="d-flex justify-content-between align-items-center">' +
+                    '<span>' + currentline["etat"] + '</span>' +
+                    (sessionEtatMaint ?
+                        '<button type="button" title="Etat" class="btn btn-danger btn-circle btn-xs margin-bottom-10 waves-effect waves-light" ' +
+                        ' data-toggle="modal" data-target="#etatmaintenance" onclick="setetatmaintenance(' +
+                        currentline["id"] + ', \'' + currentline["etat"] + '\', \'' + currentline["commentaire"] +
+                        '\', \'' + currentline["periode"] + '\')">' +
+                        '<i class="material-icons">gps_fixed</i></button>' :
+                        '') +
+                    '</td>' +
+                    '<td class="d-flex justify-content-between align-items-center">' +
+                    (sessionPdfMaint ?
+                        '<button type="button" title="PDF" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light" ' +
+                        'onclick="getmaintcur(event, \'pdf\')" data-Id="' + currentline["id"] + '">' +
+                        '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">' +
+                        '<path fill="currentColor" d="M8.267 14.68c-.184 0-.308.018-.372.036v1.178c.076.018.171.023.302.023c.479 0 .774-.242.774-.651c0-.366-.254-.586-.704-.586zm3.487.012c-.2 0-.33.018-.407.036v2.61c.077.018.201.018.313.018c.817.006 1.349-.444 1.349-1.396c.006-.83-.479-1.268-1.255-1.268z" />' +
+                        '<path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM9.498 16.19c-.309.29-.765.42-1.296.42a2.23 2.23 0 0 1-.308-.018v1.426H7v-3.936A7.558 7.558 0 0 1 8.219 14c.557 0 .953.106 1.22.319c.254.202.426.533.426.923c-.001.392-.131.723-.367.948zm3.807 1.355c-.42.349-1.059.515-1.84.515c-.468 0-.799-.03-1.024-.06v-3.917A7.947 7.947 0 0 1 11.66 14c.757 0 1.249.136 1.633.426c.415.308.675.799.675 1.504c0 .763-.279 1.29-.663 1.615zM17 14.77h-1.532v.911H16.9v.734h-1.432v1.604h-.906V14.03H17v.74zM14 9h-1V4l5 5h-4z" />' +
+                        '</svg>' +
+                        '</button>' :
+                        '') +
+                    (sessionUpdate ?
+                        '<button type="button" title="Modifier" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light"' +
+                        'data-toggle="modal" data-target="#update" ' +
+                        'onClick="setupdatemaintenance(\'' + currentline["id"] + '\',\'' + currentline[
+                            "resultat"] + '\',\'' + currentline["outil"] + '\',\'' + currentline["diagnostique"] +
+                        '\',\'' + currentline["commentaire"] + '\',\'' + currentline["cause"] + '\',\'' +
+                        currentline["date_debut"] + '\',\'' + currentline["heures"] + '\',\'' + currentline[
+                            "user_id"] + '\',\'' + currentline["usersL"] + '\',)">' +
+                        '<i class="material-icons">system_update_alt</i>' +
+                        '</button>' :
+                        '') +
+                    (sessionDelete ?
+                        '<button type="button" title="Supprimer" class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"' +
+                        'onClick="Delete(event,\'' + router.Deletes.replace(':id', currentline["id"]) + '\',\'' +
+                        currentline["periode"] + '\')"' +
+                        'data-Id="' + currentline["id"] + '" data-token="' + sessionTocken + '">' +
+                        '<i class="material-icons">delete_sweep</i>' +
+                        '</button>' :
+                        '') +
+                    '</td>' +
+                    '</tr>';
+                tbody.innerHTML += contenu;
+            });
+        }
+
+        async function searchButton(event) {
+            event.preventDefault();
+            const periodedebut = document.getElementById('periodedebut_r').value;
+            const periodefin = document.getElementById('periodefin_r').value;
+            const technicien = document.getElementById('technicien_r').value;
+            const outil = document.getElementById('outil_r').value;
+            const etat = document.getElementById('etat_r').value;
+            const cause = document.getElementById('cause_r').value;
+            const diagnostique = document.getElementById('diagnostique_r').value;
+            const resultat = document.getElementById('resultat_r').value;
+
+            const params = new URLSearchParams({
+                periodedebut: periodedebut,
+                technicien: technicien,
+                outil: outil,
+                periodefin: periodefin,
+                etat: etat,
+                cause: cause,
+                resultat: resultat,
+                diagnostique: diagnostique,
+            }).toString();
+
+            try {
+                let response = await fetch("{{ route('GMCDATA') }}?" + params, {
+                    method: 'GET',
+                    headers: {
+                        'Access-Control-Allow-Credentials': true,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (response.status == 200) {
+                    if (!response.ok) {
+                        throw new Error("Erreur lors de la récupération des données: " + response.status);
+                    }
+                    let data = await response.json();
+                    Gliste = data.list;
+                    afficherDonnees(data.list);
+                } else {
+                    throw new Error("Erreur lors de la récupération des données: " + response.status);
+                }
+            } catch (error) {
+                console.error("Erreur attrapée:", error);
+            }
         }
     </script>
 @endsection
@@ -762,7 +942,7 @@
                             <label for="ucmu" id="ucma"></label>
                             <div class="form-group">
                                 <div class="form-line" id="selectallUsercharge">
-                                    
+
                                 </div>
                             </div>
                         </div>
