@@ -33,9 +33,52 @@ class MaintenanceController extends Controller
 {
     public function list()
     {
-        $list = Maintenance::all();
         $service = Service::all();
-        return view('viewadmindste.maintenance.list', compact('list', 'service'));
+        return view('viewadmindste.maintenance.list', compact('service'));
+    }
+
+    public function listdata(Request $request)
+    {
+        $query = DB::table('maintenances as m')
+        ->leftJoin('utilisateurs as u', 'm.user', '=', 'u.idUser')
+        ->leftJoin('services as s', 'm.service', '=', 's.id')
+        ->select(
+            'm.id',
+            'm.periodedebut',
+            'm.periodefin',
+            'm.user',
+            'm.service',
+            DB::raw('COALESCE(m.commentaire, "") as commentaire'),
+            DB::raw('COALESCE(m.etat, "") as etat'),
+            DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersL'),
+        );
+
+        $query->where(function ($q) use ($request) {
+
+            if ($request->filled('periodedebut')) {
+                $q->orWhere('m.periodedebut', 'like', '%' . htmlspecialchars(trim($request->periodedebut)) . '%');
+            }
+
+            if ($request->filled('periodefin')) {
+                $q->orWhere('m.periodefin', 'like', '%' . htmlspecialchars(trim($request->periodefin)) . '%');
+            }
+
+            if ($request->filled('technicien')) {
+                $q->orWhere(DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->technicien)) . '%');
+            }
+
+            if ($request->filled('service')) {
+                $q->orWhere(DB::raw('COALESCE(s.libelle, "")'), 'like', '%' . htmlspecialchars(trim($request->service)) . '%');
+            }
+
+            if ($request->filled('etat')) {
+                $q->orWhere('m.etat', 'like', '%' . htmlspecialchars(trim($request->etat)) . '%');
+            }
+        });
+
+        $list = $query->get();
+
+        return json_encode(["list" => $list]);
     }
 
     public function addmaintenance(Request $request)

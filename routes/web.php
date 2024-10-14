@@ -162,6 +162,7 @@ Route::group([
 
 	//////////////////////////////////** Maintenance préventive **/////////////////////////////////////
 	Route::get('/listmaintenance', 'App\Http\Controllers\MaintenanceController@list')->name('GMPC');
+	Route::get('/listmaintenance/Data', 'App\Http\Controllers\MaintenanceController@listdata')->name('GMPCDATA');
 	Route::post('/programmermaintenance', 'App\Http\Controllers\MaintenanceController@addmaintenance')->name('SMPC');
 	Route::post('/deletemaintenance', 'App\Http\Controllers\MaintenanceController@setdeletemaintenance')->name('DPC');
 	Route::post('/definitionetatmaintenance', 'App\Http\Controllers\MaintenanceController@setdefinitionetatmaintenance')->name('DEPC');
