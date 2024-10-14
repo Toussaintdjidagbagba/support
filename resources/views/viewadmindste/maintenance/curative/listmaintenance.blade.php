@@ -160,84 +160,6 @@
                                 <tbody id="tbodyMC">
 
                                 </tbody>
-
-                                {{-- <tbody>
-                                    @forelse($list as $maint)
-                                        <tr>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($maint->maintenance) }}
-                                            </td>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}
-                                            </td>
-                                            <td>{{ $maint->commentaireuser }}</td>
-                                            <td>{{ $maint->avisuser }}</td>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->action) }}
-                                            </td>
-                                            <td>{{ $maint->etat }}</td>
-                                            <td>{{ $maint->commentaireinf }}</td>
-                                            <td>
-                                                @if (in_array('detail_maint_user', session('auto_action')))
-                                                    <button type="button" title="Signature"
-                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        data-toggle="modal" data-target="#signature"
-                                                        onclick="setdetailmaintenance('{{ $maint->detailjson }}')">
-                                                        <i class="material-icons">book</i></a>
-                                                    </button>
-                                                @endif
-
-                                                @if (in_array('print_maint_pdf', session('auto_action')))
-                                                    <button onclick="getmaintgcur(event,'pdf')"
-                                                        data-Id="{{ $maint->gestion_id }}" type="button" title="PDF"
-                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                            height="24" viewBox="0 0 24 24">
-                                                            <path fill="currentColor"
-                                                                d="M8.267 14.68c-.184 0-.308.018-.372.036v1.178c.076.018.
-                                                                            171.023.302.023c.479 0 .774-.242.774-.651c0-.366-.254-.586-.704-.586zm3.487.012c-.2
-                                                                            0-.33.018-.407.036v2.61c.077.018.201
-                                                                            .018.313.018c.817.006 1.349-.444 1.349-1.396c.006-.83-.479-1.268-1.255-1.268z" />
-                                                            <path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0
-                                                                            2-2V8l-6-6zM9.498 16.19c-.309.29-.765.42-1.296.42a2.23 2.23 0 0
-                                                                            1-.308-.018v1.426H7v-3.936A7.558 7.558 0 0 1 8.219 14c.557 0 .953.106
-                                                                            1.22.319c.254.202.426.533.426.923c-.001.392-.131.723-.367.948zm3.807
-                                                                            1.355c-.42.349-1.059.515-1.84.515c-.468 0-.799-.03-1.024-.06v-3.917A7.947
-                                                                            7.947 0 0 1 11.66 14c.757 0 1.249.136 1.633.426c.415.308.675.799.675 1.504c0
-                                                                            .763-.279 1.29-.663 1.615zM17 14.77h-1.532v.911H16.9v.734h-1.432v1.
-                                                                            604h-.906V14.03H17v.74zM14 9h-1V4l5 5h-4z" />
-                                                        </svg>
-                                                    </button>
-                                                @endif
-                                                @if (in_array('detail_maint_user', session('auto_action')))
-                                                    <button type="button" title="Détails"
-                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        data-toggle="modal" data-target="#detail"
-                                                        onclick="setdetailmaintenance(event,
-                                                        '{{ App\Providers\InterfaceServiceProvider::periodeMaintenancecurative($maint->maintenance) }}',
-                                                        '{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}',
-                                                        '{{ $maint->action_effectuer }}',
-                                                        '{{ $maint->commentaireinf }}',
-                                                        '{{ $maint->avisinf }}')">
-                                                        >
-                                                        <i class="material-icons">book</i></a>
-                                                    </button>
-                                                @endif
-                                                @if (in_array('comment_maint_user', session('auto_action')))
-                                                    <button type="button" title="Modifier"
-                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        data-toggle="modal" data-target="#avis"
-                                                        onclick="getid({{ $maint->gestion_id }})">
-                                                        <i class="material-icons">system_update_alt</i>
-                                                    </button>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="8">
-                                                <center>Pas de maintenance enregistrer!!!</center>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody> --}}
                             </table>
                         </div>
 
@@ -460,6 +382,8 @@
             const avisinf = document.getElementById('avisinf_r').value;
             const cause = document.getElementById('cause_r').value;
             const avis = document.getElementById('avis_r').value;
+            const etat = document.getElementById('etat_r').value;
+
 
             const params = new URLSearchParams({
                 periodedebut: periodedebut,
@@ -473,7 +397,7 @@
             }).toString();
 
             try {
-                let response = await fetch("{{ route('GMCDATA') }}?" + params, {
+                let response = await fetch("{{ route('LMCDATA') }}?" + params, {
                     method: 'GET',
                     headers: {
                         'Access-Control-Allow-Credentials': true,
