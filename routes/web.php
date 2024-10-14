@@ -144,6 +144,7 @@ Route::group([
 	
 	//////////////////////////////////** OUtils **////////////////////////////////////////////////////////////////
 	Route::get('/listoutils', 'App\Http\Controllers\OutilController@list')->name('GO');
+	Route::get('/listoutilsdata', 'App\Http\Controllers\OutilController@listOtilData')->name('GODATA');
 	Route::get('/getchampcat', 'App\Http\Controllers\OutilController@getallchamp')->name('GCCO');
 	Route::get('/actions/libelle/outils', 'App\Http\Controllers\OutilController@libelleactionsoutils')->name('LAO');
 	Route::post('/outil', 'App\Http\Controllers\OutilController@add')->name('AO');

@@ -614,12 +614,7 @@ class MaintenanceController extends Controller
     public function listmaintenancecurative(Request $request)
     {
         try {
-            $list = GestionmaintenanceCurative::join("outils", "outils.id", "=", "gestionmaintenance_curatives.outil")
-                ->select('gestionmaintenance_curatives.*', 'outils.*', 'gestionmaintenance_curatives.id as gestion_id')
-                ->where("outils.user", session("utilisateur")->idUser)
-                ->get();
-
-            return view('viewadmindste.maintenance.curative.listmaintenance', compact('list'));
+            return view('viewadmindste.maintenance.curative.listmaintenance');
         } catch (\Exception $e) {
             $errorString = "Erreur serveur.";
             flash($errorString)->error();
