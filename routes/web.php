@@ -144,6 +144,7 @@ Route::group([
 	
 	//////////////////////////////////** OUtils **////////////////////////////////////////////////////////////////
 	Route::get('/listoutils', 'App\Http\Controllers\OutilController@list')->name('GO');
+	Route::get('/listoutilsdata', 'App\Http\Controllers\OutilController@listOtilData')->name('GODATA');
 	Route::get('/getchampcat', 'App\Http\Controllers\OutilController@getallchamp')->name('GCCO');
 	Route::get('/actions/libelle/outils', 'App\Http\Controllers\OutilController@libelleactionsoutils')->name('LAO');
 	Route::post('/outil', 'App\Http\Controllers\OutilController@add')->name('AO');
@@ -162,18 +163,21 @@ Route::group([
 
 	//////////////////////////////////** Maintenance préventive **/////////////////////////////////////
 	Route::get('/listmaintenance', 'App\Http\Controllers\MaintenanceController@list')->name('GMPC');
+	Route::get('/listmaintenance/Data', 'App\Http\Controllers\MaintenanceController@listdata')->name('GMPCDATA');
 	Route::post('/programmermaintenance', 'App\Http\Controllers\MaintenanceController@addmaintenance')->name('SMPC');
 	Route::post('/deletemaintenance', 'App\Http\Controllers\MaintenanceController@setdeletemaintenance')->name('DPC');
 	Route::post('/definitionetatmaintenance', 'App\Http\Controllers\MaintenanceController@setdefinitionetatmaintenance')->name('DEPC');
 	Route::post('/updatemaintenance', 'App\Http\Controllers\MaintenanceController@setupdatemaintenance')->name('UPC');
-	Route::get('/detailmaintenances', 'App\Http\Controllers\MaintenanceController@listesordinateurs')->name('GMDPC');
+	Route::get('/detailmaintenances-{id}', 'App\Http\Controllers\MaintenanceController@listesordinateurs')->name('GMDPC');
 	Route::get('/exportmaintenances', 'App\Http\Controllers\MaintenanceController@exportexcel')->name('EMPC');
 	Route::get('/exportmaintenancepdf-{id}', 'App\Http\Controllers\MaintenanceController@getexportmaintenancepdf')->name('GEMP');
 	
 	//////////////////////////////////** Maintenance Curative **/////////////////////////////////////
 	Route::get('/listmaintenancecurative', 'App\Http\Controllers\MaintenanceController@listmaintenancecurative')->name('LMC');
+	Route::get('/listmaintenancecurativeData', 'App\Http\Controllers\MaintenanceController@listmaintenancecurativedata')->name('LMCDATA');
 	Route::get('/detailmaintenancescurative', 'App\Http\Controllers\MaintenanceController@detailsmaintenacecurative')->name('GDMC');
 	Route::get('/gestionmaintenancecurative', 'App\Http\Controllers\MaintenanceController@listgestionmaintenancecurative')->name('GMC');
+	Route::get('/gestionmaintenancecurativeData', 'App\Http\Controllers\MaintenanceController@listgestionmaintenancecurativedata')->name('GMCDATA');
 	Route::post('/maintenancescurative', 'App\Http\Controllers\MaintenanceController@addmaintenancecuartive')->name('ADDMC');
 	Route::post('/traitement/maintenancescurative', 'App\Http\Controllers\MaintenanceController@traitementmaintenancecurative')->name('TMC');
 	Route::post('/definitionetatmaintenancecurative', 'App\Http\Controllers\MaintenanceController@setdefinitionetatmaintenancecurative')->name('DEMC');
@@ -184,6 +188,7 @@ Route::group([
 
 	//////////////////////////////////** Commentaire Maintenance préventive ou curative **//////////////////////////
 	Route::get('/maintenances', 'App\Http\Controllers\MaintenanceController@listordinateurmaintenance')->name('GMU');
+	Route::get('/maintenancesData', 'App\Http\Controllers\MaintenanceController@listordinateurmaintenancedata')->name('GMUDATAT');
 	Route::post('/maintenances', 'App\Http\Controllers\MaintenanceController@traitementmaintenance')->name('SMU');
 	Route::post('/deletemaintenances', 'App\Http\Controllers\MaintenanceController@setdeletegmaintenance')->name('DMU');
 	Route::post('/updatedefinitionmaintenances', 'App\Http\Controllers\MaintenanceController@setupdatedefinitionmaintenances')->name('SUMU');

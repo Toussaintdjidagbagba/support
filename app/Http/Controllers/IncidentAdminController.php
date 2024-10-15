@@ -92,8 +92,9 @@ class IncidentAdminController extends Controller
         }
 
         $query->where(function ($q) use ($request) {
+            
             if ($request->filled('date_emission')) {
-                $q->whereDate('i.DateEmission', $request->date_emission);
+                $q->orWhere('i.DateEmission', 'like', '%' . htmlspecialchars(trim($request->date_emission)) . '%');
             }
 
             if ($request->filled('hierarchie')) {

@@ -43,6 +43,65 @@ class OutilController extends Controller
         return view('viewadmindste.outils.listoutils', compact('list'));
     }
 
+    public function listOtilData(Request $request)
+    {
+        $lists = Outil::query()->orderBy("categorie", "asc");
+        if ($request->has('q') != "" && $request->has('q') != null) {
+            $recherche = htmlspecialchars(trim($request->q));
+            $list = $lists->where('reference', 'like', '%' . $recherche . '%')
+                ->orWhere('dateacquisition', 'like', '%' . $recherche . '%')
+                ->orWhere('nameoutils', 'like', '%' . $recherche . '%')
+                // ->orWhere('categorie', 'like', '%' . $recherche . '%')
+                ->paginate(10);
+            return view('viewadmindste.outils.listoutils', compact('list'));
+        }
+        $list = $lists->paginate(10);
+
+        $query = DB::table('outils as o')
+        ->leftJoin('categorieoutils as co', 'co.id', '=', 'o.categorie')
+        ->leftJoin('utilisateurs as u', 'o.user', '=', 'u.idUser')
+        ->select(
+            'o.id as id',
+            'o.etat as etat',
+            'o.user as userO',
+            'o.otherjson as otherjson',
+            'co.libelle as co_libelle',
+            DB::raw('COALESCE(o.reference, "---") as reference'),
+            DB::raw('COALESCE(o.dateacquisition, "---") as dateacquisition'),
+            DB::raw('COALESCE(o.nameoutils, "") as nameoutils'),
+            DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersL'),
+        )->orderBy("categorie", "asc");
+
+        $query->where(function ($q) use ($request) {
+
+            if ($request->filled('date_acquise')) {
+                $q->orWhere('o.dateacquisition', 'like', '%' . htmlspecialchars(trim($request->date_acquise)) . '%');
+            }
+
+            if ($request->filled('etats')) {
+                $q->orWhere('o.etat', 'like', '%' . htmlspecialchars(trim($request->etats)) . '%');
+            }
+
+            if ($request->filled('utilisateur')) {
+                $q->orWhere(DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->utilisateur)) . '%');
+            }
+
+            if ($request->filled('reference')) {
+                $q->orWhere(DB::raw('COALESCE(o.reference, "")'), 'like', '%' . htmlspecialchars(trim($request->reference)) . '%');
+            }
+
+            if ($request->filled('cat_outil')) {
+                $q->orWhere(DB::raw('COALESCE(co.libelle, "")'), 'like', '%' . htmlspecialchars(trim($request->cat_outil)) . '%');
+            }
+
+            if ($request->filled('outils')) {
+                $q->orWhere('o.nameoutils', 'like', '%' . htmlspecialchars(trim($request->outils)) . '%');
+            }
+        });
+        $list = $query->get();
+        return json_encode(["list" => $list]);
+    }
+
     public function getallchamp(Request $request)
     {
         $all = ["data" => ChampsCategorieOutil::where("categoutil", $request->cat)->get()];

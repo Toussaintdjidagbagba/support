@@ -33,9 +33,52 @@ class MaintenanceController extends Controller
 {
     public function list()
     {
-        $list = Maintenance::all();
         $service = Service::all();
-        return view('viewadmindste.maintenance.list', compact('list', 'service'));
+        return view('viewadmindste.maintenance.list', compact('service'));
+    }
+
+    public function listdata(Request $request)
+    {
+        $query = DB::table('maintenances as m')
+        ->leftJoin('utilisateurs as u', 'm.user', '=', 'u.idUser')
+        ->leftJoin('services as s', 'm.service', '=', 's.id')
+        ->select(
+            'm.id',
+            'm.periodedebut',
+            'm.periodefin',
+            'm.user',
+            'm.service',
+            DB::raw('COALESCE(m.commentaire, "") as commentaire'),
+            DB::raw('COALESCE(m.etat, "") as etat'),
+            DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersL'),
+        );
+
+        $query->where(function ($q) use ($request) {
+
+            if ($request->filled('periodedebut')) {
+                $q->orWhere('m.periodedebut', 'like', '%' . htmlspecialchars(trim($request->periodedebut)) . '%');
+            }
+
+            if ($request->filled('periodefin')) {
+                $q->orWhere('m.periodefin', 'like', '%' . htmlspecialchars(trim($request->periodefin)) . '%');
+            }
+
+            if ($request->filled('technicien')) {
+                $q->orWhere(DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->technicien)) . '%');
+            }
+
+            if ($request->filled('service')) {
+                $q->orWhere(DB::raw('COALESCE(s.libelle, "")'), 'like', '%' . htmlspecialchars(trim($request->service)) . '%');
+            }
+
+            if ($request->filled('etat')) {
+                $q->orWhere('m.etat', 'like', '%' . htmlspecialchars(trim($request->etat)) . '%');
+            }
+        });
+
+        $list = $query->get();
+
+        return json_encode(["list" => $list]);
     }
 
     public function addmaintenance(Request $request)
@@ -213,16 +256,72 @@ class MaintenanceController extends Controller
     public function listordinateurmaintenance(Request $request)
     {
         try {
-            $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
-                ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
-                ->where("outils.user", session("utilisateur")->idUser)
-                ->get();
-
-            return view('viewadmindste.maintenance.listmaintenance', compact('list'));
+            return view('viewadmindste.maintenance.listmaintenance');
         } catch (\Exception $e) {
             $errorString = "Erreur serveur.";
             flash($errorString)->error();
             return Back();
+        }
+    }
+
+    public function listordinateurmaintenancedata(Request $request)
+    {
+        try {
+            $query = DB::table('gestionmaintenances as gm')
+            ->leftJoin('outils as o', 'o.id', '=', 'gm.outil')
+            ->leftJoin('maintenances as m', 'm.id', '=', 'gm.maintenance')
+            ->leftJoin('categorieoutils as co', 'co.id', '=', 'o.categorie')
+            ->leftJoin('utilisateurs as u', 'gm.action', '=', 'u.idUser')
+            ->leftJoin('services as s', 'm.service', '=', 's.id')
+            ->select(
+                'gm.id as gestion_id',
+                'o.id as id_outil',
+                'co.libelle as co_libelle',
+                'gm.detailjson',
+                'gm.outil as gm_outil',
+                DB::raw('COALESCE(CONCAT(m.periodedebut, " au ", m.periodefin), "Aucune période") as periode'),
+                DB::raw('COALESCE(gm.commentaireuser, "Aucune Obs") as commentaireuser'),
+                DB::raw('COALESCE(gm.commentaireinf, "Aucune Obs") as commentaireinf'),
+                DB::raw('COALESCE(gm.avisuser, "Pas d\'avis") as avisuser'),
+                DB::raw('COALESCE(gm.etat, "") as etat'),
+                DB::raw('COALESCE(o.nameoutils, "") as nameoutils'),
+                DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersL'),
+            )->where("o.user", session("utilisateur")->idUser);
+
+            $query->where(function ($q) use ($request) {
+
+                if ($request->filled('periodedebut')) {
+                    $q->orWhere('m.periodedebut', 'like', '%' . htmlspecialchars(trim($request->periodedebut)) . '%');
+                }
+
+                if ($request->filled('periodefin')) {
+                    $q->orWhere('m.periodefin', 'like', '%' . htmlspecialchars(trim($request->periodefin)) . '%');
+                }
+
+                if ($request->filled('technicien')) {
+                    $q->orWhere(DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->technicien)) . '%');
+                }
+
+                if ($request->filled('outil')) {
+                    $q->orWhere(DB::raw('COALESCE(o.nameoutils, "")'), 'like', '%' . htmlspecialchars(trim($request->outil)) . '%');
+                }
+
+                if ($request->filled('avis')) {
+                    $q->orWhere(DB::raw('COALESCE(gm.avisuser, "")'), 'like', '%' . htmlspecialchars(trim($request->avis)) . '%');
+                }
+
+                if ($request->filled('etat')) {
+                    $q->orWhere('m.etat', 'like', '%' . htmlspecialchars(trim($request->etat)) . '%');
+                }
+            });
+
+            $list = $query->get();
+            return json_encode(["list" => $list]);
+        } catch (\Exception $e) {
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
+            $list = "";
+            return json_encode(["list" => $list]);
         }
     }
 
@@ -444,59 +543,148 @@ class MaintenanceController extends Controller
         }
     }
 
-    //export gestion maintenance curative
-    public function expgestprev(Request $request)
-    {
-        try {
-            
-            $list = Maintenance::where('id', $request->idgestprev)->get();
-            
-            $format = $request->format;
-
-            // Récupérer la date actuelle pour l'exportation
-            $dateExp = now()->format('d-m-Y');
-
-            // Générer le fichier en fonction du format demandé
-            switch ($format) {
-                case 'pdf':
-                    $pdfExporter = new GestMaintPrevExport($list);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
-
-                    return response($pdfContent, 200)
-                        ->header('Content-Type', 'application/pdf')
-                        ->header('Content-Disposition', 'attachment; filename="GestionMaintenancePreventive_'. $dateExp .'.pdf"');
-                case 'xlsx':
-                default:
-                    return Excel::download(new GestPrevXExport($list), 'GestionMaintenancePreventive_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
-            }
-        } catch (\Exception $e) {
-            return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
-        }
-    }
 
     // Tout sur la maintenace curative ***********************
     public function listgestionmaintenancecurative()
     {
-        $list = MaintenanceCurative::all();
-        $service = Service::all();
-        $etat = "";
-        return view('viewadmindste.maintenance.curative.list', compact('list', 'service', 'etat'));
+        return view('viewadmindste.maintenance.curative.list');
+    }
+
+    public function listgestionmaintenancecurativedata(Request $request)
+    {
+        $query = DB::table('maintenance_curatives as mc')
+        ->leftJoin('outils as o', 'o.id', '=', 'mc.outil')
+        ->leftJoin('utilisateurs as u', 'mc.user', '=', 'u.idUser')
+        ->leftJoin('categorieoutils as co', 'co.id', '=', 'o.categorie')
+        ->select(
+            'mc.id as id',
+            'mc.periodedebut as date_debut',
+            'mc.periodefin as heures',
+            'mc.resultat',
+            'mc.outil',
+            'mc.diagnostique',
+            'mc.cause',
+            'mc.user as user_id',
+            DB::raw('COALESCE(mc.etat, "") as etat'),
+            DB::raw('COALESCE(mc.commentaire, "") as commentaire'),
+            DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersL'),
+            DB::raw('COALESCE(CONCAT(mc.periodedebut, " à ", mc.periodefin), "Aucune période") as periode'),
+            DB::raw('COALESCE(o.nameoutils, "") as nameoutils'),
+        );
+
+        $query->where(function ($q) use ($request) {
+
+            if ($request->filled('periodedebut')) {
+                $q->orWhere('mc.periodedebut', 'like', '%' . htmlspecialchars(trim($request->periodedebut)) . '%');
+            }
+
+            if ($request->filled('periodefin')) {
+                $q->orWhere('mc.periodefin', 'like', '%' . htmlspecialchars(trim($request->periodefin)) . '%');
+            }
+
+            if ($request->filled('technicien')) {
+                $q->orWhere(DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->technicien)) . '%');
+            }
+
+            if ($request->filled('outil')) {
+                $q->orWhere(DB::raw('COALESCE(o.nameoutils, "")'), 'like', '%' . htmlspecialchars(trim($request->outil)) . '%');
+            }
+
+            if ($request->filled('cause')) {
+                $q->orWhere(DB::raw('COALESCE(mc.cause, "")'), 'like', '%' . htmlspecialchars(trim($request->cause)) . '%');
+            }
+
+            if ($request->filled('etat')) {
+                $q->orWhere('mc.etat', 'like', '%' . htmlspecialchars(trim($request->etat)) . '%');
+            }
+
+            if ($request->filled('resultat')) {
+                $q->orWhere('mc.resultat', 'like', '%' . htmlspecialchars(trim($request->resultat)) . '%');
+            }
+
+            if ($request->filled('diagnostique')) {
+                $q->orWhere('mc.diagnostique', 'like', '%' . htmlspecialchars(trim($request->diagnostique)) . '%');
+            }
+        });
+        $list = $query->get();
+
+        return json_encode(["list" => $list]);
     }
 
     public function listmaintenancecurative(Request $request)
     {
         try {
-            $list = GestionmaintenanceCurative::join("outils", "outils.id", "=", "gestionmaintenance_curatives.outil")
-                ->select('gestionmaintenance_curatives.*', 'outils.*', 'gestionmaintenance_curatives.id as gestion_id')
-                ->where("outils.user", session("utilisateur")->idUser)
-                ->get();
-
-            return view('viewadmindste.maintenance.curative.listmaintenance', compact('list'));
+            return view('viewadmindste.maintenance.curative.listmaintenance');
         } catch (\Exception $e) {
             $errorString = "Erreur serveur.";
             flash($errorString)->error();
             return Back();
+        }
+    }
+
+    public function listmaintenancecurativedata(Request $request)
+    {
+        try {
+
+            $query = DB::table('gestionmaintenance_curatives as gmc')
+            ->leftJoin('outils as o', 'o.id', '=', 'gmc.outil')
+            ->leftJoin('maintenance_curatives as mc', 'mc.id', '=', 'gmc.maintenance')
+            ->leftJoin('categorieoutils as co', 'co.id', '=', 'o.categorie')
+            ->leftJoin('utilisateurs as u', 'gmc.action', '=', 'u.idUser')
+            ->select(
+                'gmc.id as gestion_id',
+                'gmc.outil as gmc_outil',
+                DB::raw('COALESCE(CONCAT(mc.periodedebut, " à ", mc.periodefin), "Aucune période") as periode'),
+                DB::raw('COALESCE(o.nameoutils, "") as nameoutils'),
+                DB::raw('COALESCE(gmc.commentaireuser, "Aucune Obs") as commentaireuser'),
+                DB::raw('COALESCE(gmc.commentaireinf, "Aucune Obs") as commentaireinf'),
+                DB::raw('COALESCE(gmc.action_effectuer, "") as action_effectuer'),
+                DB::raw('COALESCE(gmc.avisuser, "Aucun avis") as avisuser'),
+                DB::raw('COALESCE(gmc.avisinf, "Aucun avis") as avisinf'),
+                DB::raw('COALESCE(gmc.etat, "") as etat'),
+                DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersL'),
+            )->where("o.user", session("utilisateur")->idUser);
+
+            $query->where(function ($q) use ($request) {
+
+                if ($request->filled('periodedebut')) {
+                    $q->orWhere('gmc.periodedebut', 'like', '%' . htmlspecialchars(trim($request->periodedebut)) . '%');
+                }
+
+                if ($request->filled('periodefin')) {
+                    $q->orWhere('gmc.periodefin', 'like', '%' . htmlspecialchars(trim($request->periodefin)) . '%');
+                }
+
+                if ($request->filled('technicien')) {
+                    $q->orWhere(DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->technicien)) . '%');
+                }
+
+                if ($request->filled('outil')) {
+                    $q->orWhere(DB::raw('COALESCE(o.nameoutils, "")'), 'like', '%' . htmlspecialchars(trim($request->outil)) . '%');
+                }
+
+                if ($request->filled('etat')) {
+                    $q->orWhere('gmc.etat', 'like', '%' . htmlspecialchars(trim($request->etat)) . '%');
+                }
+
+                if ($request->filled('avis')) {
+                    $q->orWhere(DB::raw('COALESCE(gmc.avisuser, "")'), 'like', '%' . htmlspecialchars(trim($request->avis)) . '%');
+                }
+                if ($request->filled('avisinf')) {
+                    $q->orWhere(DB::raw('COALESCE(gmc.avisinf, "")'), 'like', '%' . htmlspecialchars(trim($request->avisinf)) . '%');
+                }
+                if ($request->filled('cause')) {
+                    $q->orWhere(DB::raw('COALESCE(mc.cause, "")'), 'like', '%' . htmlspecialchars(trim($request->cause)) . '%');
+                }
+            });
+
+            $list = $query->get();
+            return json_encode(["list" => $list]);
+        } catch (\Exception $e) {
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
+            $list = "";
+            return json_encode(["list" => $list]);
         }
     }
 
@@ -877,4 +1065,36 @@ class MaintenanceController extends Controller
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
         }
     }
+
+    //export gestion maintenance curative
+    public function expgestprev(Request $request)
+    {
+        try {
+
+            $list = Maintenance::where('id', $request->idgestprev)->get();
+
+            $format = $request->format;
+
+            // Récupérer la date actuelle pour l'exportation
+            $dateExp = now()->format('d-m-Y');
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new GestMaintPrevExport($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="GestionMaintenancePreventive_' . $dateExp . '.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new GestPrevXExport($list), 'GestionMaintenancePreventive_' . $dateExp . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
+        }
+    }
+
 }

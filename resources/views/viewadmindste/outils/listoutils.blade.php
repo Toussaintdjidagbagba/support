@@ -6,7 +6,6 @@
 @endsection
 
 @section('content')
-
     <div class="container-fluid">
         <div class="block-header">
             @include('flash::message')
@@ -16,7 +15,7 @@
             </h2>
         </div>
         <div class="row clearfix">
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div id="accordion" role="tablist" aria-multiselectable="true">
                     <div class="card">
                         <div class="header" style="padding: 0; border-radius: 0;" role="tab" id="headingOne">
@@ -33,28 +32,69 @@
                             <div class="body">
                                 <form role="form">
                                     <div class="row clearfix">
-                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-12">
                                             <div class="input-group">
-                                                <label for="outils">Outils :</label>
+                                                <label for="date_acquise">Date d'acquisition :</label>
+                                                <div class="form-line">
+                                                    <input type="date" name="date_acquise" id="date_acquise"
+                                                        placeholder="Date d'émission..."
+                                                        class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <label for="utilisateur">Utilisateur :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="utilisateur" id="utilisateur"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <label for="etats">Etat :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="etats" id="etats"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                            <div class="input-group">
+                                                <label for="reference"> Référence :</label>
+                                                <div class="form-line">
+                                                    <input type="text" name="reference" id="reference"
+                                                        placeholder="Date d'émission..."
+                                                        class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <label for="cat_outil">Catégorie d'outil :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="cat_outil" id="cat_outil"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <label for="outils">Outil :</label>
                                                 <div class="form-line">
                                                     <input type="search" name="outils" id="outils"
                                                         placeholder="Mot clé..." class="form-control filter-input-width">
                                                 </div>
                                             </div>
                                         </div>
-                                        {{-- <div class="col-12 text-center">
+                                        <div class="col-12 text-center">
                                             <button onclick="searchButton(event)"
-                                                class="btn btn-info btn-md">Rechercher</button> --}}
+                                                class="btn btn-info btn-md">Rechercher</button>
                                         </div>
                                     </div>
-                                    {{-- <div>
+                                    <br>
+                                    <div>
                                         <button type="button" class="btn btn-danger"
                                             style="margin-left: 25px; margin-bottom: 0px;"
                                             onclick="paramrech('pdf')">PDF</button>
                                         <button type="button" class="btn btn-success"
                                             style="margin-left: 25px; margin-bottom: 0px;"
                                             onclick="paramrech('xlsx')">XLSX</button>
-                                    </div> --}}
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -77,13 +117,14 @@
                         </h2>
                         <ul class="header-dropdown m-r--5">
                             <li class="dropdown">
-                                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                    aria-haspopup="true" aria-expanded="false">
+                                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                                    role="button" aria-haspopup="true" aria-expanded="false">
                                     <i class="material-icons">more_vert</i>
                                 </a>
                                 <ul class="dropdown-menu pull-right">
                                     <li>
-                                        <a href="javascript:void(0);" id="outilsexp" onclick="paramoutils('xlsx')">Exporter
+                                        <a href="javascript:void(0);" id="outilsexp"
+                                            onclick="paramoutils('xlsx')">Exporter
                                             en Excel</a>
                                     </li>
                                     <li>
@@ -107,97 +148,8 @@
                                         <th data-priority="6">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @forelse($list as $out)
-                                        <tr class="text-center">
-                                            <td>
-                                                {{ $out->reference ?? '---' }}
-                                            </td>
-                                            <td>
-                                                {{ $out->dateacquisition ?? '---' }}
-                                            </td>
+                                <tbody id="tbody-outils">
 
-                                            <td>
-                                                {{ $out->nameoutils ?? '---' }}
-                                            </td>
-                                            <td>
-                                                {{ App\Providers\InterfaceServiceProvider::LibelleCategorie($out->categorie) ?? '---' }}
-                                            </td>
-                                            <td>{{ App\Providers\InterfaceServiceProvider::LibelleUser($out->user) ?? '---' }}
-                                            </td>
-                                            <td>
-                                                @if (in_array('update_etat_outil', session('auto_action')))
-                                                    <button type="button" title="Etat"
-                                                        class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        data-toggle="modal" data-target="#etatoutil"
-                                                        onclick="setetatoutils({{ $out->id }},'{{ $out->etat }}', '{{ $out->nameoutils }}')">
-                                                        <i class="material-icons">gps_fixed</i></a> </button>
-                                                    {{ $out->etat }}
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if ($out->user == null || $out->user == '')
-                                                    @if (in_array('affecte_outil', session('auto_action')))
-                                                        <button type="button" title="Affecter"
-                                                            class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                            data-toggle="modal" data-target="#affecter"
-                                                            onclick="setutilisateurinoutils({{ $out->id }}, '{{ $out->nameoutils }}')">
-                                                            <i class="material-icons">account_circle</i>
-                                                        </button>
-                                                    @endif
-                                                @else
-                                                    @if (in_array('reaffecte_outil', session('auto_action')))
-                                                        <button type="button" title="Reaffecter"
-                                                            class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                            data-toggle="modal" data-target="#reaffecter"
-                                                            onclick="updateuserinoutils({{ $out->id }}, '{{ $out->nameoutils }}', {{ $out->user }}, '{{ App\Providers\InterfaceServiceProvider::LibelleUser($out->user) }}')">
-                                                            <i class="material-icons">account_circle</i>
-                                                        </button>
-                                                    @endif
-                                                @endif
-                                                @if (in_array('hist_outil', session('auto_action')))
-                                                    <button type="button" title="Historique"
-                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        data-toggle="modal" data-target="#historique"
-                                                        onclick="gethistorique({{ $out->id }}, '{{ $out->nameoutils }}')">
-                                                        <i class="material-icons">assessment</i>
-                                                    </button>
-                                                @endif
-                                                @if (in_array('caract_outil', session('auto_action')))
-                                                    <button type="button" title="Détails"
-                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        data-toggle="modal" data-target="#details"
-                                                        onclick="getdetail({{ $out->id }}, '{{ $out->nameoutils }}',{{ json_encode($out->otherjson) }}, '{{ $out->categorie }}')">
-                                                        <i class="material-icons">book</i></a>
-                                                    </button>
-                                                @endif
-
-                                                @if (in_array('update_caract_outil', session('auto_action')))
-                                                    <button type="button" title="Modifier"
-                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"
-                                                        data-toggle="modal" data-target="#update"
-                                                        onclick="setupdateoutils({{ $out->id }}, '{{ $out->nameoutils }}', {{ json_encode($out->otherjson) }}, '{{ $out->categorie }}')">
-                                                        <i class="material-icons">system_update_alt</i>
-                                                    </button>
-                                                @endif
-
-                                                @if (in_array('delete_outil', session('auto_action')))
-                                                    <button type="button" title="Supprimer"
-                                                        data-token="{{ csrf_token() }}" data-Id="{{ $out->id }}"
-                                                        onclick="Delete(event, '{{ route('DO') }}','{{ $out->nameoutils }}')"
-                                                        class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                        <i class="material-icons">delete_sweep</i></a> </button>
-                                                @endif
-
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="7">
-                                                <center>Pas d'outils enregistrer!!!</center>
-                                            </td>
-                                        </tr>
-                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -210,6 +162,18 @@
     </div>
 
     <script type="text/javascript">
+        const sessionEtatOutils = "{{ in_array('update_etat_outil', session('auto_action')) }}";
+        const sessionAffecterOutils = "{{ in_array('affecte_outil', session('auto_action')) }}";
+        const sessionRaffecterOutils = "{{ in_array('reaffecte_outil', session('auto_action')) }}";
+        const sessionHistOutils = "{{ in_array('hist_outil', session('auto_action')) }}";
+        const sessionCatOutils = "{{ in_array('caract_outil', session('auto_action')) }}";
+        const sessionUpdateCatOutil = "{{ in_array('update_caract_outil', session('auto_action')) }}";
+        const sessionDelete = "{{ in_array('delete_outil', session('auto_action')) }}";
+        const sessionTocken = "{{ csrf_token() }}";
+        const router = {
+            Deletes: "{{ route('DO', ':id') }}",
+        }
+
         async function controlecat() {
 
             catchoisi = document.getElementById('caraccat').value;
@@ -862,8 +826,162 @@
             document.body.appendChild(form);
             form.submit();
         }
-    </script>
 
+        window.onload = function() {
+            recupListO();
+        };
+
+        async function recupListO() {
+            console.log("Toutes les ressources de la page sont chargées, la fonction est exécutée.");
+
+            try {
+                let response = await fetch("{{ route('GODATA') }}", {
+                    method: 'GET',
+                    headers: {
+                        'Access-Control-Allow-Credentials': true,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (response.status == 200) {
+                    if (!response.ok) {
+                        throw new Error("Erreur lors de la récupération des données: " + response.status);
+                    }
+
+                    data = await response.json();
+                    afficherDonnees(data.list);
+                }
+            } catch (error) {
+                console.error("Erreur attrapée:", error);
+            }
+        }
+
+        async function searchButton(event) {
+            event.preventDefault();
+            const date_acquise = document.getElementById('date_acquise').value;
+            const utilisateur = document.getElementById('utilisateur').value;
+            const etats = document.getElementById('etats').value;
+            const reference = document.getElementById('reference').value;
+            const cat_outil = document.getElementById('cat_outil').value;
+            const outils = document.getElementById('outils').value;
+
+            const params = new URLSearchParams({
+                date_acquise: date_acquise,
+                utilisateur: utilisateur,
+                etats: etats,
+                reference: reference,
+                cat_outil: cat_outil,
+                outils: outils,
+            }).toString();
+
+            try {
+                let response = await fetch("{{ route('GODATA') }}?" + params, {
+                    method: 'GET',
+                    headers: {
+                        'Access-Control-Allow-Credentials': true,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (response.status == 200) {
+                    if (!response.ok) {
+                        throw new Error("Erreur lors de la récupération des données: " + response.status);
+                    }
+                    let data = await response.json();
+                    Gliste = data.list;
+                    afficherDonnees(data.list);
+                } else {
+                    throw new Error("Erreur lors de la récupération des données: " + response.status);
+                }
+            } catch (error) {
+                console.error("Erreur attrapée:", error);
+            }
+        }
+
+        function afficherDonnees(list) {
+            const tbody = document.getElementById('tbody-outils');
+            tbody.innerHTML = '';
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9"><center>Pas de maintenance enregistrer!!!</center></td></tr>`;
+                return;
+            }
+
+            list.forEach((currentline, index, arry) => {
+                const contenu = '<tr class="text-center">' +
+                    '<th><span class="co-name">' + currentline["reference"] + '</span></th>' +
+                    '<td>' + currentline["dateacquisition"] + '</td>' +
+                    '<td>' + currentline["nameoutils"] + '</td>' +
+                    '<td>' + currentline["co_libelle"] + '</td>' +
+                    '<td>' + currentline["usersL"] + '</td>' +
+                    '<td class="d-flex justify-content-between align-items-center">' +
+                    '<span>' + currentline["etat"] + '</span>' +
+                    (sessionEtatOutils ?
+                        '<button type="button" title="Etat" class="btn btn-danger btn-circle btn-xs margin-bottom-10 waves-effect waves-light" ' +
+                        ' data-toggle="modal" data-target="#etatoutil" onclick="setetatoutils(' +
+                        currentline["id"] + ', \'' + currentline["etat"] + '\', \'' + currentline["nameoutils"] +
+                        '\')">' +
+                        '<i class="material-icons">gps_fixed</i></button>' :
+                        '') +
+                    '</td>' +
+                    '<td class="d-flex justify-content-between align-items-center">' +
+                    ((currentline["userO"] == null || currentline["userO"] == '') ?
+                        (sessionAffecterOutils ?
+                            '<button type="button" title="Affecter" class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light" data-toggle="modal" data-target="#affecter" ' +
+                            'onClick="setutilisateurinoutils(\'' + currentline["id"] + '\',\'' + currentline[
+                                "nameoutils"] + '\')">' +
+                            '<i class="material-icons">account_circle</i>' +
+                            '</button>' :
+                            '') :
+                        (sessionRaffecterOutils ?
+                            '<button type="button" title="Reaffecter" class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light" data-toggle="modal" data-target="#reaffecter" ' +
+                            'onClick="updateuserinoutils(\'' + currentline["id"] + '\',\'' + currentline[
+                                "nameoutils"] + '\',\'' + currentline["userO"] + '\',\'' + currentline["usersL"] +
+                            '\')">' +
+                            '<i class="material-icons">account_circle</i>' +
+                            '</button>' :
+                            '')
+                    ) +
+                    (sessionHistOutils ?
+                        '<button type="button" title="Historique" class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"' +
+                        'data-toggle="modal" data-target="#historique" ' +
+                        'onClick="gethistorique(\'' + currentline["id"] + '\', \'' + currentline[
+                            "nameoutils"] + '\')">' +
+                        '<i class="material-icons">assessment</i>' +
+                        '</button>' :
+                        '') +
+                    // (sessionCatOutils ?
+                    //     '<button type="button" title="Détails"' +
+                    //     ' class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"' +
+                    //     ' data-toggle="modal" data-target="#details" ' +
+                    //     'onClick="getdetail(\'' + currentline["id"] + '\',\'' + currentline["nameoutils"] + '\',' + JSON.stringify(currentline["otherjson"]) + ',\'' + currentline["categorie"] + '\')">' +
+                    //     '<i class="material-icons">book</i>' +
+                    //     '</button>' :
+                    //     '') +
+                    (sessionUpdateCatOutil ?
+                        '<button type="button" title="Modifier" class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light" data-toggle="modal" data-target="#update" ' +
+                        'onclick="setupdateoutils(\'' + currentline["id"] + '\',\'' + currentline["nameoutils"] +
+                        '\',' + JSON.stringify(currentline["otherjson"]) + ',\'' + currentline["categorie"] +
+                        '\')">' +
+                        ' <i class="material-icons">system_update_alt</i>' +
+                        '</button>' :
+                        '') +
+                    (sessionDelete ?
+                        '<button type="button" title="Supprimer" class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"' +
+                        'onClick="Delete(event,\'' + router.Deletes.replace(':id', currentline["id"]) + '\',\'' +
+                        currentline["nameoutils"] + '\')"' +
+                        'data-Id="' + currentline["id"] + '" data-token="' + sessionTocken + '">' +
+                        '<i class="material-icons">delete_sweep</i>' +
+                        '</button>' :
+                        '') +
+                    '</td>' +
+                    '</tr>';
+                tbody.innerHTML += contenu;
+            });
+        }
+    </script>
 @endsection
 
 @section('model')
