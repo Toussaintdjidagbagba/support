@@ -10,6 +10,9 @@
 .env.production
 .phpunit.result.cache
 itsupport.sql
+itsupport(1).sql
+itsupport(2).sql
+itsupport(3).sql
 Homestead.json
 Homestead.yaml
 auth.json

@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Entete extends Model
 {
-    protected $table = 'entete_footer';
+    protected $table = 'entetes';
 }
