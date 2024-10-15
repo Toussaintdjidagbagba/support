@@ -14,6 +14,7 @@ class OutilsRech implements FromView
     {
         // Convertir le tableau en collection
         $this->list = collect($list);
+        
     }
 
     public function view(): View
@@ -24,8 +25,8 @@ class OutilsRech implements FromView
                 'reference' => $outils['reference'], // Utilisez des clés pour accéder aux valeurs
                 'dateacquisition' => $outils['dateacquisition'],
                 'nameoutils' => $outils['nameoutils'],
-                'categorie' => InterfaceServiceProvider::LibelleCategorie($outils['categorie']),
-                'user' => InterfaceServiceProvider::LibelleUser($outils['user']),
+                'categorie' => $outils['co_libelle'],
+                'user' => $outils['usersL'],
                 'etat' => $outils['etat'],
             ];
         });
