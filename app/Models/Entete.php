@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Entete extends Model
 {
-    use HasFactory;
+    protected $table = 'entete_footer';
 }

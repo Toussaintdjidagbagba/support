@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Service;
+use App\Models\Entete;
 use Illuminate\Http\Request;
 use App\Models\Setting;
 use App\Models\Trace;
@@ -20,9 +21,76 @@ class SettingController extends Controller
 
     public function listentete()
     {
-        $list = Setting::all();
+        $list = Entete::all();
         return view('viewadmindste.setting.listentete', compact('list'));
     }
+
+    public function addentetef(Request $request)
+    {
+        // Validation des données
+        $request->validate([
+            'titre' => 'required|string|max:255', // Nouveau champ pour le contenu de l'entête
+            'lib' => 'required|string|max:255',
+            'contenu_footer_col1' => 'nullable|string',
+            'contenu_footer_col2' => 'nullable|string',
+            'contenu_footer_col3' => 'nullable|string',
+            'alignment_entete' => 'required|in:left,center,right,justify',
+            'alignment_footer' => 'required|in:left,center,right,justify',
+            'piece' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+
+        // Création ou mise à jour des données dans la table
+        $entete = new Entete();
+        $entete->titre = $request->input('titre');
+        $entete->contenu_entete = $request->input('lib'); // Correction pour le contenu de l'entête
+        $entete->contenu_footer_col1 = $request->input('contenu_footer_col1');
+        $entete->contenu_footer_col2 = $request->input('contenu_footer_col2');
+        $entete->contenu_footer_col3 = $request->input('contenu_footer_col3');
+        $entete->alignement_entete = $request->input('alignment_entete');
+        $entete->alignement_footer = $request->input('alignment_footer');
+
+        // Gestion du logo
+        if ($request->hasFile('piece')) {
+            $namefile = "entete" . date('i') . "." . $request->file('piece')->getClientOriginalExtension();
+            $upload = "documents/entete/";
+            $request->file('piece')->move($upload, $namefile);
+            $entete->logo = $upload . $namefile; // Correction pour stocker le logo
+        } else {
+            $entete->logo = ""; // Si aucune image n'est uploadée
+        }
+
+        // Sauvegarde des informations
+        $entete->save();
+
+        // Redirection après l'ajout avec message de succès
+        return redirect()->back()->with('success', 'Entête et footer ajoutés avec succès.');
+    }
+
+    public function destroy(Request $request)
+    {
+        try {
+            // Récupérer l'ID de l'entête à partir de la requête
+            $id = $request->id; 
+
+            // Recherche de l'entête à supprimer
+            $entete = Entete::findOrFail($id);
+
+            // Supprimer le logo si existe
+            if ($entete->logo && file_exists(public_path($entete->logo))) {
+                unlink(public_path($entete->logo));
+            }
+
+            // Suppression de l'enregistrement
+            $entete->delete();
+
+            // Retourner un message de succès
+            return response()->json('Entête supprimée avec succès.', 200);
+        } catch (\Exception $e) {
+            // En cas d'erreur, retourner une réponse d'erreur
+            return response()->json('Erreur lors de la suppression : ' . $e->getMessage(), 500);
+        }
+    }
+
 
     public function add(Request $request)
     {

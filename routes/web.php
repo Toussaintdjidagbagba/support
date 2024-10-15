@@ -215,7 +215,11 @@ Route::group([
 
 	// /////////////////////////////  Paramétrage des entêtes  ///////////////////////////////////////
 
-	Route::get('/settings-entete', 'App\Http\Controllers\SettingController@listentete')->name('GERAP');
+	Route::get('/settings-listentete', 'App\Http\Controllers\SettingController@listentete')->name('GERAP');
+	Route::post('/add-entete-footer', 'App\Http\Controllers\SettingController@addentetef')->name('AENTF');
+	Route::post('/entete/supprimer', 'App\Http\Controllers\SettingController@destroy')->name('DENT');
+
+
 });
 	
 /* 

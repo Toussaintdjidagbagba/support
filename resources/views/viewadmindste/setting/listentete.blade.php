@@ -7,10 +7,15 @@
 
 @section('content')
     <div class="container-fluid">
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
         <div class="block-header">
             @include('flash::message')
             <h2>
-                Entête
+                Entête/Footer
                 <small></small>
             </h2>
         </div>
@@ -19,7 +24,7 @@
                 <div class="card">
                     <div class="header">
                         <h2>
-                            Listes des entêtes
+                            Listes des entêtes et footer
 
                             <button type="button"
                                 style="margin-right: 30px; float: right; padding-right: 30px; padding-left: 30px;"
@@ -27,55 +32,86 @@
                                 data-target="#addentete">Ajouter</button>
                         </h2>
                     </div>
+                    
                     <div class="body">
                         <div class="table-responsive" data-pattern="priority-columns">
                             <table id="tech-companies-1" class="table table-small-font table-bordered table-striped">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
                                         <th>Logo</th>
                                         <th>Titre</th>
-                                        <th>Contenu</th>
-                                        <th>Actions</th>
+                                        <th>Contenu Entete</th>
+                                        <th>Alignement entete</th>
+                                        <th>Footer Contenu 1</th>
+                                        <th>Footer Contenu 2</th>
+                                        <th>Footer Contenu 3</th>
+                                        <th>Alignement footer</th>
+                                        <th data-priority="6">Actions</th>
                                     </tr>
                                 </thead>
-                                {{-- <tbody>
-                                    @php($i = 1)
-                                    @forelse($list as $men)
-                                        @if ($men->type == 'Avis')
-                                            <tr>
-                                                <th><span class="co-name">{{ $i }}</span></th>
-                                                <td>{{ $men->libelle }}</td>
-                                                <td>
-                                                    @if (in_array('update_menu', session('auto_action')))
-                                                        <button type="button" title="Modifier"
-                                                            onclick="setupdate(event,'{{ $men->id }}','{{ $men->type }}','{{ $men->libelle }}')"
-                                                            data-toggle="modal" data-target="#updates"
-                                                            class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                            <i class="material-icons">system_update_alt</i>
-                                                        </button>
-                                                    @endif
+                                <tbody>
+                                    @forelse($list as $ent)
+                                        <tr>
+                                            <td>
+                                                @if($ent->logo)
+                                                    <img src="{{ asset($ent->logo) }}" 
+                                                    alt="Logo" style="width: 70px; height: 70px; border-radius: 50%;">
+                                                @else
+                                                    Aucun logo
+                                                @endif
+                                            </td>
+                                            <td>
+                                                {{ $ent->titre }}
+                                            </td>
+                                            <td>
+                                                {{ $ent->contenu_entete }}
+                                            </td>
+                                            <td>
+                                                {{ $ent->alignement_entete }}
+                                            </td>
+                                            <td>
+                                                {{ $ent->contenu_footer_col1 }}
+                                            </td>
+                                            <td>
+                                                {{ $ent->contenu_footer_col2 }}
+                                            </td>
+                                            <td>
+                                                {{ $ent->contenu_footer_col3 }}
+                                            </td>
+                                            <td>
+                                                {{ $ent->alignement_footer }}
+                                            </td>
+                                            <td>
+                                                @if (in_array('update_service', session('auto_action')))
+                                                    <button type="button" title="Modifier"
+                                                        class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
+                                                        <a href="{{ route('MSC', $ent->id) }}" style="color:white;"> <i
+                                                                class="material-icons">system_update_alt</i></a>
+                                                    </button>
+                                                @endif
 
-                                                    @if (in_array('delete_menu', session('auto_action')))
-                                                        <button type="button" title="Supprimer"
-                                                            data-token="{{ csrf_token() }}" data-Id="{{ $men->id }}"
-                                                            onclick="Delete(event, '{{ route('DMETAT') }}','{{ $men->type }}','{{ $men->libelle }}')"
-                                                            class="btn btn-danger btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                            <i class="material-icons">delete_sweep</i>
-                                                        </button>
-                                                    @endif
-                                                </td>
-                                                @php($i++)
-                                            </tr>
-                                        @endif
+                                                @if (in_array('delete_service', session('auto_action')))
+                                                    <button type="button" title="Supprimer" style="color:white;"
+                                                        data-token="{{ csrf_token() }}" data-Id="{{ $ent->id }}"
+                                                        onclick="DeleteH(event, '{{ route('DENT') }}')"
+                                                        class="btn btn-danger btn-circle btn-xs margin-bottom-10 waves-effect waves-light">
+                                                        <i class="material-icons">delete_sweep</i> 
+                                                    </button>
+                                                @endif
+
+
+
+                                            </td>
+                                        </tr>
                                     @empty
                                         <tr>
                                             <td colspan="3">
-                                                <center>Pas d'avis enregistrer!!!</center>
+                                                <center>Pas de services enregistrer!!!</center>
                                             </td>
                                         </tr>
                                     @endforelse
-                                </tbody> --}}
+                                </tbody>
+                                
                             </table>
 
                         </div>
@@ -160,6 +196,53 @@
                 event.target.value = '';
             }
         };
+
+        async function DeleteH(event, url) 
+        {
+            event.preventDefault();
+            var target = event.currentTarget;
+            var token = target.getAttribute('data-token') ?? "";
+            var iddelete = target.getAttribute('data-Id') ?? "";
+
+            const { isConfirmed } = await Swal.fire({
+                title: "Êtes-vous sûr de vouloir supprimer cet entête ?",
+                text: "Cette action est irréversible!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Oui, supprimer",
+                cancelButtonText: "Annuler",
+                customClass: {
+                    confirmButton: 'bg-confirm',
+                    cancelButton: 'bg-cancel'
+                }
+            });
+
+            if (isConfirmed) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST', // Utilisation de POST
+                        headers: {
+                            'X-CSRF-TOKEN': token, // Envoi du token CSRF dans l'en-tête
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ id: iddelete }) // Envoi de l'ID dans le corps de la requête
+                    });
+
+                    if (response.status == 200) {
+                        const data = await response.text();
+                        Swal.fire("Succès", data, "success").then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        throw new Error('Erreur lors de la suppression');
+                    }
+                } catch (error) {
+                    Swal.fire("Erreur", "La suppression a échoué: " + error.message, "error");
+                }
+            }
+        }
+
     </script>
 @endsection
 
@@ -170,9 +253,9 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Enregistrer une entête : </h4>
+                    <h4 class="modal-title" id="myModalLabel">Enregistrer une entête et un footer : </h4>
                 </div>
-                <form method="post" action="{{ route('AETAT') }}">
+                <form method="post" action="{{ route('AENTF') }}" enctype="multipart/form-data">
                     <div class="modal-body">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                         <div class="row clearfix">
@@ -190,7 +273,7 @@
                                     <div class="form-group">
                                         <label for="libelle">Titre :</label>
                                         <div class="form-line">
-                                            <input type="text" id="libelle" name="lib" class="form-control"
+                                            <input type="text" id="titre" name="titre" class="form-control"
                                                 placeholder="" required>
                                         </div>
                                     </div>
@@ -207,13 +290,12 @@
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-12">
                                 <div class="form-group">
-                                    <label for="alignment">Alignement du texte :</label>
+                                    <label for="alignment">Alignement Entete:</label>
                                     <div class="form-line">
-                                        <select id="alignment" name="alignment" class="form-control">
+                                        <select id="alignment_entete" name="alignment_entete" class="form-control">
                                             <option value="left">Aligner à gauche</option>
                                             <option value="center">Aligner au centre</option>
                                             <option value="right">Aligner à droite</option>
-                                            <option value="justify">Justifier</option>
                                         </select>
                                     </div>
                                 </div>
@@ -228,6 +310,50 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <div class="row clearfix">
+                            <!-- Contenu du footer (3 colonnes) -->
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+
+                                <label for="contenu_footer_col1">Footer Contenu 1:</label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <textarea id="contenu_footer_col1" name="contenu_footer_col1" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label for="contenu_footer_col2">Footer Contenu 2:</label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <textarea name="contenu_footer_col2" id="contenu_footer_col2" class="form-control"></textarea>
+                                    </div>   
+                                </div>  
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label for="contenu_footer_col3">Footer Contenu 3:</label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <textarea name="contenu_footer_col3" id="contenu_footer_col3" class="form-control"></textarea>
+                                    </div> 
+                                </div>  
+                            </div>
+
+                            <!-- Alignement du footer -->
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label for="alignment_footer">Alignement Footer:</label>
+                                    <div class="form-line">
+                                        <select id="alignment_footer" name="alignment_footer" class="form-control">
+                                            <option value="left">Aligner à gauche</option>
+                                            <option value="center">Aligner au centre</option>
+                                            <option value="right">Aligner à droite</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default btn-sm waves-effect waves-light"
