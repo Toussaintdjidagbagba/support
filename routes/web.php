@@ -210,6 +210,8 @@ Route::group([
 
 	Route::get('export-maintenancepreventive', [MaintenanceController::class, 'expmaintpre'])->name('export.mainte');
 	
+	Route::get('export-maintenancepreventive-execution', [MaintenanceController::class, 'expmaintpreexec'])->name('export.execmainte');
+	
 	Route::get('export-maintenancecurrative', [MaintenanceController::class, 'expmaintcur'])->name('export.maintecur');
 
 	Route::get('export-declarationincident', [IncidentAdminController::class, 'expdeclincident'])->name('export.declind');
