@@ -226,6 +226,10 @@ Route::group([
 	Route::get('export-maintenanceprevrecherche', [MaintenanceController::class, 'mprevrech'])->name('mprevrechexp');
 	
 	Route::get('export-gestionprevrecherche', [MaintenanceController::class, 'gprevrech'])->name('gprevrechexp');
+	
+	Route::get('export-maintenancecurrecherche', [MaintenanceController::class, 'mcurrech'])->name('mcurrechexp');
+	
+	Route::get('export-gestioncurrecherche', [MaintenanceController::class, 'gcurrech'])->name('gcurrechexp');
 
 
 	// /////////////////////////////  Paramétrage des entêtes  ///////////////////////////////////////

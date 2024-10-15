@@ -46,7 +46,7 @@
     <tr>
         <th class="modal-title font-14" colspan="1"
             style="vertical-align:middle; text-align: center; background-color: black; color: white; size: 50px;">
-            Liste des maintenance préventive
+            Liste des maintenance currative
         </th>
     </tr>
 </table><br><br>

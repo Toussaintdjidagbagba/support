@@ -101,6 +101,8 @@
                 white-space: normal;
                 padding: 0 10px;
                 font-weight: bold;
+                text-align: left;
+                padding-left: 600px;
             }
         </style>
     </head>
@@ -122,11 +124,6 @@
                         <td>{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}</td>
                         <td class="ser">Avis </td>
                         <td>{{ $maint->avisuser }}</td>
-                    </tr>
-                    <tr>
-                        <td class="ser">Technicien </td>
-                        <td colspan="3">{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->action) }}
-                        </td>
                     </tr>
                     <tr>
                         <td class="ser">Technicien </td>

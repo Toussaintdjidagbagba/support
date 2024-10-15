@@ -12,6 +12,7 @@
     th {
         background-color: #f2f2f2;
     }
+   
     /* Footer styles */
     .footer {
         position: fixed;
@@ -19,20 +20,22 @@
         left: 0;
         right: 0;
         height: 70px;
-        background-color: #fff;
-        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 12px;
+        width: 100%;
+        padding: 10px;
     }
 
     .footer .title-footer {
         flex: 1;
         font-size: 12px;
         white-space: normal;
-        padding: 0 10px;
         font-weight: bold;
+        text-align: left;
+        padding-left: 83%;
+        position: relative;
+        top: 130%;
     }
 
 </style>

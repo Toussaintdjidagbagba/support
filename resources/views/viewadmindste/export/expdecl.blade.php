@@ -91,6 +91,7 @@
             justify-content: space-between;
             align-items: center;
             font-size: 12px;
+            
         }
 
         .footer .title-footer {
@@ -99,6 +100,8 @@
             white-space: normal;
             padding: 0 10px;
             font-weight: bold;
+            text-align: left;
+            padding-left: 600px;
         }
 
     </style>

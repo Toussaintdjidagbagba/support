@@ -13,6 +13,8 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportExcel;
 use App\Exports\ExportMaintenance;
+use App\Exports\GcurRech;
+use App\Exports\GcurRechpdf;
 use App\Exports\GestCurXExport;
 use App\Exports\GestMaintCurExport;
 use App\Exports\GestMaintPrevExport;
@@ -23,6 +25,8 @@ use App\Exports\MaintCurrativaExport;
 use App\Exports\MaintCurrativeExport;
 use App\Exports\MaintPreventiveExport;
 use App\Exports\MaintPrevExecExport;
+use App\Exports\McurRech;
+use App\Exports\McurRechpdf;
 use App\Exports\MprevRech;
 use App\Exports\MprevRechpdf;
 use App\Models\ActionOutil;
@@ -1212,5 +1216,71 @@ class MaintenanceController extends Controller
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
         }
     }
+
+
+    //maintenance preventive export recherche
+    public function mcurrech(Request $request)
+    {
+        try {
+
+            $list = json_decode($request->input('Gliste'), true); 
+
+            // Récupérer la date actuelle pour l'exportation
+            $dateExp = now()->format('d-m-Y');
+
+            $format = $request->format;
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new McurRechpdf($list);
+                    //dd($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="MaintenanceCurrativeExport_'. $dateExp .'.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new McurRech($list), 'MaintenanceCurrativeExport_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
+        }
+    }
+
+    //gestion preventive export recherche
+    public function gcurrech(Request $request)
+    {
+        try {
+
+            $list = json_decode($request->input('Gliste'), true); 
+
+            // Récupérer la date actuelle pour l'exportation
+            $dateExp = now()->format('d-m-Y');
+
+            $format = $request->format;
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new GcurRechpdf($list);
+                    //dd($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="GestionCurrativeExport_'. $dateExp .'.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new GcurRech($list), 'GestionCurrativeExport_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
+        }
+    }
+
 
 }

@@ -2,17 +2,17 @@
 
 namespace App\Exports;
 
-use Illuminate\Support\Facades\Storage;
 use Dompdf\Dompdf;
+use Illuminate\Support\Facades\Storage;
 
-class GestMaintCurExport 
+class McurRechpdf 
 {
     protected $list;
-    
+
     public function __construct($list)
     {
         $this->list = $list;
-        
+        //dd($this->list);
     }
 
     public function generatePdf()
@@ -20,7 +20,7 @@ class GestMaintCurExport
         $list = $this->list;
 
         $pdf = new Dompdf();
-        $pdf->loadHtml(view('viewadmindste.export.expgestcur', compact('list'))->render());
+        $pdf->loadHtml(view('viewadmindste.export.rechmcurpdf', compact('list'))->render());
         $pdf->render();
 
         $filePath = 'exports/Currative_export.pdf';

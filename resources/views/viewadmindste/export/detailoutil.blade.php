@@ -71,6 +71,8 @@
             white-space: normal;
             padding: 0 10px;
             font-weight: bold;
+            text-align: left;
+            padding-left: 600px;
         }
 
     </style>

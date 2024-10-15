@@ -117,6 +117,10 @@
                     <td class="ser">Technicien </td>
                     <td colspan="3">{{App\Providers\InterfaceServiceProvider::LibelleUser($maint->user)}}</td>
                 </tr>
+                <tr>
+                    <td class="ser">Utilisateur </td>
+                    <td colspan="3">{{App\Providers\InterfaceServiceProvider::getUserOutil($maint->outil)}}</td>
+                </tr>
             @endforeach
         </table><br>
 
