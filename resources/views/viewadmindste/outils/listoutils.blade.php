@@ -174,6 +174,8 @@
             Deletes: "{{ route('DO', ':id') }}",
         }
 
+        let Gliste;
+
         async function controlecat() {
 
             catchoisi = document.getElementById('caraccat').value;
@@ -728,10 +730,10 @@
             form.submit();
         }
 
-
-        function paramrech(format) {
-            console.log(listData);
-
+        function paramrech(format) 
+        {
+            console.log(Gliste);
+            
             var form = document.createElement('form');
             form.method = 'get';
             form.action = '{{ route('outilsrechexp') }}';
@@ -745,8 +747,8 @@
             // Ajouter le champ de recherche
             var inputListData = document.createElement('input');
             inputListData.type = 'hidden';
-            inputListData.name = 'listData';
-            inputListData.value = JSON.stringify(listData);
+            inputListData.name = 'Gliste';
+            inputListData.value = JSON.stringify(Gliste);
             form.appendChild(inputListData);
 
             document.body.appendChild(form);

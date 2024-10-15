@@ -144,6 +144,7 @@
             Updates: "{{ route('MTI', ':id') }}",
             ListeDetail: "{{ route('GMDPC', ':id') }}",
         }
+        let Gliste;
 
         async function validemaintenance() {
 
@@ -658,6 +659,31 @@
             } catch (error) {
                 console.error("Erreur attrapée:", error);
             }
+        }
+
+        function paramrech(format) 
+        {
+            console.log(Gliste);
+            
+            var form = document.createElement('form');
+            form.method = 'get';
+            form.action = '{{ route('gprevrechexp') }}';
+
+            var inputExport = document.createElement('input');
+            inputExport.type = 'hidden';
+            inputExport.name = 'format';
+            inputExport.value = format;
+            form.appendChild(inputExport);
+
+            // Ajouter le champ de recherche
+            var inputListData = document.createElement('input');
+            inputListData.type = 'hidden';
+            inputListData.name = 'Gliste';
+            inputListData.value = JSON.stringify(Gliste);
+            form.appendChild(inputListData);
+
+            document.body.appendChild(form);
+            form.submit();
         }
     </script>
 @endsection

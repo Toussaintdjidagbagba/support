@@ -2,17 +2,18 @@
 
 namespace App\Exports;
 
-use Illuminate\Support\Facades\Storage;
 use Dompdf\Dompdf;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Concerns\FromCollection;
 
-class MaintPreventiveExport
+class GprevRechpdf 
 {
     protected $list;
-    
+
     public function __construct($list)
     {
         $this->list = $list;
-        
+        //dd($this->list);
     }
 
     public function generatePdf()
@@ -20,7 +21,7 @@ class MaintPreventiveExport
         $list = $this->list;
 
         $pdf = new Dompdf();
-        $pdf->loadHtml(view('viewadmindste.export.expmaintprev', compact('list'))->render());
+        $pdf->loadHtml(view('viewadmindste.export.rechgestprevpdf', compact('list'))->render());
         $pdf->render();
 
         $filePath = 'exports/Preventive_export.pdf';

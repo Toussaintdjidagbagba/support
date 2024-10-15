@@ -160,6 +160,8 @@
         const sessionPdfMaint = "{{ in_array('print_maint_pdf', session('auto_action')) }}";
         const sessionDetailMaint = "{{ in_array('detail_maint_user', session('auto_action')) }}";
 
+        let Gliste;
+
         async function setdetailmaintenance(maint, outilsId) {
             let tab = maint.split("|").filter(Boolean);
             let lists = "";
@@ -270,12 +272,6 @@
                     '<div class="alert alert-danger alert-block"><button type="button" class="close" data-dismiss="alert">×</button><strong> Une erreur est survenir. Veuillez connectez le service informatique. </strong></div>';
             }
         }
-
-        // var sig = document.getElementById('sig').signature();
-
-        // $('#clear').click(function() {
-        //     sig.signature('clear');
-        // });
 
         function getmaintprev(event, format) {
             event.preventDefault();
@@ -427,6 +423,31 @@
             } catch (error) {
                 console.error("Erreur attrapée:", error);
             }
+        }
+
+        function paramrech(format) 
+        {
+            console.log(Gliste);
+            
+            var form = document.createElement('form');
+            form.method = 'get';
+            form.action = '{{ route('mprevrechexp') }}';
+
+            var inputExport = document.createElement('input');
+            inputExport.type = 'hidden';
+            inputExport.name = 'format';
+            inputExport.value = format;
+            form.appendChild(inputExport);
+
+            // Ajouter le champ de recherche
+            var inputListData = document.createElement('input');
+            inputListData.type = 'hidden';
+            inputListData.name = 'Gliste';
+            inputListData.value = JSON.stringify(Gliste);
+            form.appendChild(inputListData);
+
+            document.body.appendChild(form);
+            form.submit();
         }
     </script>
 @endsection

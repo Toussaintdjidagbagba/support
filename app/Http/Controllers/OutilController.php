@@ -578,9 +578,7 @@ class OutilController extends Controller
     {
         try {
 
-            $lists = json_decode($request->input('listData'), true); 
-
-            $list = $lists['data'];
+            $list = json_decode($request->input('Gliste'), true); 
 
             //dd($list);
             

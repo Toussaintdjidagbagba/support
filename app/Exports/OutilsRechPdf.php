@@ -18,13 +18,13 @@ class OutilsRechPdf
     public function generatePdf()
     {
        // Utilisation de map() sur la collection
-       $list = $this->list->map(function ($outils) {
+        $list = $this->list->map(function ($outils) {
             return [
                 'reference' => $outils['reference'], // Utilisez des clés pour accéder aux valeurs
                 'dateacquisition' => $outils['dateacquisition'],
                 'nameoutils' => $outils['nameoutils'],
-                'categorie' => InterfaceServiceProvider::LibelleCategorie($outils['categorie']),
-                'user' => InterfaceServiceProvider::LibelleUser($outils['user']),
+                'categorie' => $outils['co_libelle'],
+                'user' => $outils['usersL'],
                 'etat' => $outils['etat'],
             ];
         });

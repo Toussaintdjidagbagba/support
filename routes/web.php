@@ -6,6 +6,7 @@ use App\Http\Controllers\IncidentAdminController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\OutilController;
+use App\Models\Maintenance;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -198,12 +199,6 @@ Route::group([
 	
 	Route::post('export-incident', [IncidentAdminController::class, 'exportincident'])->name('incident.export');
 
-	Route::get('export-incidentgestionrecherche', [IncidentAdminController::class, 'exportincidentrech'])->name('incidentrechexp');
-	
-	Route::get('export-incidentdeclarationrecherche', [IncidentController::class, 'exportincidentrech'])->name('indrechexp');
-	
-	Route::get('export-outilsrecherche', [OutilController::class, 'exportoutilsrech'])->name('outilsrechexp');
-
 	Route::post('export-outils', [OutilController::class, 'exportoutils'])->name('outils.export');
 	
 	Route::get('/outilshisto/export', 'App\Http\Controllers\OutilController@expoutilhisto')->name('outilshisto.export');
@@ -219,6 +214,19 @@ Route::group([
 	Route::get('export-gestioncurative', [MaintenanceController::class, 'expgestcurat'])->name('export.gestcur');
 	
 	Route::get('export-gestionpreventive', [MaintenanceController::class, 'expgestprev'])->name('export.gestprev');
+
+	//////////////////////////////////** Les Exports  recherches **//////////////////////////
+
+	Route::get('export-incidentgestionrecherche', [IncidentAdminController::class, 'exportincidentrech'])->name('incidentrechexp');
+	
+	Route::get('export-incidentdeclarationrecherche', [IncidentController::class, 'exportincidentrech'])->name('indrechexp');
+	
+	Route::get('export-outilsrecherche', [OutilController::class, 'exportoutilsrech'])->name('outilsrechexp');
+	
+	Route::get('export-maintenanceprevrecherche', [MaintenanceController::class, 'mprevrech'])->name('mprevrechexp');
+	
+	Route::get('export-gestionprevrecherche', [MaintenanceController::class, 'gprevrech'])->name('gprevrechexp');
+
 
 	// /////////////////////////////  Paramétrage des entêtes  ///////////////////////////////////////
 
