@@ -108,11 +108,11 @@
     <body>
        
         <div class="container">
-            <h2 class="title">Maintenance préventive</h2><br>
+            <h2 class="title">Execution maintenance préventive</h2><br>
             <table>
                 @foreach ($list as $maint)
                     <tr>
-                        <td class="ser">Date d'exécution</td>
+                        <td class="ser">Date d'exécution </td>
                         <td>{{$maint->periodedebut}}</td>
                         <td class="ser">Date Fin </td>
                         <td>{{ $maint->periodefin}}</td>
@@ -129,10 +129,10 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="ser">Technicien </td>
-                        <td colspan="3">{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->action) }}
-                        </td>
+                        <td class="ser">Utilisateur </td>
+                        <td colspan="3">{{ $maint->user_nom }} {{ $maint->user_prenom }}</td>
                     </tr>
+
                 @endforeach
             </table><br>
 

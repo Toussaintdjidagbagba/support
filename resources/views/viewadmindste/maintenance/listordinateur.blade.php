@@ -91,7 +91,7 @@
                                                 @if (in_array('print_maint_pdf', session('auto_action')))
                                                     <button type="button" title="PDF" 
                                                         class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light" 
-                                                        onclick="getmaintprev(event, 'pdf')" data-Id="{{ $maint->id }}">
+                                                        onclick="getmaintprev(event, 'pdf')" data-Id="{{ $maint->gestid }}">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                                                             <path fill="currentColor" d="M8.267 14.68c-.184 0-.308.018-.372.036v1.178c.076.018.171.023.302.02
                                                             3c.479 0 .774-.242.774-.651c0-.366-.254-.586-.704-.586zm3.487.012c-.2 0-.33.018-.407.036v2.61c.077.018.201.018.313.018c.817.006 1.349-.444 1.349-1.396c.006-.83-.479-1.268-1.255-1.268z" />

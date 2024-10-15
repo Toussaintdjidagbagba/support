@@ -20,6 +20,7 @@ use App\Exports\GestPrevXExport;
 use App\Exports\MaintCurrativaExport;
 use App\Exports\MaintCurrativeExport;
 use App\Exports\MaintPreventiveExport;
+use App\Exports\MaintPrevExecExport;
 use App\Models\ActionOutil;
 use App\Models\GestionmaintenanceCurative;
 use App\Models\MaintenanceCurative;
@@ -242,7 +243,9 @@ class MaintenanceController extends Controller
     public function listesordinateurs(Request $request)
     {
         try {
-            $list = Gestionmaintenance::where("maintenance", $request->id)->get();
+            $list = Gestionmaintenance::where("maintenance", $request->id)
+                ->select('gestionmaintenances.id as gestid', 'gestionmaintenances.*')
+                ->get();
             $etat = Maintenance::where("id", $request->id)->first()->etat;
             $periode = $request->id;
             return view('viewadmindste.maintenance.listordinateur', compact('list', 'periode', 'etat'));
@@ -252,6 +255,55 @@ class MaintenanceController extends Controller
             return Back();
         }
     }
+
+    //export execution maintenance preventive
+    public function expmaintpreexec(Request $request)
+    {
+        try {
+
+            //$list = Gestionmaintenance::where("id", $request->ideprev)->get(); 
+            
+            $list = Gestionmaintenance::join('maintenances', 'gestionmaintenances.maintenance', '=', 'maintenances.id')
+                    ->join('utilisateurs', 'maintenances.user', '=', 'utilisateurs.idUser')
+                    ->where('gestionmaintenances.id', $request->ideprev)
+                    ->select(
+                        'gestionmaintenances.*', 
+                        'maintenances.*', 
+                        'utilisateurs.nom as user_nom', 
+                        'utilisateurs.prenom as user_prenom'
+                    )
+                    ->get();
+        
+        
+            //dd($list);       
+
+            $format = $request->format;
+
+            // Récupérer la date actuelle pour l'exportation
+            $dateExp = now()->format('d-m-Y');
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new MaintPrevExecExport($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="MaintenanceExecutionPreventive_'. $dateExp .'.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new MaintPrevExecExport($list), 'MaintenanceExecutionPreventive_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
+        }
+    }
+
+
+
+
 
     public function listordinateurmaintenance(Request $request)
     {
