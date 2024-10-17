@@ -15,6 +15,7 @@ use App\Models\Outil;
 use App\Models\Trace;
 use App\Models\CategorieOutil;
 use App\Models\ChampsCategorieOutil;
+use App\Models\Entete;
 use App\Providers\InterfaceServiceProvider;
 use PDF;
 use Illuminate\Database\QueryException;
@@ -461,7 +462,6 @@ class OutilController extends Controller
         }
     }
 
-
     // Export des détails d'outil
     public function exportPdfDetail(Request $request)
     {
@@ -472,6 +472,8 @@ class OutilController extends Controller
             if (!$outil) {
                 return response()->json(['message' => 'Outil introuvable'], 404);
             }
+
+            $entete = Entete::first(); 
 
             // Récupérer les détails supplémentaires en fonction de la catégorie de l'outil
             $details = ChampsCategorieOutil::where("categoutil", $request->cat)->get();
@@ -491,7 +493,8 @@ class OutilController extends Controller
             $pdf = PDF::loadView('viewadmindste.export.detailoutil', [
                     'outil' => $outil,
                     'details' => $details,
-                    'carct' => $carct
+                    'carct' => $carct,
+                    'entete' => $entete
                 ]);
             
         
@@ -509,6 +512,8 @@ class OutilController extends Controller
 
             $list = Outil::orderBy("categorie", "asc")->get();
 
+            $entete = Entete::first(); 
+
             $format = $request->format;
 
             // Récupérer la date actuelle pour l'exportation
@@ -517,7 +522,7 @@ class OutilController extends Controller
             // Générer le fichier en fonction du format demandée
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new OutilspdfExport($list);
+                    $pdfExporter = new OutilspdfExport($list,$entete);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
 
@@ -526,7 +531,7 @@ class OutilController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="OutilsExport_' . $dateExp . '.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new OutilsExport($list), 'OutilsExport_' . $dateExp . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new OutilsExport($list,$entete), 'OutilsExport_' . $dateExp . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
@@ -544,6 +549,8 @@ class OutilController extends Controller
                 ->where('traces.type', 'outil')
                 ->where('traces.idsec', $request->idhisto)
                 ->get();
+                
+            $entete = Entete::first(); 
 
             $format = $request->format;
 
@@ -557,7 +564,7 @@ class OutilController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new OutilhistopdfExport($data);
+                    $pdfExporter = new OutilhistopdfExport($data,$entete);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
 
@@ -566,7 +573,7 @@ class OutilController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="Historique'. $nameOutil .'_'. $dateExp . '.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new HistoExport($data), 'Historique'. $nameOutil .'_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new HistoExport($data,$entete), 'Historique'. $nameOutil .'_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
@@ -581,7 +588,8 @@ class OutilController extends Controller
             $list = json_decode($request->input('Gliste'), true); 
 
             //dd($list);
-            
+            $entete = Entete::first(); 
+
             // Récupérer la date actuelle pour l'exportation
             $dateExp = now()->format('d-m-Y');    
 
@@ -590,7 +598,7 @@ class OutilController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new OutilsRechPdf($list);
+                    $pdfExporter = new OutilsRechPdf($list,$entete);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
 
@@ -599,7 +607,7 @@ class OutilController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="Outils_'. $dateExp .'.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new OutilsRech($list), 'Outils_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new OutilsRech($list,$entete), 'Outils_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);

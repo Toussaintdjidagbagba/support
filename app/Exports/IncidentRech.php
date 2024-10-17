@@ -10,11 +10,13 @@ class IncidentRech implements FromView
 {
 
     protected $list;
+    protected $entete;
 
-    public function __construct($list)
+    public function __construct($list,$entete)
     {
         // Convertir le tableau en collection
         $this->list = collect($list);
+        $this->entete = $entete;
         //dd($list);
     }
 
@@ -34,8 +36,11 @@ class IncidentRech implements FromView
             ];
         });
 
+        $entete = $this->entete;
+
         return view('viewadmindste.export.expincident', [
             'list' => $list,
+            'entete' => $entete
         ]);
     }
 }

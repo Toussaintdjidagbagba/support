@@ -8,11 +8,13 @@ use Dompdf\Dompdf;
 class OutilsRechPdf 
 {
     protected $list;
+    protected $entete;
 
-    public function __construct($list)
+    public function __construct($list,$entete)
     {
         // Convertir le tableau en collection
         $this->list = collect($list);
+        $this->entete = $entete;
     }
 
     public function generatePdf()
@@ -28,9 +30,10 @@ class OutilsRechPdf
                 'etat' => $outils['etat'],
             ];
         });
-        
+        $entete = $this->entete;
+
         $pdf = new Dompdf();
-        $pdf->loadHtml(view('viewadmindste.export.expoutilpdf', ['list' => $list])->render());
+        $pdf->loadHtml(view('viewadmindste.export.expoutilpdf', ['list' => $list, 'entete' => $entete])->render());
         $pdf->setPaper('A4', 'landscape');
         $pdf->render();
 

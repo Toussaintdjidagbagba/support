@@ -9,10 +9,12 @@ use Maatwebsite\Excel\Concerns\FromView;
 class OutilsExport implements FromView
 {
     protected $list;
+    protected $entete;
 
-    public function __construct($list)
+    public function __construct($list,$entete)
     {
         $this->list = $list;
+        $this->entete = $entete;
     }
 
     public function view(): View
@@ -28,8 +30,10 @@ class OutilsExport implements FromView
                 'etat' => $outils['etat'], 
             ];
         });
+        $entete = $this->entete;
         return view('viewadmindste.export.expoutil', [
             'list' => $list,
+            'entete' => $entete
         ]);
     }
 }

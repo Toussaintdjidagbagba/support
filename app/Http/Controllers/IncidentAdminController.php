@@ -18,6 +18,7 @@ use App\Exports\IncidentExport;
 use App\Exports\IncidentpdfExport;
 use App\Exports\IncidentRech;
 use App\Exports\IncidentRechpdf;
+use App\Models\Entete;
 use App\Providers\InterfaceServiceProvider;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -482,6 +483,7 @@ class IncidentAdminController extends Controller
 
             $list = $query->get();
             
+            $entete = Entete::first(); 
 
             // Récupérer la date actuelle pour l'exportation
             $dateExp = now()->format('d-m-Y');
@@ -491,7 +493,7 @@ class IncidentAdminController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new IncidentpdfExport($list);
+                    $pdfExporter = new IncidentpdfExport($list,$entete);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
 
@@ -500,7 +502,7 @@ class IncidentAdminController extends Controller
                     ->header('Content-Disposition', 'attachment; filename="IncidentExport_' . $dateExp . '.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new IncidentExport($list), 'IncidentExport_' . $dateExp . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new IncidentExport($list,$entete), 'IncidentExport_' . $dateExp . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
@@ -514,6 +516,8 @@ class IncidentAdminController extends Controller
 
             $list = json_decode($request->input('Gliste'), true); 
 
+            $entete = Entete::first(); 
+
             // Récupérer la date actuelle pour l'exportation
             $dateExp = now()->format('d-m-Y');
 
@@ -522,7 +526,7 @@ class IncidentAdminController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new IncidentRechpdf($list);
+                    $pdfExporter = new IncidentRechpdf($list,$entete);
                     //dd($list);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
@@ -532,7 +536,7 @@ class IncidentAdminController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="IncidentExport_'. $dateExp .'.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new IncidentRech($list), 'IncidentExport_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new IncidentRech($list,$entete), 'IncidentExport_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
@@ -605,8 +609,10 @@ class IncidentAdminController extends Controller
             
             // Récupérer la liste des incidents
             $list = $query->get();
+
+            $entete = Entete::first(); 
             
-            //dd($list);       
+            //dd($entete);       
 
             // Récupérer la date actuelle pour l'exportation
             $dateExp = now()->format('d-m-Y');    
@@ -616,7 +622,7 @@ class IncidentAdminController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new DeclarIncidentpdfExport($list);
+                    $pdfExporter = new DeclarIncidentpdfExport($list,$entete);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
 
@@ -625,7 +631,7 @@ class IncidentAdminController extends Controller
                     ->header('Content-Disposition', 'attachment; filename="DeclarationsIncident_' . $dateExp . '.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new DeclarIncidentpdfExport($list), 'DeclarationIncident_' . $dateExp . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new DeclarIncidentpdfExport($list,$entete), 'DeclarationIncident_' . $dateExp . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);

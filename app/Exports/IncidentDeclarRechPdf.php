@@ -12,10 +12,13 @@ class IncidentDeclarRechPdf
  
     protected $list;
 
-    public function __construct($list)
+    protected $entete;
+
+    public function __construct($list,$entete)
     {
         // Convertir le tableau en collection
         $this->list = collect($list);
+        $this->entete = $entete;
     }
 
     public function generatePdf()
@@ -33,8 +36,10 @@ class IncidentDeclarRechPdf
             ];
         });
 
+        $entete = $this->entete;
+
         $pdf = new Dompdf();
-        $pdf->loadHtml(view('viewadmindste.export.expincidentrechpdf', ['list' => $list])->render());
+        $pdf->loadHtml(view('viewadmindste.export.expincidentrechpdf', ['list' => $list, 'entete' => $entete ])->render());
         $pdf->setPaper('A4', 'landscape');
         $pdf->render();
 

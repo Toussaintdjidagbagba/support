@@ -9,12 +9,13 @@ use App\Providers\InterfaceServiceProvider;
 class OutilsRech implements FromView
 {
     protected $list;
+    protected $entete;
 
-    public function __construct($list)
+    public function __construct($list,$entete)
     {
         // Convertir le tableau en collection
         $this->list = collect($list);
-        
+        $this->entete = $entete;
     }
 
     public function view(): View
@@ -31,7 +32,9 @@ class OutilsRech implements FromView
             ];
         });
 
+        $entete = $this->entete;
+
         // Renvoyer la vue avec la liste transformée
-        return view('viewadmindste.export.expoutil', ['list' => $list]);
+        return view('viewadmindste.export.expoutil', ['list' => $list, 'entete' => $entete]);
     }
 }

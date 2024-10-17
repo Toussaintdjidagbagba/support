@@ -9,10 +9,12 @@ use Dompdf\Dompdf;
 class OutilspdfExport
 {
     protected $list;
+    protected $entete;
 
-    public function __construct($list)
+    public function __construct($list,$entete)
     {
         $this->list = $list;
+        $this->entete = $entete;
     }
 
     public function generatePdf()
@@ -28,10 +30,10 @@ class OutilspdfExport
                 'etat' => $outils['etat'],
             ];
         });
-        
+        $entete = $this->entete;
 
         $pdf = new Dompdf();
-        $pdf->loadHtml(view('viewadmindste.export.expoutilpdf', ['list' => $list])->render());
+        $pdf->loadHtml(view('viewadmindste.export.expoutilpdf', ['list' => $list,'entete' => $entete])->render());
         $pdf->setPaper('A4', 'landscape');
         $pdf->render();
 

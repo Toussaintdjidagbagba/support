@@ -7,15 +7,18 @@ use Maatwebsite\Excel\Concerns\FromView;
 class HistoExport implements FromView
 {
     protected $data;
+    protected $entete;
     
-    public function __construct($data)
+    public function __construct($data,$entete)
     {
         $this->data = $data; 
+        $this->entete = $entete;
     }
    
     public function view(): View
     {
         $data = $this->data;
-        return view('viewadmindste.export.exphisto', compact('data'));
+        $entete = $this->entete;
+        return view('viewadmindste.export.exphisto', compact('data','entete'));
     }
 }

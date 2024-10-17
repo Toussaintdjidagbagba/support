@@ -8,13 +8,14 @@ use App\Providers\InterfaceServiceProvider;
 
 class IncidentDeclarRech implements FromView
 {
-
     protected $list;
+    protected $entete;
 
-    public function __construct($list)
+    public function __construct($list,$entete)
     {
         // Convertir le tableau en collection
         $this->list = collect($list);
+        $this->entete = $entete;
     }
 
     public function view(): View
@@ -32,8 +33,11 @@ class IncidentDeclarRech implements FromView
             ];
         });
 
+        $entete = $this->entete;
+
         return view('viewadmindste.export.expincidentrech', [
             'list' => $list,
+            'entete' => $entete,
         ]);
     }
 }

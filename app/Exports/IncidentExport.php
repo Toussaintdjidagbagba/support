@@ -9,10 +9,12 @@ use Maatwebsite\Excel\Concerns\FromView;
 class IncidentExport implements FromView
 {
     protected $list;
+    protected $entete;
 
-    public function __construct($list)
+    public function __construct($list,$entete)
     {
         $this->list = $list;
+        $this->entete = $entete;
     }
 
     public function view(): View
@@ -29,9 +31,12 @@ class IncidentExport implements FromView
                 'affecter' => $incident->usersA, 
             ];
         });
+
+        $entete = $this->entete;
         
         return view('viewadmindste.export.expincident', [
             'list' => $list,
+            'entete' => $entete
         ]);
     }
 }

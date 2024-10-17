@@ -8,19 +8,21 @@ use Illuminate\Support\Facades\Storage;
 class McurRechpdf 
 {
     protected $list;
+    protected $entete;
 
-    public function __construct($list)
+    public function __construct($list,$entete)
     {
         $this->list = $list;
+        $this->entete = $entete;
         //dd($this->list);
     }
 
     public function generatePdf()
     {
         $list = $this->list;
-
+        $entete = $this->entete;
         $pdf = new Dompdf();
-        $pdf->loadHtml(view('viewadmindste.export.rechmcurpdf', compact('list'))->render());
+        $pdf->loadHtml(view('viewadmindste.export.rechmcurpdf', compact('list','entete'))->render());
         $pdf->render();
 
         $filePath = 'exports/Currative_export.pdf';

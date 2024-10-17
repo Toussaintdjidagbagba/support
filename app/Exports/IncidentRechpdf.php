@@ -10,11 +10,13 @@ use Illuminate\Support\Collection;
 class IncidentRechpdf 
 {
     protected $list;
+    protected $entete;
 
-    public function __construct($list)
+    public function __construct($list,$entete)
     {
         // Convertir le tableau en collection
         $this->list = collect($list);
+        $this->entete = $entete;
         //dd($list);
        
     }
@@ -34,8 +36,10 @@ class IncidentRechpdf
             ];
         });
 
+        $entete = $this->entete;
+
         $pdf = new Dompdf();
-        $pdf->loadHtml(view('viewadmindste.export.expincidentpdf', ['list' => $list])->render());
+        $pdf->loadHtml(view('viewadmindste.export.expincidentpdf', ['list' => $list,'entete' => $entete])->render());
         $pdf->setPaper('A4', 'landscape');
         $pdf->render();
 
