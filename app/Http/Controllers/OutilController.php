@@ -545,7 +545,7 @@ class OutilController extends Controller
             $data = DB::table('traces')
                 ->join('utilisateurs', 'utilisateurs.idUser', '=', 'traces.action') // Correction ici
                 ->join('outils', 'outils.id', '=', 'traces.idsec') // Si vous voulez inclure la table 'outils'
-                ->select('nom', 'prenom', 'libelle', 'traces.created_at as created_at', 'outils.nameoutils')
+                ->select('nom', 'prenom', 'libelle', 'traces.created_at as created_at', 'outils.nameoutils as out')
                 ->where('traces.type', 'outil')
                 ->where('traces.idsec', $request->idhisto)
                 ->get();
@@ -553,12 +553,12 @@ class OutilController extends Controller
             $entete = Entete::first(); 
 
             $format = $request->format;
-
+           
             // Récupérer la date actuelle pour l'exportation
             $dateExp = now()->format('d-m-Y');
 
-            // Récupérer le nom de l'outil à partir du premier élément de la collection
-            $nameOutil = $data->first()->nameoutils;
+            // Vérifier que la collection n'est pas vide avant d'accéder à la première entrée
+            $nameOutil = $data->isNotEmpty() ? $data->first()->out : 'Outil inconnu';
 
 
             // Générer le fichier en fonction du format demandé

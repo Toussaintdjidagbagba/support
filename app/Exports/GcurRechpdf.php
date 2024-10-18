@@ -24,6 +24,7 @@ class GcurRechpdf
 
         $pdf = new Dompdf();
         $pdf->loadHtml(view('viewadmindste.export.rechgestcurpdf', compact('list','entete'))->render());
+        $pdf->setPaper('A4', 'landscape');
         $pdf->render();
 
         $filePath = 'exports/Currative_export.pdf';

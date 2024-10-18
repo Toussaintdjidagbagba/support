@@ -31,6 +31,7 @@
                         <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
                             <div class="body">
                                 <form role="form">
+                                    <div id="alert" class="alert" style="display: none;"></div><br>
                                     <div class="row clearfix">
                                         <div class="col-lg-6 col-md-6 col-sm-12">
                                             <div class="input-group">
@@ -143,6 +144,7 @@
             Updates: "{{ route('MTI', ':id') }}",
         }
         let Gliste;
+        let searchPerformed = false; 
 
         function getid(id) {
             document.getElementById("anoid").value = id;
@@ -315,6 +317,7 @@
                     
                     Gliste = data.list;
                     afficherDonnees(list);
+                    searchPerformed = true; 
                 } else {
                     throw new Error("Erreur lors de la récupération des données: " + response.status);
                 }
@@ -408,6 +411,11 @@
 
         function paramrech(format) {
 
+            const alertDiv = document.getElementById('alert');
+            if (!searchPerformed) {
+                showAlert("Veuillez d'abord effectuer une recherche avant d'exporter les données.", "warning");
+                return;
+            }
             var form = document.createElement('form');
             form.method = 'get';
             form.action = '{{ route('indrechexp') }}';
@@ -427,6 +435,17 @@
 
             document.body.appendChild(form);
             form.submit();
+        }
+
+        // Fonction pour afficher l'alerte
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.className = `alert alert-${type}`; // Ajoute la classe d'alerte
+            alertDiv.innerHTML = message; // Définit le message
+            alertDiv.style.display = 'block'; // Affiche le div
+            setTimeout(() => {
+                alertDiv.style.display = 'none'; // Masque le div après 3 secondes
+            }, 4000);
         }
     </script>
 @endsection

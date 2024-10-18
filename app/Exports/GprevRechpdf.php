@@ -25,6 +25,7 @@ class GprevRechpdf
 
         $pdf = new Dompdf();
         $pdf->loadHtml(view('viewadmindste.export.rechgestprevpdf', compact('list','entete'))->render());
+        $pdf->setPaper('A4', 'landscape');
         $pdf->render();
 
         $filePath = 'exports/Preventive_export.pdf';

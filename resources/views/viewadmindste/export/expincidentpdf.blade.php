@@ -187,7 +187,7 @@
                         Liste des incidents déclarés
                     </th>
                 </tr>
-            </table><br>
+            </table>
             <table>
                 <thead>
                     <tr>

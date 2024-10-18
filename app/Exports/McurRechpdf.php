@@ -23,6 +23,7 @@ class McurRechpdf
         $entete = $this->entete;
         $pdf = new Dompdf();
         $pdf->loadHtml(view('viewadmindste.export.rechmcurpdf', compact('list','entete'))->render());
+        $pdf->setPaper('A4', 'landscape');
         $pdf->render();
 
         $filePath = 'exports/Currative_export.pdf';

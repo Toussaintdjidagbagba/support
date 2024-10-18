@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,10 +14,9 @@
 
         body {
             font-family: Arial, sans-serif;
-            /* height: 100vh; */
             display: flex;
             flex-direction: column;
-            justify-content: center; 
+            justify-content: center;
             background-color: #fff;
         }
 
@@ -24,19 +24,19 @@
             width: 85%;
             margin: 0 auto;
             background-color: #fff;
-            padding: 20px;
+            padding: 10px;
             margin-top: 100px;
             font-size: 13px;
             display: flex;
             flex-direction: column;
-            justify-content: center; 
-            align-items: center; 
+            justify-content: center;
+            align-items: center;
             flex-grow: 1;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Header styles */
-        .header, .footer {
+        .header,
+        .footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -56,29 +56,30 @@
             margin-top: 30px;
         }
 
-        .header .logo, .footer .logo-footer {
+        .header .logo,
+        .footer .logo-footer {
             width: 100px;
             justify-content: center;
         }
 
-        .logo
-        {
+        .logo {
             padding-left: 50px;
             padding-bottom: 10px;
         }
 
-        .header .title, .footer .title-footer {
+        .header .title,
+        .footer .title-footer {
             font-size: 18px;
             font-weight: bold;
             flex: 1;
             text-align: center;
         }
 
-        .info{
+        .info {
             width: 100px;
             position: relative;
             left: 80%;
-            bottom: 165%;
+            bottom: 50%;
             max-width: 200px;
             word-wrap: break-word;
             overflow-wrap: break-word;
@@ -87,12 +88,11 @@
             text-align: {{ $entete->alignement_entete }};
         }
 
-        /* Body section */
         .body-content {
             width: 100%;
-            margin-top: 120px; 
-            margin-bottom: 100px; 
-            padding: 20px;
+            margin-top: 120px;
+            margin-bottom: 100px;
+            padding: 10px;
         }
 
         table {
@@ -101,17 +101,18 @@
             margin-bottom: 20px;
         }
 
-        td, th {
+        td,
+        th {
             padding: 10px;
             border: 1px solid #000;
         }
 
-        .large th, .large td {
+        .large th,
+        .large td {
             width: 40%;
             text-align: left;
         }
 
-        /* Footer styles */
         .footer {
             display: flex;
             justify-content: space-between;
@@ -128,21 +129,20 @@
             position: fixed;
         }
 
-        .footer-right 
-        {
+        .footer-right {
             width: 250px;
             display: flex;
             justify-content: right;
             align-items: center;
             font-size: 10.5px;
             font-weight: bold;
-            padding-left: 610px;
+            padding-left: 870px;
         }
 
         .footer-text {
             flex: 1;
-            text-align: {{ $entete->alignement_footer }};
             font-size: 10px;
+            text-align: {{ $entete->alignement_footer }};
             line-height: 1.4;
             padding-left: 70px;
             padding-right: 80px;
@@ -151,27 +151,13 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- Header -->
     <div class="header">
-        <div class="logo">
-            <?php
-            $path = public_path('documents/entete/' . $entete->logo);
-            if (file_exists($path)) {
-                $type = pathinfo($path, PATHINFO_EXTENSION);
-                $data = file_get_contents($path);
-                $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-            ?>
-                <img src="{{ $base64 }}" width="100" height="100">
-            <?php
-            } else {
-                echo "Image non trouvée.";
-            }
-            ?>
-        </div>
-
         <div class="title">{{ $entete->titre }}</div>
+
         <div class="info">
             {{ $entete->contenu_entete }}
         </div>
@@ -180,10 +166,10 @@
     <!-- Body -->
     <div class="container">
         <div class="body-content">
-            
             @php
-                $outilName = $data->isNotEmpty() ? $data->first()->nameoutils : 'Outil inconnu';
+                $outilName = $data->isNotEmpty() && isset($data->first()->out) ? $data->first()->out : 'Outil inconnu';
             @endphp
+
             <table>
                 <tr>
                     <th class="modal-title font-14" colspan="1"
@@ -195,32 +181,40 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Date</th>
-                        <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Traces</th>
-                        <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Utilisateur</th>
+                        <th
+                            style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">
+                            Date</th>
+                        <th
+                            style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">
+                            Traces</th>
+                        <th
+                            style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">
+                            Utilisateur</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($data as $hist)
                         <tr>
-                            <td style="vertical-align:middle; text-align: left; width: 50px; height:30px;" ><b>{{ $hist->created_at ?? '___' }}</b></td>
-                            <td style="vertical-align:middle; text-align: left; width: 120px; height:30px;">{{ $hist->libelle ?? '___' }}</td>
-                            <td style="vertical-align:middle; text-align: left; width: 30px; height:30px;">{{ $hist->nom . ' ' . $hist->prenom ?? '___' }}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 50px; height:30px;">
+                                <b>{{ $hist->created_at ?? '___' }}</b></td>
+                            <td style="vertical-align:middle; text-align: left; width: 120px; height:30px;">
+                                {{ $hist->libelle ?? '___' }}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 30px; height:30px;">
+                                {{ $hist->nom . ' ' . $hist->prenom ?? '___' }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-
         </div>
     </div>
 
     <!-- Footer -->
     <div class="footer">
         <div class="footer-text">
-            {{ $entete->contenu_footer_col}}<br>
+            {{ $entete->contenu_footer_col }}<br>
         </div>
         <div class="footer-text">
-            {{ $entete->contenu_footer_col2}}
+            {{ $entete->contenu_footer_col2 }}
         </div>
         <br>
         <div class="footer-right">
@@ -228,4 +222,5 @@
         </div>
     </div>
 </body>
+
 </html>
