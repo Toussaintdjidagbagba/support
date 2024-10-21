@@ -954,14 +954,14 @@
                         '<i class="material-icons">assessment</i>' +
                         '</button>' :
                         '') +
-                    // (sessionCatOutils ?
-                    //     '<button type="button" title="Détails"' +
-                    //     ' class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"' +
-                    //     ' data-toggle="modal" data-target="#details" ' +
-                    //     'onClick="getdetail(\'' + currentline["id"] + '\',\'' + currentline["nameoutils"] + '\',' + JSON.stringify(currentline["otherjson"]) + ',\'' + currentline["categorie"] + '\')">' +
-                    //     '<i class="material-icons">book</i>' +
-                    //     '</button>' :
-                    //     '') +
+                    (sessionCatOutils ?
+                        '<button type="button" title="Détails"' +
+                        ' class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"' +
+                        ' data-toggle="modal" data-target="#details" ' +
+                        'onClick="getdetail(\'' + currentline["id"] + '\',\'' + currentline["nameoutils"] + '\',' + JSON.stringify(currentline["otherjson"]) + ',\'' + currentline["categorie"] + '\')">' +
+                        '<i class="material-icons">book</i>' +
+                        '</button>' :
+                        '') +
                     (sessionUpdateCatOutil ?
                         '<button type="button" title="Modifier" class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light" data-toggle="modal" data-target="#update" ' +
                         'onclick="setupdateoutils(\'' + currentline["id"] + '\',\'' + currentline["nameoutils"] +
