@@ -465,10 +465,10 @@
             }
         }
 
-        async function getdetail(id, outil, caracteristique, categorie) {
-            document.getElementById('infodetail').innerHTML = "Caractéritiques de " + outil + " : <br><br>";
+        async function getdetail(id, outil, categorie) {            
+            document.getElementById('infodetail').innerHTML = "Caractéritiques de :" + outil + " : <br><br>";
             try {
-                let response = await fetch("{{ route('GDOS') }}?cat=" + categorie + "&caract=" + caracteristique, {
+                let response = await fetch("{{ route('GDOS') }}?cat=" + categorie + "&id=" + id, {
                     method: 'get',
                     headers: {
                         'Access-Control-Allow-Credentials': true,
@@ -477,11 +477,11 @@
                     },
                 });
                 if (response.status == 200) {
-                    data = await response.text();
-                    document.getElementById('detailoutils').innerHTML = data;
+                    data = await response.json();
+                    document.getElementById('detailoutils').innerHTML = data.contenu;
                     document.getElementById('idoutildetail').value = id;
                     document.getElementById('catdetail').value = categorie;
-                    document.getElementById('carctdetail').value = caracteristique;
+                    document.getElementById('carctdetail').value = data.caracteristique;
 
                 } else {
                     return "";
@@ -532,11 +532,11 @@
             form.submit();
         }
 
-        async function setupdateoutils(id, outil, caracteristique, categorie) {
+        async function setupdateoutils(id, outil, categorie) {
             document.getElementById('idupdate').value = id;
             document.getElementById('infoupdate').innerHTML = "Caractéritiques de " + outil + " : <br><br>";
             try {
-                let response = await fetch("{{ route('GDOSU') }}?cat=" + categorie + "&caract=" + caracteristique, {
+                let response = await fetch("{{ route('GDOSU') }}?cat=" + categorie + "&id=" + id, {
                     method: 'get',
                     headers: {
                         'Access-Control-Allow-Credentials': true,
@@ -545,8 +545,8 @@
                     },
                 });
                 if (response.status == 200) {
-                    data = await response.text();
-                    document.getElementById('detailupdate').innerHTML = data;
+                    data = await response.json();
+                    document.getElementById('detailupdate').innerHTML = data.contenu;
                 } else {
                     return "";
                 }
@@ -973,14 +973,14 @@
                         '<button type="button" title="Détails"' +
                         ' class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"' +
                         ' data-toggle="modal" data-target="#details" ' +
-                        'onClick="getdetail(\'' + currentline["id"] + '\',\'' + currentline["nameoutils"] + '\',' + JSON.stringify(currentline["otherjson"]) + ',\'' + currentline["categorie"] + '\')">' +
+                        'onClick="getdetail(\'' + currentline["id"] + '\',\'' + currentline["nameoutils"] + '\',\'' + currentline["categorie"] + '\')">' +
                         '<i class="material-icons">book</i>' +
                         '</button>' :
                         '') +
                     (sessionUpdateCatOutil ?
                         '<button type="button" title="Modifier" class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light" data-toggle="modal" data-target="#update" ' +
                         'onclick="setupdateoutils(\'' + currentline["id"] + '\',\'' + currentline["nameoutils"] +
-                        '\',' + JSON.stringify(currentline["otherjson"]) + ',\'' + currentline["categorie"] +
+                        '\',\'' + currentline["categorie"] +
                         '\')">' +
                         ' <i class="material-icons">system_update_alt</i>' +
                         '</button>' :

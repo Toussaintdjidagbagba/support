@@ -30,34 +30,11 @@ class OutilController extends Controller
 {
     public function list(Request $request)
     {
-        $lists = Outil::query()->orderBy("categorie", "asc");
-        if ($request->has('q') != "" && $request->has('q') != null) {
-            $recherche = htmlspecialchars(trim($request->q));
-            $list = $lists->where('reference', 'like', '%' . $recherche . '%')
-                ->orWhere('dateacquisition', 'like', '%' . $recherche . '%')
-                ->orWhere('nameoutils', 'like', '%' . $recherche . '%')
-                // ->orWhere('categorie', 'like', '%' . $recherche . '%')
-                ->paginate(10);
-            return view('viewadmindste.outils.listoutils', compact('list'));
-        }
-        $list = $lists->paginate(10);
-        return view('viewadmindste.outils.listoutils', compact('list'));
+        return view('viewadmindste.outils.listoutils');
     }
 
     public function listOtilData(Request $request)
     {
-        $lists = Outil::query()->orderBy("categorie", "asc");
-        if ($request->has('q') != "" && $request->has('q') != null) {
-            $recherche = htmlspecialchars(trim($request->q));
-            $list = $lists->where('reference', 'like', '%' . $recherche . '%')
-                ->orWhere('dateacquisition', 'like', '%' . $recherche . '%')
-                ->orWhere('nameoutils', 'like', '%' . $recherche . '%')
-                // ->orWhere('categorie', 'like', '%' . $recherche . '%')
-                ->paginate(10);
-            return view('viewadmindste.outils.listoutils', compact('list'));
-        }
-        $list = $lists->paginate(10);
-
         $query = DB::table('outils as o')
         ->leftJoin('categorieoutils as co', 'co.id', '=', 'o.categorie')
         ->leftJoin('utilisateurs as u', 'o.user', '=', 'u.idUser')
@@ -65,6 +42,7 @@ class OutilController extends Controller
             'o.id as id',
             'o.etat as etat',
             'o.user as userO',
+            'o.categorie as categorie',
             'o.otherjson as otherjson',
             'co.libelle as co_libelle',
             DB::raw('COALESCE(o.reference, "---") as reference'),
@@ -304,12 +282,12 @@ class OutilController extends Controller
             } else {
 
                 $allChamp = ChampsCategorieOutil::where("categoutil", $request->cat)->get();
-               
 
-                $caract = $request->caract; // Caractéristique associé à l'outils. La valeur otherjson
+                $otherjson = Outil::where("id", $request->id)->pluck('otherjson');
+                $caract = $otherjson[0];
+                // $caract = $request->caract; // Caractéristique associé à l'outils. La valeur otherjson
 
                 $contenu = "";
-
                 foreach ($allChamp as $value) {
                     $contenu .= '<div class="col-md-6">';
                     $contenu .= '<label for="' . $value->code . '">' . $value->libelle . '</label>';
@@ -321,13 +299,16 @@ class OutilController extends Controller
                     } else {
                         $contenu .= '<input type="' . $value->type . '" disabled id="' . $value->code . '" name="' . $value->code . '" value="" class="form-control outiladd" placeholder="">';
                     }
-
+                    
                     $contenu .= '</div>';
                     $contenu .= '</div>';
                     $contenu .= '</div>';
                 }
 
-                return $contenu;
+                return response()->json([
+                    'contenu' => $contenu,
+                    'caracteristique' => $caract
+                ]);
             }
         } catch (\Exception $e) {
             $errorString = "Erreur serveur.";
@@ -341,7 +322,8 @@ class OutilController extends Controller
         try {
             $allChamp = ChampsCategorieOutil::where("categoutil", $request->cat)->get();
 
-            $caract = $request->caract;
+            $otherjson = Outil::where("id", $request->id)->pluck('otherjson');
+            $caract = $otherjson[0];
 
             $contenu = "";
 
@@ -361,7 +343,9 @@ class OutilController extends Controller
                 $contenu .= '</div>';
             }
 
-            return $contenu;
+            return response()->json([
+                'contenu' => $contenu
+            ]);
         } catch (\Exception $e) {
             return Back()->with('error', "Une erreur ses produites :" . $e->getMessage());
         }

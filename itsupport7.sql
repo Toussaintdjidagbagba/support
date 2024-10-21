@@ -448,10 +448,10 @@ INSERT INTO `champscategorieoutils` (`id`, `action`, `libelle`, `code`, `categou
 -- --------------------------------------------------------
 
 --
--- Structure de la table `entete`
+-- Structure de la table `entetes`
 --
 
-CREATE TABLE `entete` (
+CREATE TABLE `entetes` (
   `id` int(11) NOT NULL,
   `logo` varchar(255) DEFAULT NULL,
   `titre` varchar(255) DEFAULT NULL,
@@ -465,10 +465,22 @@ CREATE TABLE `entete` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Déchargement des données de la table `entete`
+-- Déchargement des données de la table `entetes`
 --
 
-INSERT INTO `entete` (`id`, `logo`, `titre`, `contenu_entete`, `contenu_footer_col`, `contenu_footer_col2`, `alignement_entete`, `alignement_footer`, `created_at`, `updated_at`) VALUES
+INSERT INTO `entetes` (
+    `id`,
+    `logo`,
+    `titre`,
+    `contenu_entete`,
+    `contenu_footer_col`,
+    `contenu_footer_col2`,
+    `alignement_entete`,
+    `alignement_footer`,
+    `created_at`,
+    `updated_at`
+  )
+VALUES
 (2, '1729167129_essf.png', 'Nom Entreprise', 'MARKETING ET COMMERCIAL', 'Société Anonyme avec Conseil d’administration au Capital social de CFA 3.000.000.000. Entreprise régie par le code CIMA immeuble NSIA, 1006 Boulevard Saint Michel - BP 958 Tri Postal.', 'Tél : (229) 20 24 69 00 / 21 30 54 50 Fax : (229) 21 95 61 17 Email : nsia.com@groupsesia.com - Site web : www.nsiawebenin.com', 'right', 'center', '2024-10-16 14:52:24', '2024-10-17 13:53:39');
 
 -- --------------------------------------------------------
@@ -1779,9 +1791,9 @@ ALTER TABLE `champscategorieoutils`
   ADD PRIMARY KEY (`id`) USING BTREE;
 
 --
--- Index pour la table `entete`
+-- Index pour la table `entetes`
 --
-ALTER TABLE `entete`
+ALTER TABLE `entetes`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1915,9 +1927,9 @@ ALTER TABLE `champscategorieoutils`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
--- AUTO_INCREMENT pour la table `entete`
+-- AUTO_INCREMENT pour la table `entetes`
 --
-ALTER TABLE `entete`
+ALTER TABLE `entetes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
