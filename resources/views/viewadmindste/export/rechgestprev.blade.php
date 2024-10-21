@@ -1,8 +1,8 @@
 <table>
     <tr>
-        <th class="modal-title font-14" colspan="7"
+        <th class="modal-title font-14" colspan="3"
             style="vertical-align:middle; text-align: center; background-color: black; color: white; size: 50px;">
-            Gestion de la maintenance préventive
+            Liste gestion de la maintenance préventive
         </th>
     </tr>
 </table><br><br>

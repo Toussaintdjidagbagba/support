@@ -13,6 +13,8 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportExcel;
 use App\Exports\ExportMaintenance;
+use App\Exports\GcurRech;
+use App\Exports\GcurRechpdf;
 use App\Exports\GestCurXExport;
 use App\Exports\GestMaintCurExport;
 use App\Exports\GestMaintPrevExport;
@@ -23,9 +25,12 @@ use App\Exports\MaintCurrativaExport;
 use App\Exports\MaintCurrativeExport;
 use App\Exports\MaintPreventiveExport;
 use App\Exports\MaintPrevExecExport;
+use App\Exports\McurRech;
+use App\Exports\McurRechpdf;
 use App\Exports\MprevRech;
 use App\Exports\MprevRechpdf;
 use App\Models\ActionOutil;
+use App\Models\Entete;
 use App\Models\GestionmaintenanceCurative;
 use App\Models\MaintenanceCurative;
 use App\Models\Service;
@@ -277,8 +282,9 @@ class MaintenanceController extends Controller
                         'utilisateurs.prenom as user_prenom'
                     )
                     ->get();
-        
-        
+
+            $entete = Entete::first(); 
+            
             //dd($list);       
 
             $format = $request->format;
@@ -289,7 +295,7 @@ class MaintenanceController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new MaintPrevExecExport($list);
+                    $pdfExporter = new MaintPrevExecExport($list,$entete);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
 
@@ -298,7 +304,7 @@ class MaintenanceController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="MaintenanceExecutionPreventive_'. $dateExp .'.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new MaintPrevExecExport($list), 'MaintenanceExecutionPreventive_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new MaintPrevExecExport($list,$entete), 'MaintenanceExecutionPreventive_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
@@ -569,6 +575,8 @@ class MaintenanceController extends Controller
                 ->where("gestionmaintenances.id", $request->idmprev)
                 ->get();
 
+            $entete = Entete::first(); 
+
             //dd($list);       
 
             $format = $request->format;
@@ -579,7 +587,7 @@ class MaintenanceController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new MaintPreventiveExport($list);
+                    $pdfExporter = new MaintPreventiveExport($list,$entete);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
 
@@ -588,7 +596,7 @@ class MaintenanceController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="MaintenancePreventive_'. $dateExp .'.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new MaintPreventiveExport($list), 'MaintenancePreventive_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new MaintPreventiveExport($list,$entete), 'MaintenancePreventive_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
@@ -602,6 +610,8 @@ class MaintenanceController extends Controller
 
             $list = json_decode($request->input('Gliste'), true); 
 
+            $entete = Entete::first(); 
+
             // Récupérer la date actuelle pour l'exportation
             $dateExp = now()->format('d-m-Y');
 
@@ -610,7 +620,7 @@ class MaintenanceController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new MprevRechpdf($list);
+                    $pdfExporter = new MprevRechpdf($list,$entete);
                     //dd($list);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
@@ -620,7 +630,7 @@ class MaintenanceController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="MaintenancePreventiveExport_'. $dateExp .'.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new MprevRech($list), 'MaintenancePreventiveExport_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new MprevRech($list,$entete), 'MaintenancePreventiveExport_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
@@ -634,6 +644,8 @@ class MaintenanceController extends Controller
 
             $list = json_decode($request->input('Gliste'), true); 
 
+            $entete = Entete::first(); 
+
             // Récupérer la date actuelle pour l'exportation
             $dateExp = now()->format('d-m-Y');
 
@@ -642,7 +654,7 @@ class MaintenanceController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new GprevRechpdf($list);
+                    $pdfExporter = new GprevRechpdf($list,$entete);
                     //dd($list);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
@@ -652,7 +664,7 @@ class MaintenanceController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="GestionPreventiveExport_'. $dateExp .'.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new GprevRech($list), 'GestionPreventiveExport_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new GprevRech($list,$entete), 'GestionPreventiveExport_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
@@ -814,7 +826,9 @@ class MaintenanceController extends Controller
                 ->where("outils.user", session("utilisateur")->idUser)
                 ->where("gestionmaintenance_curatives.id", $request->idmcur)
                 ->get();
-    
+
+            $entete = Entete::first(); 
+
             //dd($list);       
 
             $format = $request->format;
@@ -825,7 +839,7 @@ class MaintenanceController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new MaintCurrativeExport($list);
+                    $pdfExporter = new MaintCurrativeExport($list,$entete);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
 
@@ -834,7 +848,7 @@ class MaintenanceController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="MaintenanceCurrative_'. $dateExp .'.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new MaintCurrativeExport($list), 'MaintenanceCurrative_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new MaintCurrativeExport($list,$entete), 'MaintenanceCurrative_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
@@ -1157,6 +1171,8 @@ class MaintenanceController extends Controller
         try {
             
             $list = MaintenanceCurative::where('id', $request->idgestcur)->get();
+
+            $entete = Entete::first(); 
             
             $format = $request->format;
 
@@ -1166,7 +1182,7 @@ class MaintenanceController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new GestMaintCurExport($list);
+                    $pdfExporter = new GestMaintCurExport($list,$entete);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
 
@@ -1175,7 +1191,7 @@ class MaintenanceController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="GestionMaintenanceCurative_'. $dateExp .'.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new GestCurXExport($list), 'GestionMaintenanceCurative_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new GestCurXExport($list,$entete), 'GestionMaintenanceCurative_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
@@ -1189,6 +1205,8 @@ class MaintenanceController extends Controller
 
             $list = Maintenance::where('id', $request->idgestprev)->get();
 
+            $entete = Entete::first(); 
+
             $format = $request->format;
 
             // Récupérer la date actuelle pour l'exportation
@@ -1197,7 +1215,7 @@ class MaintenanceController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new GestMaintPrevExport($list);
+                    $pdfExporter = new GestMaintPrevExport($list,$entete);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
 
@@ -1206,11 +1224,81 @@ class MaintenanceController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="GestionMaintenancePreventive_' . $dateExp . '.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new GestPrevXExport($list), 'GestionMaintenancePreventive_' . $dateExp . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new GestPrevXExport($list,$entete), 'GestionMaintenancePreventive_' . $dateExp . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
         }
     }
+
+
+    //maintenance preventive export recherche
+    public function mcurrech(Request $request)
+    {
+        try {
+
+            $list = json_decode($request->input('Gliste'), true); 
+
+            $entete = Entete::first(); 
+
+            // Récupérer la date actuelle pour l'exportation
+            $dateExp = now()->format('d-m-Y');
+
+            $format = $request->format;
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new McurRechpdf($list,$entete);
+                    //dd($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="MaintenanceCurrativeExport_'. $dateExp .'.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new McurRech($list,$entete), 'MaintenanceCurrativeExport_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
+        }
+    }
+
+    //gestion preventive export recherche
+    public function gcurrech(Request $request)
+    {
+        try {
+
+            $list = json_decode($request->input('Gliste'), true); 
+
+            $entete = Entete::first(); 
+
+            // Récupérer la date actuelle pour l'exportation
+            $dateExp = now()->format('d-m-Y');
+
+            $format = $request->format;
+
+            // Générer le fichier en fonction du format demandé
+            switch ($format) {
+                case 'pdf':
+                    $pdfExporter = new GcurRechpdf($list,$entete);
+                    //dd($list);
+                    $filePath = $pdfExporter->generatePdf();
+                    $pdfContent = Storage::get($filePath);
+
+                    return response($pdfContent, 200)
+                        ->header('Content-Type', 'application/pdf')
+                        ->header('Content-Disposition', 'attachment; filename="GestionCurrativeExport_'. $dateExp .'.pdf"');
+                case 'xlsx':
+                default:
+                    return Excel::download(new GcurRech($list,$entete), 'GestionCurrativeExport_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);
+        }
+    }
+
 
 }

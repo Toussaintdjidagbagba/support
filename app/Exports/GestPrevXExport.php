@@ -8,18 +8,20 @@ use Maatwebsite\Excel\Concerns\FromView;
 class GestPrevXExport implements FromView
 {
     protected $list;
-    
+    protected $entete;
 
-    public function __construct($list)
+    public function __construct($list,$entete)
     {
         $this->list = $list;
+        $this->entete = $entete;
     }
     
    
     public function view(): View
     {
         $list = $this->list;
+        $entete = $this->entete;
        
-        return view('viewadmindste.export.expgestprev', compact('list'));
+        return view('viewadmindste.export.expgestprev', compact('list','entete'));
     }
 }

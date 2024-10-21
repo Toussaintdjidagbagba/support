@@ -7,19 +7,21 @@ use Dompdf\Dompdf;
 class GestMaintPrevExport
 {
     protected $list;
+    protected $entete;
     
-    public function __construct($list)
+    public function __construct($list,$entete)
     {
         $this->list = $list;
-        
+        $this->entete = $entete;
     }
 
     public function generatePdf()
     {
         $list = $this->list;
+        $entete = $this->entete;
 
         $pdf = new Dompdf();
-        $pdf->loadHtml(view('viewadmindste.export.expgestprev', compact('list'))->render());
+        $pdf->loadHtml(view('viewadmindste.export.expgestprev', compact('list','entete'))->render());
         $pdf->render();
 
         $filePath = 'exports/Preventive_export.pdf';

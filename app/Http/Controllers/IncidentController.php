@@ -8,6 +8,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\IncidentDeclarRech;
 use App\Exports\IncidentDeclarRechPdf;
+use App\Models\Entete;
 use Illuminate\Http\Request;
 use App\Models\Incident;
 use App\Models\Trace;
@@ -296,6 +297,8 @@ class IncidentController extends Controller
 
             $list = json_decode($request->input('Gliste'), true); 
 
+            $entete = Entete::first(); 
+
             //dd($list);
             
             // Récupérer la date actuelle pour l'exportation
@@ -306,7 +309,7 @@ class IncidentController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new IncidentDeclarRechPdf($list);
+                    $pdfExporter = new IncidentDeclarRechPdf($list,$entete);
                     $filePath = $pdfExporter->generatePdf();
                     $pdfContent = Storage::get($filePath);
 
@@ -315,7 +318,7 @@ class IncidentController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="Incident_'. $dateExp .'.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new IncidentDeclarRech($list), 'Incident_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new IncidentDeclarRech($list,$entete), 'Incident_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du téléchargement : " . $e->getMessage()], 400);

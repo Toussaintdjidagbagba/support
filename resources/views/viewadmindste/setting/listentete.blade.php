@@ -42,9 +42,8 @@
                                         <th>Titre</th>
                                         <th>Contenu Entete</th>
                                         <th>Alignement entete</th>
-                                        <th>Footer Contenu 1</th>
-                                        <th>Footer Contenu 2</th>
-                                        <th>Footer Contenu 3</th>
+                                        <th>Footer Contenu 1 </th>
+                                        <th>Footer Contenu 2 </th>
                                         <th>Alignement footer</th>
                                         <th data-priority="6">Actions</th>
                                     </tr>
@@ -54,7 +53,7 @@
                                         <tr>
                                             <td>
                                                 @if($ent->logo)
-                                                    <img src="{{ asset($ent->logo) }}" 
+                                                    <img src="{{ asset('documents/entete/' . $ent->logo)}}" 
                                                     alt="Logo" style="width: 70px; height: 70px; border-radius: 50%;">
                                                 @else
                                                     Aucun logo
@@ -70,13 +69,10 @@
                                                 {{ $ent->alignement_entete }}
                                             </td>
                                             <td>
-                                                {{ $ent->contenu_footer_col1 }}
+                                                {{ $ent->contenu_footer_col }}
                                             </td>
                                             <td>
                                                 {{ $ent->contenu_footer_col2 }}
-                                            </td>
-                                            <td>
-                                                {{ $ent->contenu_footer_col3 }}
                                             </td>
                                             <td>
                                                 {{ $ent->alignement_footer }}
@@ -85,7 +81,7 @@
                                                 @if (in_array('update_service', session('auto_action')))
                                                     <button type="button" title="Modifier"
                                                         class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light">
-                                                        <a href="{{ route('MSC', $ent->id) }}" style="color:white;"> <i
+                                                        <a href="{{ route('ME', $ent->id) }}" style="color:white;"> <i
                                                                 class="material-icons">system_update_alt</i></a>
                                                     </button>
                                                 @endif
@@ -105,7 +101,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="3">
+                                            <td colspan="8">
                                                 <center>Pas de services enregistrer!!!</center>
                                             </td>
                                         </tr>
@@ -296,6 +292,7 @@
                                             <option value="left">Aligner à gauche</option>
                                             <option value="center">Aligner au centre</option>
                                             <option value="right">Aligner à droite</option>
+                                            <option value="justify">Justifié</option>
                                         </select>
                                     </div>
                                 </div>
@@ -312,33 +309,25 @@
                         </div>
                         
                         <div class="row clearfix">
-                            <!-- Contenu du footer (3 colonnes) -->
+                            <!-- Contenu du footer (2 colonnes) -->
                             <div class="col-lg-6 col-md-6 col-sm-12">
 
-                                <label for="contenu_footer_col1">Footer Contenu 1:</label>
+                                <label for="contenu_footer_col">Footer Contenu 1 :</label>
                                 <div class="form-group">
                                     <div class="form-line">
-                                        <textarea id="contenu_footer_col1" name="contenu_footer_col1" class="form-control"></textarea>
+                                        <textarea id="contenu_footer_col" name="contenu_footer_col" class="form-control"></textarea>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-12">
-                                <label for="contenu_footer_col2">Footer Contenu 2:</label>
-                                <div class="form-group">
-                                    <div class="form-line">
-                                        <textarea name="contenu_footer_col2" id="contenu_footer_col2" class="form-control"></textarea>
-                                    </div>   
-                                </div>  
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-12">
-                                <label for="contenu_footer_col3">Footer Contenu 3:</label>
-                                <div class="form-group">
-                                    <div class="form-line">
-                                        <textarea name="contenu_footer_col3" id="contenu_footer_col3" class="form-control"></textarea>
-                                    </div> 
-                                </div>  
-                            </div>
 
+                                <label for="contenu_footer_col2">Footer Contenu 2 :</label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <textarea id="contenu_footer_col2" name="contenu_footer_col2" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
                             <!-- Alignement du footer -->
                             <div class="col-lg-6 col-md-6 col-sm-12">
                                 <div class="form-group">
@@ -348,6 +337,7 @@
                                             <option value="left">Aligner à gauche</option>
                                             <option value="center">Aligner au centre</option>
                                             <option value="right">Aligner à droite</option>
+                                            <option value="justify">Justifié</option>
                                         </select>
                                     </div>
                                 </div>

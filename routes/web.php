@@ -226,6 +226,10 @@ Route::group([
 	Route::get('export-maintenanceprevrecherche', [MaintenanceController::class, 'mprevrech'])->name('mprevrechexp');
 	
 	Route::get('export-gestionprevrecherche', [MaintenanceController::class, 'gprevrech'])->name('gprevrechexp');
+	
+	Route::get('export-maintenancecurrecherche', [MaintenanceController::class, 'mcurrech'])->name('mcurrechexp');
+	
+	Route::get('export-gestioncurrecherche', [MaintenanceController::class, 'gcurrech'])->name('gcurrechexp');
 
 
 	// /////////////////////////////  Paramétrage des entêtes  ///////////////////////////////////////
@@ -233,6 +237,8 @@ Route::group([
 	Route::get('/settings-listentete', 'App\Http\Controllers\SettingController@listentete')->name('GERAP');
 	Route::post('/add-entete-footer', 'App\Http\Controllers\SettingController@addentetef')->name('AENTF');
 	Route::post('/entete/supprimer', 'App\Http\Controllers\SettingController@destroy')->name('DENT');
+	Route::get('/edit-entete-{id}', 'App\Http\Controllers\SettingController@editent')->name('ME');
+	Route::post('/update-entete', 'App\Http\Controllers\SettingController@updateent')->name('UME');
 
 
 });

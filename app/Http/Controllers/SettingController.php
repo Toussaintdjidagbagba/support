@@ -31,9 +31,8 @@ class SettingController extends Controller
         $request->validate([
             'titre' => 'required|string|max:255', // Nouveau champ pour le contenu de l'entête
             'lib' => 'required|string|max:255',
-            'contenu_footer_col1' => 'nullable|string',
+            'contenu_footer_col' => 'nullable|string',
             'contenu_footer_col2' => 'nullable|string',
-            'contenu_footer_col3' => 'nullable|string',
             'alignment_entete' => 'required|in:left,center,right,justify',
             'alignment_footer' => 'required|in:left,center,right,justify',
             'piece' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
@@ -43,9 +42,8 @@ class SettingController extends Controller
         $entete = new Entete();
         $entete->titre = $request->input('titre');
         $entete->contenu_entete = $request->input('lib'); // Correction pour le contenu de l'entête
-        $entete->contenu_footer_col1 = $request->input('contenu_footer_col1');
+        $entete->contenu_footer_col = $request->input('contenu_footer_col');
         $entete->contenu_footer_col2 = $request->input('contenu_footer_col2');
-        $entete->contenu_footer_col3 = $request->input('contenu_footer_col3');
         $entete->alignement_entete = $request->input('alignment_entete');
         $entete->alignement_footer = $request->input('alignment_footer');
 
@@ -91,6 +89,74 @@ class SettingController extends Controller
         }
     }
 
+    public function editent(Request $request)
+    {
+        try {
+            if (!in_array("update_service", session("auto_action"))) {
+                return view("vendor.error.649");
+            } else {
+                $ent = Entete::where('id', request('id'))->first();
+                return view('viewadmindste.setting.modifent', compact('ent'));
+            }
+        } catch (\Exception $e) {
+            $errorString = "Erreur serveur.";
+            flash($errorString)->error();
+            return Back();
+        }
+    }
+
+    public function updateent(Request $request)
+    {
+        try {
+            // Validation des entrées
+            $request->validate([
+                'titre' => 'required|string',
+                'lib' => 'required|string',
+                'alignement_entete' => 'required|string', 
+                'contenu_footer_col' => 'nullable|string',
+                'contenu_footer_col2' => 'nullable|string',
+                'alignement_footer' => 'required|string', 
+                'piece' => 'nullable|image|mimes:jpg,jpeg,png|max:2048' // Limite de taille à 2 Mo
+            ]);
+
+            // Traitement du fichier logo (s'il y a un nouveau fichier)
+            if ($request->hasFile('piece')) {
+                $fileName = time() . '_' . $request->file('piece')->getClientOriginalName();
+                $request->file('piece')->move(public_path('documents/entete'), $fileName);
+            } else {
+                // Garder l'ancien logo si aucun fichier n'est uploadé
+                $fileName = Entete::where('id', $request->id)->first()->logo;
+            }
+
+            // Récupération de l'ancien titre pour les notifications
+            $oldTitle = Entete::where('id', $request->id)->first()->titre;
+
+            // Mise à jour des données dans la table
+            Entete::where('id', $request->id)->update([
+                'titre' => htmlspecialchars(trim($request->titre)),
+                'contenu_entete' => htmlspecialchars(trim($request->lib)),
+                'alignement_entete' => $request->alignement_entete, // alignement correct
+                'logo' => $fileName,
+                'contenu_footer_col' => htmlspecialchars(trim($request->contenu_footer_col)),
+                'contenu_footer_col2' => htmlspecialchars(trim($request->contenu_footer_col2)),
+                'alignement_footer' => $request->alignement_footer // correspond à la vue
+            ]);
+
+            // Message de succès
+            flash($oldTitle . " a été modifié avec succès.")->success();
+
+            // Tracer l'action
+            TraceController::setTrace("Vous avez modifié l'en-tête et le footer avec le titre " . $request->titre . " .", session("utilisateur")->idUser);
+
+            // Redirection vers la liste des enregistrements
+            return redirect('/settings-listentete');
+        } catch (\Exception $e) {
+            // Gestion des erreurs
+            $errorString = "Erreur serveur : " . $e->getMessage();
+            flash($errorString)->error();
+            return back();
+        }
+    }
 
     public function add(Request $request)
     {

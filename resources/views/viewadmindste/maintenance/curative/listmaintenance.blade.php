@@ -47,6 +47,7 @@
                         <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
                             <div class="body">
                                 <form role="form">
+                                    <div id="alert" class="alert" style="display: none;"></div><br>
                                     <div class="row clearfix">
                                         <div class="col-lg-6 col-md-6 col-sm-12">
                                             <div class="input-group">
@@ -175,16 +176,18 @@
         const sessionDetailMaint = "{{ in_array('detail_maint_user', session('auto_action')) }}";
         const sessionPdfMaint = "{{ in_array('print_maint_pdf', session('auto_action')) }}";
         const sessionCommtMaint = "{{ in_array('comment_maint_user', session('auto_action')) }}";
+        let Gliste;
+        let searchPerformed = false;
 
         function setdetailmaintenance(event, periode, outil, action, avisinf) {
             event.preventDefault();
-                      document.getElementById('dates').innerHTML = periode;
+            document.getElementById('dates').innerHTML = periode;
             document.getElementById('outild').innerHTML = outil;
             document.getElementById('aviinf').innerHTML = avisinf;
             document.getElementById('actn').innerHTML = action;
         }
 
-        function getid(id) {            
+        function getid(id) {
             document.getElementById("anoid").value = id;
         }
 
@@ -348,10 +351,12 @@
                         '') +
                     (sessionDetailMaint ?
                         '<button type="button" title="Détails" data-toggle="modal" data-target="#detail" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light" ' +
-                        'onClick="setdetailmaintenance(event, \'' + currentline["periode"] + '\', \'' + currentline["nameoutils"] + '\', \'' + currentline["action_effectuer"] + '\', \'' + currentline["avisinf"] + '\')">' +
+                        'onClick="setdetailmaintenance(event, \'' + currentline["periode"] + '\', \'' + currentline[
+                            "nameoutils"] + '\', \'' + currentline["action_effectuer"] + '\', \'' + currentline[
+                            "avisinf"] + '\')">' +
                         '<i class="material-icons">book</i>' +
                         '</button>' :
-                        '') + 
+                        '') +
                     (sessionCommtMaint ?
                         '<button type="button" title="Modifier" data-toggle="modal" data-target="#avis" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light" ' +
                         'onClick="getid(\'' + currentline["gestion_id"] + '\')">' +
@@ -413,12 +418,51 @@
                     let data = await response.json();
                     Gliste = data.list;
                     afficherDonnees(data.list);
+                    searchPerformed = true;
                 } else {
                     throw new Error("Erreur lors de la récupération des données: " + response.status);
                 }
             } catch (error) {
                 console.error("Erreur attrapée:", error);
             }
+        }
+
+        function paramrech(format) {
+            console.log(Gliste);
+            const alertDiv = document.getElementById('alert');
+            if (!searchPerformed) {
+                showAlert("Veuillez d'abord effectuer une recherche avant d'exporter les données.", "warning");
+                return;
+            }
+            var form = document.createElement('form');
+            form.method = 'get';
+            form.action = '{{ route('mcurrechexp') }}';
+
+            var inputExport = document.createElement('input');
+            inputExport.type = 'hidden';
+            inputExport.name = 'format';
+            inputExport.value = format;
+            form.appendChild(inputExport);
+
+            // Ajouter le champ de recherche
+            var inputListData = document.createElement('input');
+            inputListData.type = 'hidden';
+            inputListData.name = 'Gliste';
+            inputListData.value = JSON.stringify(Gliste);
+            form.appendChild(inputListData);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+        // Fonction pour afficher l'alerte
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.className = `alert alert-${type}`; // Ajoute la classe d'alerte
+            alertDiv.innerHTML = message; // Définit le message
+            alertDiv.style.display = 'block'; // Affiche le div
+            setTimeout(() => {
+                alertDiv.style.display = 'none'; // Masque le div après 3 secondes
+            }, 4000);
         }
     </script>
 @endsection
