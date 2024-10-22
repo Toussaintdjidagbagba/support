@@ -25,9 +25,6 @@ class GestMaintCurExport
         $pdf->loadHtml(view('viewadmindste.export.expgestcur', compact('list','entete'))->render());
         $pdf->render();
 
-        $filePath = 'exports/Currative_export.pdf';
-        Storage::put($filePath, $pdf->output());
-
-        return $filePath;
+        return $pdf->output();
     }
 }

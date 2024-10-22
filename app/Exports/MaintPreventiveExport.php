@@ -24,10 +24,6 @@ class MaintPreventiveExport
         $pdf = new Dompdf();
         $pdf->loadHtml(view('viewadmindste.export.expmaintprev', compact('list','entete'))->render());
         $pdf->render();
-
-        $filePath = 'exports/Preventive_export.pdf';
-        Storage::put($filePath, $pdf->output());
-
-        return $filePath;
+        return $pdf->output();
     }
 }

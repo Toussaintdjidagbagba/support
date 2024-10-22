@@ -565,8 +565,7 @@ class OutilController extends Controller
             switch ($format) {
                 case 'pdf':
                     $pdfExporter = new OutilhistopdfExport($data,$entete);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
+                    $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
@@ -599,8 +598,7 @@ class OutilController extends Controller
             switch ($format) {
                 case 'pdf':
                     $pdfExporter = new OutilsRechPdf($list,$entete);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
+                    $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')

@@ -296,8 +296,7 @@ class MaintenanceController extends Controller
             switch ($format) {
                 case 'pdf':
                     $pdfExporter = new MaintPrevExecExport($list,$entete);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
+                    $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
@@ -588,8 +587,7 @@ class MaintenanceController extends Controller
             switch ($format) {
                 case 'pdf':
                     $pdfExporter = new MaintPreventiveExport($list,$entete);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
+                    $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
@@ -622,8 +620,7 @@ class MaintenanceController extends Controller
                 case 'pdf':
                     $pdfExporter = new MprevRechpdf($list,$entete);
                     //dd($list);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
+                    $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
@@ -656,8 +653,7 @@ class MaintenanceController extends Controller
                 case 'pdf':
                     $pdfExporter = new GprevRechpdf($list,$entete);
                     //dd($list);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
+                    $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
@@ -840,8 +836,7 @@ class MaintenanceController extends Controller
             switch ($format) {
                 case 'pdf':
                     $pdfExporter = new MaintCurrativeExport($list,$entete);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
+                    $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
@@ -1183,8 +1178,7 @@ class MaintenanceController extends Controller
             switch ($format) {
                 case 'pdf':
                     $pdfExporter = new GestMaintCurExport($list,$entete);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
+                    $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
@@ -1216,8 +1210,7 @@ class MaintenanceController extends Controller
             switch ($format) {
                 case 'pdf':
                     $pdfExporter = new GestMaintPrevExport($list,$entete);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
+                    $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
@@ -1251,8 +1244,7 @@ class MaintenanceController extends Controller
                 case 'pdf':
                     $pdfExporter = new McurRechpdf($list,$entete);
                     //dd($list);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
+                    $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
@@ -1285,8 +1277,7 @@ class MaintenanceController extends Controller
                 case 'pdf':
                     $pdfExporter = new GcurRechpdf($list,$entete);
                     //dd($list);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
+                    $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')

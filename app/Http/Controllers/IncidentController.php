@@ -310,8 +310,7 @@ class IncidentController extends Controller
             switch ($format) {
                 case 'pdf':
                     $pdfExporter = new IncidentDeclarRechPdf($list,$entete);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
+                    $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')

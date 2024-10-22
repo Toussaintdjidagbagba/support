@@ -494,9 +494,7 @@ class IncidentAdminController extends Controller
             switch ($format) {
                 case 'pdf':
                     $pdfExporter = new IncidentpdfExport($list,$entete);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
-
+                    $pdfContent = $pdfExporter->generatePdf();
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
                     ->header('Content-Disposition', 'attachment; filename="IncidentExport_' . $dateExp . '.pdf"');
@@ -528,8 +526,7 @@ class IncidentAdminController extends Controller
                 case 'pdf':
                     $pdfExporter = new IncidentRechpdf($list,$entete);
                     //dd($list);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
+                    $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
@@ -623,8 +620,7 @@ class IncidentAdminController extends Controller
             switch ($format) {
                 case 'pdf':
                     $pdfExporter = new DeclarIncidentpdfExport($list,$entete);
-                    $filePath = $pdfExporter->generatePdf();
-                    $pdfContent = Storage::get($filePath);
+                    $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')

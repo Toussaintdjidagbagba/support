@@ -24,10 +24,7 @@ class OutilhistopdfExport
         $pdf = new Dompdf();
         $pdf->loadHtml(view('viewadmindste.export.exphistopdf', compact('data','entete'))->render());
         $pdf->render();
-
-        $filePath = 'exports/HistorOutils_export.pdf';
-        Storage::put($filePath, $pdf->output());
-
-        return $filePath;
+        return $pdf->output();
+       
     }
 }

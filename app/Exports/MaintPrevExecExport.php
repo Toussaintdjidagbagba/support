@@ -24,9 +24,6 @@ class MaintPrevExecExport
         $pdf->loadHtml(view('viewadmindste.export.expmaintexecprev', compact('list','entete'))->render());
         $pdf->render();
 
-        $filePath = 'exports/Preventive_export.pdf';
-        Storage::put($filePath, $pdf->output());
-
-        return $filePath;
+        return $pdf->output();
     }
 }

@@ -43,10 +43,7 @@ class IncidentDeclarRechPdf
         $pdf->setPaper('A4', 'landscape');
         $pdf->render();
 
-        $filePath = 'exports/incident_export.pdf';
-        Storage::put($filePath, $pdf->output());
-
-        return $filePath;
+        return $pdf->output();
     }
 
 }
