@@ -107,7 +107,7 @@
                                             <button type="button" class="btn btn-gris"
                                                 style="margin-left: 25px; margin-bottom: 0px;"
                                                 onclick="paramrech('xlsx')">EXCEL Exporter</button>
-                                             <button onclick="searchButton(event)"
+                                            <button onclick="searchButton(event)"
                                                 style="margin-left: 25px; margin-bottom: 0px;"
                                                 class="btn btn-primary btn-md">Rechercher</button>
                                         </div>
@@ -337,7 +337,7 @@
 
                 const params = new URLSearchParams({
                     date_emission: dateEmission,
-                     date_resolution: dateResolution,
+                    date_resolution: dateResolution,
                     hierarchie: hierarchie,
                     desc: desc,
                     modules: modules,

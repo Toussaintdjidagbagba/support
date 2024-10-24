@@ -89,7 +89,7 @@
                                             <button type="button" class="btn btn-gris"
                                                 style="margin-left: 25px; margin-bottom: 0px;"
                                                 onclick="paramrech('xlsx')">EXCEL Exporter</button>
-                                             <button onclick="searchButton(event)"
+                                            <button onclick="searchButton(event)"
                                                 style="margin-left: 25px; margin-bottom: 0px;"
                                                 class="btn btn-primary btn-md">Rechercher</button>
                                         </div>
@@ -143,6 +143,13 @@
         </div>
     </div>
     <script>
+        const sessionUpdateEtat = "{{ in_array('update_etat', session('auto_action')) }}";
+        const sessionUpdateIncie = "{{ in_array('update_incie', session('auto_action')) }}";
+        const sessionAffecIncie = "{{ in_array('affec_incie', session('auto_action')) }}";
+        const sessionViewDocIncie = "{{ in_array('viewdoc_incie', session('auto_action')) }}";
+        const sessionDeleteIncie = "{{ in_array('delete_incie', session('auto_action')) }}";
+        const sessionPrintPdfIncie = "{{ in_array('print_maint_pdf', session('auto_action')) }}";
+
         const sessionUpdate = "{{ in_array('update_incident', session('auto_action')) }}";
         const sessionDelete = "{{ in_array('delete_incident', session('auto_action')) }}";
         const router = {
@@ -414,6 +421,33 @@
                     '</tr>';
                 tbody.innerHTML += contenu;
             });
+        }
+
+        function getdeclaind(event, format) {
+            event.preventDefault();
+            var dataT = event.currentTarget;
+
+            var idlin = dataT.getAttribute('data-Id') ?? "";
+            console.log(idlin);
+
+            var form = document.createElement('form');
+            form.method = 'GET';
+            form.action = '{{ route('export.declind') }}';
+
+            var inputId = document.createElement('input');
+            inputId.type = 'hidden';
+            inputId.name = 'idlin';
+            inputId.value = idlin;
+            form.appendChild(inputId);
+
+            var inputFormat = document.createElement('input');
+            inputFormat.type = 'hidden';
+            inputFormat.name = 'format';
+            inputFormat.value = format;
+            form.appendChild(inputFormat);
+
+            document.body.appendChild(form);
+            form.submit();
         }
 
         function paramrech(format) {
