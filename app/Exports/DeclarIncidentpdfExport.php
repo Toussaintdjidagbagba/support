@@ -25,7 +25,7 @@ class DeclarIncidentpdfExport
 
         $pdf = new Dompdf();
         $pdf->loadHtml(view('viewadmindste.export.expdecl', compact('list','entete'))->render());
-        $pdf->setPaper('A4', 'landscape');
+       
         $pdf->render();
 
         return $pdf->output();

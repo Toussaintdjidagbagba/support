@@ -25,8 +25,8 @@
             margin: 0 auto;
             background-color: #fff;
             padding: 10px;
-            margin-top: 100px;
-            font-size: 13px;
+            margin-top: 70px;
+            font-size: 11px;
             display: flex;
             flex-direction: column;
             justify-content: center; 
@@ -67,18 +67,29 @@
             padding-bottom: 10px;
         }
 
-        .header .title, .footer .title-footer {
+        .footer .title-footer {
             font-size: 18px;
             font-weight: bold;
             flex: 1;
             text-align: center;
         }
 
+        .title
+        {
+            position: relative;
+            bottom: 70px;
+            font-size: 21px;
+            font-weight: 300;
+            flex: 1;
+            text-align: center;
+            color: #272727;
+        }
+
         .info{
             width: 100px;
             position: relative;
             left: 80%;
-            bottom: 140%;
+            bottom: 160%;
             max-width: 200px;
             word-wrap: break-word;
             overflow-wrap: break-word;
@@ -149,6 +160,11 @@
             overflow-wrap: break-word;
             word-wrap: break-word;
         }
+
+        .h2t
+        {
+           
+        }
     </style>
 </head>
 <body>
@@ -197,19 +213,23 @@
                         <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Emetteur</th>
                         <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Etat</th>
                         <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Date de résolution</th>
+                        <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Description</th>
+                        <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Catégorie</th>
                         <th style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">Affecter</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($list as $inc)
                         <tr>
-                            <td style="vertical-align:middle; text-align: left; width: 100px;"><b>{{ $inc['DateEmission']}}</b></td>
-                            <td style="vertical-align:middle; text-align: left; width: 90px;">{{ $inc['Module'] }}</td>
-                            <td style="vertical-align:middle; text-align: left; width: 90px;">{{ $inc['hierarchie'] ?? 'N/A' }}</td>
-                            <td style="vertical-align:middle; text-align: left; width: 185px;">{{ $inc['emetteur'] ?? 'N/A'}}</td>
-                            <td style="vertical-align:middle; text-align: left; width: 100px;">{{ $inc['etat'] ?? 'N/A'}}</td>
-                            <td style="vertical-align:middle; text-align: left; width: 140px;">{{ $inc['DateResolue']}}</td>
-                            <td style="vertical-align:middle; text-align: left; width: 100px;">{{ $inc['affecter']}}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 90px;"><b>{{ $inc['DateEmission']}}</b></td>
+                            <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['Module'] }}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['hierarchie'] ?? 'N/A' }}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 120px;">{{ $inc['emetteur'] ?? 'N/A'}}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['etat'] ?? 'N/A'}}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 90px;">{{ $inc['DateResolue']}}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['cat']}}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['desc']}}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 90px;">{{ $inc['affecter']}}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -221,6 +241,9 @@
 
     <!-- Footer -->
     <div class="footer">
+        <div class="footer-right">
+            Date d'exportation : {{ now()->format('d/m/Y') }}
+        </div><br>
         <div class="footer-text">
             {{ $entete->contenu_footer_col}}<br>
         </div>
@@ -228,9 +251,6 @@
             {{ $entete->contenu_footer_col2}}
         </div>
         <br>
-        <div class="footer-right">
-            Date d'exportation : {{ now()->format('d/m/Y') }}
-        </div>
     </div>
 </body>
 </html>

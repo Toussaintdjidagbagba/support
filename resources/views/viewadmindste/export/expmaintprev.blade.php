@@ -238,15 +238,14 @@
 
     <!-- Footer -->
     <div class="footer">
+        <div class="footer-right">
+            Date d'exportation : {{ now()->format('d/m/Y') }}
+        </div><br>
         <div class="footer-text">
             {{ $entete->contenu_footer_col}}<br>
         </div>
         <div class="footer-text">
             {{ $entete->contenu_footer_col2}}
-        </div>
-        <br>
-        <div class="footer-right">
-            Date d'exportation : {{ now()->format('d/m/Y') }}
         </div>
     </div>
 </body>

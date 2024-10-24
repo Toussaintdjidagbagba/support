@@ -169,6 +169,7 @@ class IncidentAdminController extends Controller
                     } else {
                         $add->piece = "";
                     }
+
                     $add->save();
 
                     // Sauvegarde de la trace
@@ -561,6 +562,7 @@ class IncidentAdminController extends Controller
                         'i.DateEmission',
                         'i.description',
                         'i.piece',
+                        'i.resolue',
                         'h.libelle as hierarchie',
                         DB::raw('COALESCE(i.DateResolue, "Pas encore résolue") as DateResolue'),
                         DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
@@ -589,6 +591,7 @@ class IncidentAdminController extends Controller
                         'i.DateEmission',
                         'i.description',
                         'i.piece',
+                        'i.resolue',
                         'h.libelle as hierarchie',
                         DB::raw('COALESCE(i.DateResolue, "Pas encore résolue") as DateResolue'),
                         DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),

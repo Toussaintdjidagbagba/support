@@ -29,6 +29,8 @@ class IncidentpdfExport
                 'etat' => $incident->etats,
                 'DateResolue' => $incident->DateResolue, 
                 'affecter' => $incident->usersA, 
+                'cat' => $incident->cat, 
+                'desc' => $incident->description, 
             ];
         });
 

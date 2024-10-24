@@ -29,6 +29,8 @@ class IncidentExport implements FromView
                 'etat' => $incident->etats,
                 'DateResolue' => $incident->DateResolue, 
                 'affecter' => $incident->usersA, 
+                'cat' => $incident->cat, 
+                'desc' => $incident->description, 
             ];
         });
 

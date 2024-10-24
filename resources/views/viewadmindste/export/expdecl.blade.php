@@ -25,8 +25,8 @@
             margin: 0 auto;
             background-color: #fff;
             padding: 20px;
-            margin-top: 100px;
-            font-size: 13px;
+            margin-top: 50px;
+            font-size: 12px;
             display: flex;
             flex-direction: column;
             justify-content: center; 
@@ -67,23 +67,34 @@
             padding-bottom: 10px;
         }
 
-        .header .title, .footer .title-footer {
+        .footer .title-footer {
             font-size: 18px;
             font-weight: bold;
             flex: 1;
             text-align: center;
         }
 
+        .title
+        {
+            position: relative;
+            bottom: 70px;
+            font-size: 21px;
+            font-weight: 300;
+            flex: 1;
+            text-align: center;
+            color: #272727;
+        }
+
         .info{
             width: 100px;
             position: relative;
             left: 80%;
-            bottom: 165%;
+            bottom: 160%;
             max-width: 200px;
             word-wrap: break-word;
             overflow-wrap: break-word;
             white-space: normal;
-            font-size: 12px;
+            font-size: 11px;
             text-align: {{ $entete->alignement_entete }};
         }
 
@@ -149,6 +160,30 @@
             overflow-wrap: break-word;
             word-wrap: break-word;
         }
+        
+        .h2t
+        {
+            text-align: center;
+            padding-bottom: 30px;
+            font-size: 17px;
+        }
+
+        .col
+        {
+            border: none;
+            
+        }
+
+        .ser
+        {
+            font-weight: 300;
+        }
+
+        .break
+        {
+            text-align: center;
+            padding-top: 200px;
+        }
     </style>
 </head>
 <body>
@@ -180,64 +215,135 @@
     <div class="container">
         <div class="body-content">
         
-            <h2>Incidents déclarés</h2><br>
+            <h2 class="h2t">Fiche d'incident déclaré</h2><br>
             <table>
                 @foreach($list as $inc)
                     <tr>
-                        <td class="ser">Date Emission </td>
+                        <td class="ser">Date Emission :</td>
                         <td>{{$inc->DateEmission}}</td>
-                        <td class="ser">Date de résolution </td>
+                        <td class="ser">Etat d'Evolution :</td>
+                        <td >{{ $inc->etats }} </td>
+                    </tr>
+                   
+                    <tr>
+                        <td class="ser">Module :</td>
+                        <td>{{ $inc->Module }}</td>
+                        <td class="ser">Date de résolution :</td>
                         <td>{{ $inc->DateResolue}}</td>
                     </tr>
+                    
                     <tr>
-                        <td class="ser">Modules </td>
-                        <td>{{ $inc->Module }}</td>
-                        <td class="ser">Hiérachisation </td>
+                        <td class="ser">Hiérachisation : </td>
                         <td>{{ $inc->hierarchie}}</td>
+                        <td rowspan="3" class="ser">Solution : </td>
+                        <td rowspan="3">{{ $inc->resolue}}</td>
                     </tr>
+                    
                     <tr>
-                        <td class="ser">Emetteur </td>
-                        <td colspan="3">{{$inc->usersE}}</td>
+                        <td class="ser">Categorie :</td>
+                        <td>{{ $inc->cat}}</td>
+                        
+                    </tr>
+                    
+                    <tr>
+                        <td class="ser">Description  :</td>
+                        <td style="height: 40px; " > {{ $inc->description }}</td>
+                        
+                    </tr>
+                    
+                    <tr>
+                        <td class="ser">Emetteur :</td>
+                        <td>{{$inc->usersE}}</td>
+                        <td class="ser">Technicien :</td>
+                        <td>{{ $inc->usersA}}</td>
                     </tr>
                 @endforeach
-            </table><br>
+            </table>
+
+            <br>
 
             <table class="large">
                 <thead>
                     <tr>
-                        <th>Etat</th>
-                        <th>Description</th>
+                        <th>Signature de l'emetteur</th>
+                        <th>Signature du Technicien</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($list as $inc)
                         <tr>
                             <td style="height: 40px;">
-                                {{ $inc->etats }} 
+                                {{$inc->usersE}} 
                             </td>
                             <td style="height: 40px;">
-                                {{ $inc->description }}
+                                {{ $inc->usersA }}
                             </td> 
                         </tr>
                     @endforeach
                 </tbody>
             </table><br>
-
+            <table class="large">
+                <thead>
+                    <tr>
+                        <th>Valeur de l'emetteur</th>
+                        <th>Valeur du Technicien</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($list as $inc)
+                        <tr>
+                            <td style="height: 40px;">
+                                {{$inc->usersE}}
+                            </td>
+                            <td style="height: 40px;">
+                                {{ $inc->usersA }}
+                            </td> 
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 
     <!-- Footer -->
     <div class="footer">
+        <div class="footer-right">
+            Date d'exportation : {{ now()->format('d/m/Y') }}
+        </div><br>
         <div class="footer-text">
             {{ $entete->contenu_footer_col}}<br>
         </div>
         <div class="footer-text">
             {{ $entete->contenu_footer_col2}}
         </div>
+    </div>
+
+    <!-- Nouvelle page pour afficher l'image -->
+    <div style="page-break-before: always;"></div> <!-- Forcer la nouvelle page dans le PDF -->
+
+    <div class="break">
+        <h2 class="h2t">Preuve d'incident</h2>
         <br>
-        <div class="footer-right">
-            Date d'exportation : {{ now()->format('d/m/Y') }}
+        <div class="incident-image">
+            @foreach($list as $item)
+                <?php
+                $path = public_path($item->piece);
+            
+                if (file_exists($path)) {
+                    $type = pathinfo($path, PATHINFO_EXTENSION);
+                    $data = file_get_contents($path);
+                    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                ?>
+                    <img src="{{ $base64 }}" alt="Image de l'incident" width="600" height="500">
+                <?php
+                } else {
+                    echo "Image non trouvée.";
+                }
+                ?>
+            @endforeach
+
         </div>
     </div>
+    
 </body>
 </html>

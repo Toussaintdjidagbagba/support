@@ -25,7 +25,7 @@
             margin: 0 auto;
             background-color: #fff;
             padding: 10px;
-            margin-top: 100px;
+            margin-top: 75px;
             font-size: 13px;
             display: flex;
             flex-direction: column;
@@ -67,18 +67,28 @@
             padding-bottom: 10px;
         }
 
-        .header .title, .footer .title-footer {
+        .footer .title-footer {
             font-size: 18px;
             font-weight: bold;
             flex: 1;
             text-align: center;
+        }
+        .title
+        {
+            position: relative;
+            bottom: 70px;
+            font-size: 21px;
+            font-weight: 300;
+            flex: 1;
+            text-align: center;
+            color: #272727;
         }
 
         .info{
             width: 100px;
             position: relative;
             left: 80%;
-            bottom: 140%;
+            bottom: 160%;
             max-width: 200px;
             word-wrap: break-word;
             overflow-wrap: break-word;
@@ -149,6 +159,7 @@
             overflow-wrap: break-word;
             word-wrap: break-word;
         }
+        .j{}
     </style>
 </head>
 <body>
@@ -211,15 +222,14 @@
 
     <!-- Footer -->
     <div class="footer">
+        <div class="footer-right">
+            Date d'exportation : {{ now()->format('d/m/Y') }}
+        </div><br>
         <div class="footer-text">
             {{ $entete->contenu_footer_col}}<br>
         </div>
         <div class="footer-text">
             {{ $entete->contenu_footer_col2}}
-        </div>
-        <br>
-        <div class="footer-right">
-            Date d'exportation : {{ now()->format('d/m/Y') }}
         </div>
     </div>
 </body>

@@ -516,7 +516,7 @@
                                 <div class="form-group">
                                     <div class="form-line">
                                         <input type="file" class="form-control" id="piece" name="piece"
-                                            accept=".jpg, .jpeg, .png" onchange="loadImage(event)">
+                                            accept=".jpg, .jpeg, .png" onchange="loadImage(event)" required>
                                     </div>
                                 </div>
                             </div>
