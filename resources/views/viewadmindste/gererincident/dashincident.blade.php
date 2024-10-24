@@ -188,7 +188,7 @@
                 Updates: "{{ route('MTIA', ':id') }}",
             }
             let serve;
-            let itemsPerPage = 4;
+            let itemsPerPage = 10;
             let currentPage = 1;
             let totalItems = 0;
 

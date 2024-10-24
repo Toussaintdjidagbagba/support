@@ -115,7 +115,7 @@
                                                 style="margin-left: 25px; margin-bottom: 0px;"
                                                 onclick="paramrech('xlsx')">EXCEL Exporter</button>
                                             <button onclick="searchButton(event)"
-                                            style="margin-left: 25px; margin-bottom: 0px;"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
                                                 class="btn btn-primary btn-md">Rechercher</button>
                                         </div>
                                     </div>
@@ -152,6 +152,9 @@
                                 <tbody id="datatbodys">
                                 </tbody>
                             </table>
+                            <div id="pagination" class="pagination-container">
+
+                            </div>
                         </div>
 
                     </div>
@@ -168,6 +171,11 @@
         const sessionDetailMaint = "{{ in_array('detail_maint_user', session('auto_action')) }}";
 
         let Gliste;
+
+        let itemsPerPage = 10;
+        let currentPage = 1;
+        let totalItems = 0;
+
         let searchPerformed = false;
 
         async function setdetailmaintenance(maint, outilsId) {
@@ -312,8 +320,6 @@
         };
 
         async function recupListMP() {
-            console.log("Toutes les ressources de la page sont chargées, la fonction est exécutée.");
-
             try {
                 let response = await fetch("{{ route('GMUDATAT') }}", {
                     method: 'GET',
@@ -330,7 +336,9 @@
                     }
 
                     data = await response.json();
+                    totalItems = data.list.length;
                     afficherDonnees(data.list);
+                    paginationListe(totalItems);
                 }
             } catch (error) {
                 console.error("Erreur attrapée:", error);
@@ -341,12 +349,16 @@
             const tbody = document.getElementById('datatbodys');
             tbody.innerHTML = '';
 
-            if (list.length === 0) {
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const currentListes = list.slice(start, end);
+
+            if (currentListes.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="9"><center>Pas de maintenance enregistrer!!!</center></td></tr>`;
                 return;
             }
 
-            list.forEach((currentline, index, arry) => {
+            currentListes.forEach((currentline, index, arry) => {
                 const contenu = '<tr>' +
                     '<th><span class="co-name">' + currentline["periode"] + '</span></th>' +
                     '<td>' + currentline["nameoutils"] + '</td>' +
@@ -388,6 +400,35 @@
                     '</tr>';
                 tbody.innerHTML += contenu;
             });
+        }
+
+        function paginationListe(totalItems) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const paginationContainer = document.getElementById('pagination');
+
+            paginationContainer.innerHTML = '';
+
+            if (currentPage > 1) {
+                const prevButton = document.createElement('button');
+                prevButton.textContent = 'Précédent';
+                prevButton.classList.add('btn', 'btn-secondary', 'mr-2');
+                prevButton.onclick = () => {
+                    currentPage--;
+                    recupListMP();
+                };
+                paginationContainer.appendChild(prevButton);
+            }
+
+            if (currentPage < totalPages) {
+                const nextButton = document.createElement('button');
+                nextButton.textContent = 'Suivant';
+                nextButton.classList.add('btn', 'btn-primary');
+                nextButton.onclick = () => {
+                    currentPage++;
+                    recupListMP();
+                };
+                paginationContainer.appendChild(nextButton);
+            }
         }
 
         async function searchButton(event) {
@@ -461,6 +502,7 @@
             document.body.appendChild(form);
             form.submit();
         }
+
         // Fonction pour afficher l'alerte
         function showAlert(message, type) {
             const alertDiv = document.getElementById('alert');
@@ -471,6 +513,7 @@
                 alertDiv.style.display = 'none'; // Masque le div après 3 secondes
             }, 4000);
         }
+
     </script>
 @endsection
 
