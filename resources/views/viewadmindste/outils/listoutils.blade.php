@@ -33,7 +33,7 @@
                                 <form role="form">
                                     <div id="alert" class="alert" style="display: none;"></div><br>
                                     <div class="row clearfix">
-                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="date_acquise">Date d'acquisition :</label>
                                                 <div class="form-line">
@@ -42,6 +42,8 @@
                                                         class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="utilisateur">Utilisateur :</label>
                                                 <div class="form-line">
@@ -49,6 +51,8 @@
                                                         placeholder="Mot clé..." class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="etats">Etat :</label>
                                                 <div class="form-line">
@@ -58,7 +62,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="reference"> Référence :</label>
                                                 <div class="form-line">
@@ -67,6 +71,8 @@
                                                         class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="cat_outil">Catégorie d'outil :</label>
                                                 <div class="form-line">
@@ -74,6 +80,8 @@
                                                         placeholder="Mot clé..." class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="outils">Outil :</label>
                                                 <div class="form-line">
@@ -82,19 +90,19 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-12 text-center">
-                                            <button onclick="searchButton(event)"
-                                                class="btn btn-info btn-md">Rechercher</button>
-                                        </div>
                                     </div>
-                                    <br>
-                                    <div>
-                                        <button type="button" class="btn btn-danger"
+                                    <div class="row clearfix">
+                                        <div class="justify-content-center">
+                                            <button type="button" class="btn btn-secondary"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                onclick="paramrech('pdf')">PDF Exporter</button>
+                                            <button type="button" class="btn btn-gris"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                onclick="paramrech('xlsx')">EXCEL Exporter</button>
+                                            <button onclick="searchButton(event)"
                                             style="margin-left: 25px; margin-bottom: 0px;"
-                                            onclick="paramrech('pdf')">PDF</button>
-                                        <button type="button" class="btn btn-success"
-                                            style="margin-left: 25px; margin-bottom: 0px;"
-                                            onclick="paramrech('xlsx')">XLSX</button>
+                                                class="btn btn-primary btn-md">Rechercher</button>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -465,7 +473,7 @@
             }
         }
 
-        async function getdetail(id, outil, categorie) {            
+        async function getdetail(id, outil, categorie) {
             document.getElementById('infodetail').innerHTML = "Caractéritiques de :" + outil + " : <br><br>";
             try {
                 let response = await fetch("{{ route('GDOS') }}?cat=" + categorie + "&id=" + id, {
@@ -908,7 +916,7 @@
                     let data = await response.json();
                     Gliste = data.list;
                     afficherDonnees(data.list);
-                    searchPerformed = true; 
+                    searchPerformed = true;
                 } else {
                     throw new Error("Erreur lors de la récupération des données: " + response.status);
                 }
@@ -943,7 +951,7 @@
                         '<i class="material-icons">gps_fixed</i></button>' :
                         '') +
                     '</td>' +
-                    '<td class="d-flex justify-content-between align-items-center">' +
+                    '<td style="align-items: center; padding: 8px; justify-content: space-between;margin-left: 20px;">' +
                     ((currentline["userO"] == null || currentline["userO"] == '') ?
                         (sessionAffecterOutils ?
                             '<button type="button" title="Affecter" class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light" data-toggle="modal" data-target="#affecter" ' +
@@ -973,7 +981,8 @@
                         '<button type="button" title="Détails"' +
                         ' class="btn btn-primary btn-circle btn-xs  margin-bottom-10 waves-effect waves-light"' +
                         ' data-toggle="modal" data-target="#details" ' +
-                        'onClick="getdetail(\'' + currentline["id"] + '\',\'' + currentline["nameoutils"] + '\',\'' + currentline["categorie"] + '\')">' +
+                        'onClick="getdetail(\'' + currentline["id"] + '\',\'' + currentline["nameoutils"] +
+                        '\',\'' + currentline["categorie"] + '\')">' +
                         '<i class="material-icons">book</i>' +
                         '</button>' :
                         '') +

@@ -2425,7 +2425,7 @@
                     "email": "patrick@spartner.nl"
                 }
             ],
-            "description": "Supercharged Excel exports and imports in Laravel",
+            "description": "Supercharged EXCEL Exporters and imports in Laravel",
             "keywords": [
                 "PHPExcel",
                 "batch",

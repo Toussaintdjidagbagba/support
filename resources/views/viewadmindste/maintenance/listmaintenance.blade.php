@@ -49,7 +49,7 @@
                                 <form role="form">
                                     <div id="alert" class="alert" style="display: none;"></div><br>
                                     <div class="row clearfix">
-                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="periodedebut_r">Du :</label>
                                                 <div class="form-line">
@@ -58,23 +58,8 @@
                                                         class="form-control filter-input-width">
                                                 </div>
                                             </div>
-                                            <div class="input-group">
-                                                <label for="technicien_r">Technicien :</label>
-                                                <div class="form-line">
-                                                    <input type="search" name="technicien_r" id="technicien_r"
-                                                        placeholder="Mot clé..." class="form-control filter-input-width">
-                                                </div>
-                                            </div>
-                                            <div class="input-group">
-                                                <label for="avis_r">Avis :</label>
-                                                <div class="form-line">
-                                                    <input type="search" name="avis_r" id="avis_r"
-                                                        placeholder="Mot clé..." class="form-control filter-input-width">
-                                                </div>
-                                            </div>
                                         </div>
-
-                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="periodefin_r"> au :</label>
                                                 <div class="form-line">
@@ -83,6 +68,26 @@
                                                         class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
+                                            <div class="input-group">
+                                                <label for="technicien_r">Technicien :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="technicien_r" id="technicien_r"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="cols">
+                                            <div class="input-group">
+                                                <label for="avis_r">Avis :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="avis_r" id="avis_r"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="etat_r">Etat :</label>
                                                 <div class="form-line">
@@ -90,6 +95,8 @@
                                                         placeholder="Mot clé..." class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="outil_r">Outils :</label>
                                                 <div class="form-line">
@@ -98,19 +105,19 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-12 text-center">
-                                            <button onclick="searchButton(event)"
-                                                class="btn btn-info btn-md">Rechercher</button>
-                                        </div>
                                     </div>
-                                    <br>
-                                    <div>
-                                        <button type="button" class="btn btn-danger"
+                                    <div class="row clearfix">
+                                        <div class="justify-content-center">
+                                            <button type="button" class="btn btn-secondary"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                onclick="paramrech('pdf')">PDF Exporter</button>
+                                            <button type="button" class="btn btn-gris"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                onclick="paramrech('xlsx')">EXCEL Exporter</button>
+                                            <button onclick="searchButton(event)"
                                             style="margin-left: 25px; margin-bottom: 0px;"
-                                            onclick="paramrech('pdf')">PDF</button>
-                                        <button type="button" class="btn btn-success"
-                                            style="margin-left: 25px; margin-bottom: 0px;"
-                                            onclick="paramrech('xlsx')">XLSX</button>
+                                                class="btn btn-primary btn-md">Rechercher</button>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -120,7 +127,6 @@
             </div>
         </div>
         <div class="row clearfix">
-
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="card">
                     <div class="header">
@@ -349,7 +355,7 @@
                     '<td>' + currentline["usersL"] + '</td>' +
                     '<td>' + currentline["etat"] + '</td>' +
                     '<td>' + currentline["commentaireinf"] + '</td>' +
-                    '<td class="d-flex justify-content-between align-items-center">' +
+                    '<td style="align-items: center; padding: 8px; justify-content: space-between;margin-left: 20px;">' +
                     (sessionDetailMaint ?
                         '<button type="button" title="Signature" data-toggle="modal" data-target="#signature" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light" ' +
                         'onClick="setdetailmaintenance(\'' + currentline["detailjson"] + '\')">' +
@@ -419,7 +425,7 @@
                     let data = await response.json();
                     Gliste = data.list;
                     afficherDonnees(data.list);
-                    searchPerformed = true; 
+                    searchPerformed = true;
                 } else {
                     throw new Error("Erreur lors de la récupération des données: " + response.status);
                 }

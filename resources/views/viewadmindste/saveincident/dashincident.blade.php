@@ -33,7 +33,7 @@
                                 <form role="form">
                                     <div id="alert" class="alert" style="display: none;"></div><br>
                                     <div class="row clearfix">
-                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="dateEmission">Date Emission :</label>
                                                 <div class="form-line">
@@ -42,6 +42,8 @@
                                                         class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="hierarchie">Hiérarchie :</label>
                                                 <div class="form-line">
@@ -49,6 +51,8 @@
                                                         placeholder="Mot clé..." class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="desc">Description :</label>
                                                 <div class="form-line">
@@ -58,7 +62,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="modules">Modules :</label>
                                                 <div class="form-line">
@@ -66,6 +70,8 @@
                                                         placeholder="Mot clé..." class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="categorie">Catégorie :</label>
                                                 <div class="form-line">
@@ -74,19 +80,19 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-12 text-center">
-                                            <button onclick="searchButton(event)"
-                                                class="btn btn-info btn-md">Rechercher</button>
-                                        </div>
                                     </div>
-                                    <br>
-                                    <div>
-                                        <button type="button" class="btn btn-danger"
-                                            style="margin-left: 25px; margin-bottom: 0px;"
-                                            onclick="paramrech('pdf')">PDF</button>
-                                        <button type="button" class="btn btn-success"
-                                            style="margin-left: 25px; margin-bottom: 0px;"
-                                            onclick="paramrech('xlsx')">XLSX</button>
+                                    <div class="row clearfix">
+                                        <div class="justify-content-center">
+                                            <button type="button" class="btn btn-secondary"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                onclick="paramrech('pdf')">PDF Exporter</button>
+                                            <button type="button" class="btn btn-gris"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                onclick="paramrech('xlsx')">EXCEL Exporter</button>
+                                            <button onclick="searchButton(event)"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                class="btn btn-primary btn-md">Rechercher</button>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -127,7 +133,9 @@
                                 <tbody id="data-tbody">
                                 </tbody>
                             </table>
-                            {{-- {{ $list->links() }} --}}
+                            <div id="pagination" class="pagination-container">
+
+                            </div>
                         </div>
 
                     </div>
@@ -137,6 +145,13 @@
         </div>
     </div>
     <script>
+        const sessionUpdateEtat = "{{ in_array('update_etat', session('auto_action')) }}";
+        const sessionUpdateIncie = "{{ in_array('update_incie', session('auto_action')) }}";
+        const sessionAffecIncie = "{{ in_array('affec_incie', session('auto_action')) }}";
+        const sessionViewDocIncie = "{{ in_array('viewdoc_incie', session('auto_action')) }}";
+        const sessionDeleteIncie = "{{ in_array('delete_incie', session('auto_action')) }}";
+        const sessionPrintPdfIncie = "{{ in_array('print_maint_pdf', session('auto_action')) }}";
+
         const sessionUpdate = "{{ in_array('update_incident', session('auto_action')) }}";
         const sessionDelete = "{{ in_array('delete_incident', session('auto_action')) }}";
         const router = {
@@ -144,7 +159,11 @@
             Updates: "{{ route('MTI', ':id') }}",
         }
         let Gliste;
-        let searchPerformed = false; 
+        let searchPerformed = false;
+
+        let itemsPerPage = 4;
+        let currentPage = 1;
+        let totalItems = 0;
 
         function getid(id) {
             document.getElementById("anoid").value = id;
@@ -314,10 +333,10 @@
                     let data = await response.json();
                     let list = data.list;
                     console.log(list);
-                    
+
                     Gliste = data.list;
                     afficherDonnees(list);
-                    searchPerformed = true; 
+                    searchPerformed = true;
                 } else {
                     throw new Error("Erreur lors de la récupération des données: " + response.status);
                 }
@@ -327,7 +346,6 @@
         }
 
         async function recupListIncident() {
-            console.log("Toutes les ressources de la page sont chargées, la fonction est exécutée.");
 
             try {
                 let response = await fetch("{{ route('GIDTA') }}", {
@@ -345,7 +363,9 @@
                     }
 
                     data = await response.json();
+                    totalItems = data.list.length;
                     afficherDonnees(data.list);
+                    paginationListe(totalItems);
                 }
             } catch (error) {
                 console.error("Erreur attrapée:", error);
@@ -356,12 +376,16 @@
             const tbody = document.getElementById('data-tbody');
             tbody.innerHTML = '';
 
-            if (list.length === 0) {
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const currentListes = list.slice(start, end);
+
+            if (currentListes.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="9"><center>Pas d'incident enregistrés !!!</center></td></tr>`;
                 return;
             }
 
-            list.forEach((currentline, index, arry) => {
+            currentListes.forEach((currentline, index, arry) => {
 
                 const contenu = '<tr>' +
                     '<th><span class="co-name">' + currentline["DateEmission"] + '</span></th>' +
@@ -391,22 +415,79 @@
                         ) :
                         '') +
                     '</td>' +
-                    '<td>' +
-                    (currentline["statut"] !== 1 ? (sessionUpdate ?
-                            '<button type="button" title="Modifier" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
-                            '<a href="' + router.Updates.replace(':id', currentline["id"]) +
-                            '" style="color:white;"><i class="material-icons">system_update_alt</i></a>' +
-                            '</button>' : ''
-                        ) + (sessionDelete ?
-                            '<button type="button" title="Supprimer" style="color:white;" onclick="Delete(event, \'' +
-                            router.Deletes.replace(':id', currentline["id"]) +
-                            '\')" class="btn btn-danger btn-circle btn-xs margin-bottom-10 waves-effect waves-light"><i class="material-icons">delete_sweep</i></button>' :
-                            '') :
-                        '') +
+                    '<td style="align-items: center; padding: 8px; justify-content: space-between;margin-left: 20px;">' +
+                    (((currentline["etat"] === "En attente") && (currentline["etat"] != "Incident résolu")) ?
+                        (currentline["statut"] !== 1 ? (sessionUpdate ?
+                                '<button type="button" title="Modifier" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
+                                '<a href="' + router.Updates.replace(':id', currentline["id"]) +
+                                '" style="color:white;"><i class="material-icons">system_update_alt</i></a>' +
+                                '</button>' : ''
+                            ) + (sessionDelete ?
+                                '<button type="button" title="Supprimer" style="color:white;" onclick="Delete(event, \'' +
+                                router.Deletes.replace(':id', currentline["id"]) +
+                                '\')" class="btn btn-danger btn-circle btn-xs margin-bottom-10 waves-effect waves-light"><i class="material-icons">delete_sweep</i></button>' :
+                                '') :
+                            '') : '') +
                     '</td>' +
                     '</tr>';
                 tbody.innerHTML += contenu;
             });
+        }
+
+        function paginationListe(totalItems) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const paginationContainer = document.getElementById('pagination');
+
+            paginationContainer.innerHTML = ''; 
+
+            if (currentPage > 1) {
+                const prevButton = document.createElement('button');
+                prevButton.textContent = 'Précédent';
+                prevButton.classList.add('btn', 'btn-secondary', 'mr-2'); 
+                prevButton.onclick = () => {
+                    currentPage--;
+                    recupListIncident();
+                };
+                paginationContainer.appendChild(prevButton);
+            }
+
+            if (currentPage < totalPages) {
+                const nextButton = document.createElement('button');
+                nextButton.textContent = 'Suivant';
+                nextButton.classList.add('btn', 'btn-primary'); 
+                nextButton.onclick = () => {
+                    currentPage++;
+                    recupListIncident();
+                };
+                paginationContainer.appendChild(nextButton);
+            }
+        }
+
+        function getdeclaind(event, format) {
+            event.preventDefault();
+            var dataT = event.currentTarget;
+
+            var idlin = dataT.getAttribute('data-Id') ?? "";
+            console.log(idlin);
+
+            var form = document.createElement('form');
+            form.method = 'GET';
+            form.action = '{{ route('export.declind') }}';
+
+            var inputId = document.createElement('input');
+            inputId.type = 'hidden';
+            inputId.name = 'idlin';
+            inputId.value = idlin;
+            form.appendChild(inputId);
+
+            var inputFormat = document.createElement('input');
+            inputFormat.type = 'hidden';
+            inputFormat.name = 'format';
+            inputFormat.value = format;
+            form.appendChild(inputFormat);
+
+            document.body.appendChild(form);
+            form.submit();
         }
 
         function paramrech(format) {

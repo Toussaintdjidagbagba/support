@@ -33,40 +33,17 @@
                                 <form role="form">
                                     <div id="alert" class="alert" style="display: none;"></div><br>
                                     <div class="row clearfix">
-                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="cols">
                                             <div class="input-group">
-                                                <label for="periodedebut_r">Du :</label>
+                                                <label for="periodedebut_r">Le :</label>
                                                 <div class="form-line">
                                                     <input type="date" name="periodedebut_r" id="periodedebut_r"
                                                         placeholder="Date d'émission..."
                                                         class="form-control filter-input-width">
                                                 </div>
                                             </div>
-                                            <div class="input-group">
-                                                <label for="technicien_r">Technicien :</label>
-                                                <div class="form-line">
-                                                    <input type="search" name="technicien_r" id="technicien_r"
-                                                        placeholder="Mot clé..." class="form-control filter-input-width">
-                                                </div>
-                                            </div>
-                                            <div class="input-group">
-                                                <label for="cause_r">Cause :</label>
-                                                <div class="form-line">
-                                                    <input type="search" name="cause_r" id="cause_r"
-                                                        placeholder="Mot clé..." class="form-control filter-input-width">
-                                                </div>
-                                            </div>
-
-                                            <div class="input-group">
-                                                <label for="resultat_r">Resultat :</label>
-                                                <div class="form-line">
-                                                    <input type="search" name="resultat_r" id="resultat_r"
-                                                        placeholder="Mot clé..." class="form-control filter-input-width">
-                                                </div>
-                                            </div>
                                         </div>
-
-                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="periodefin_r"> à :</label>
                                                 <div class="form-line">
@@ -75,6 +52,35 @@
                                                         class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
+                                            <div class="input-group">
+                                                <label for="technicien_r">Technicien :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="technicien_r" id="technicien_r"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="cols">
+                                            <div class="input-group">
+                                                <label for="cause_r">Cause :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="cause_r" id="cause_r"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="cols">
+                                            <div class="input-group">
+                                                <label for="resultat_r">Resultat :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="resultat_r" id="resultat_r"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="etat_r">Etat :</label>
                                                 <div class="form-line">
@@ -82,6 +88,8 @@
                                                         placeholder="Mot clé..." class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="outil_r">Outils :</label>
                                                 <div class="form-line">
@@ -89,7 +97,8 @@
                                                         placeholder="Mot clé..." class="form-control filter-input-width">
                                                 </div>
                                             </div>
-
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="diagnostique_r">Diagnostique :</label>
                                                 <div class="form-line">
@@ -98,19 +107,19 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-12 text-center">
-                                            <button onclick="searchButton(event)"
-                                                class="btn btn-info btn-md">Rechercher</button>
-                                        </div>
                                     </div>
-                                    <br>
-                                    <div>
-                                        <button type="button" class="btn btn-danger"
+                                    <div class="row clearfix">
+                                        <div class="justify-content-center">
+                                            <button type="button" class="btn btn-secondary"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                onclick="paramrech('pdf')">PDF Exporter</button>
+                                            <button type="button" class="btn btn-gris"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                onclick="paramrech('xlsx')">EXCEL Exporter</button>
+                                            <button onclick="searchButton(event)"
                                             style="margin-left: 25px; margin-bottom: 0px;"
-                                            onclick="paramrech('pdf')">PDF</button>
-                                        <button type="button" class="btn btn-success"
-                                            style="margin-left: 25px; margin-bottom: 0px;"
-                                            onclick="paramrech('xlsx')">XLSX</button>
+                                                class="btn btn-primary btn-md">Rechercher</button>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -625,7 +634,7 @@
                         '<i class="material-icons">gps_fixed</i></button>' :
                         '') +
                     '</td>' +
-                    '<td class="d-flex justify-content-between align-items-center">' +
+                    '<td style="align-items: center; padding: 8px; justify-content: space-between;margin-left: 20px;">' +
                     (sessionPdfMaint ?
                         '<button type="button" title="PDF" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light" ' +
                         'onclick="getmaintcur(event, \'pdf\')" data-Id="' + currentline["id"] + '">' +

@@ -1,6 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" >
     <head>
         <meta charset="UTF-8">
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -129,7 +128,7 @@
                                     <li>
                                         @if ($libelle->route != '#')
                                             <a href="{{ route($libelle->route) }}"><i class="large material-icons"
-                                                    style="color:#001e60">home</i><span>{{ $libelle->libelleMenu }}</span></a>
+                                                    style="color:#001e60"> {{ $libelle->iconee}} </i><span>{{ $libelle->libelleMenu }}</span></a>
                                         @endif
                                     </li>
                                 @endif
@@ -147,7 +146,7 @@
                                     <li>
                                         @if ($libelle->route != '#')
                                             <a href="{{ route($libelle->route) }}"><i class="large material-icons"
-                                                    style="color:#001e60">insert_chart</i><span>{{ $libelle->libelleMenu }}</span></a>
+                                                    style="color:#001e60">{{ $libelle->iconee}}</i><span>{{ $libelle->libelleMenu }}</span></a>
                                         @endif
                                     </li>
                                 @endif

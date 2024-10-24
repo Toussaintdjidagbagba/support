@@ -11201,6 +11201,7 @@ html.ie11 .bs-searchbox .form-control {
   background-color: #f44336 !important;
   color: white !important;
 }
+
 /* Accordion */
 
 .filter-toggle {
@@ -11266,4 +11267,55 @@ html.ie11 .bs-searchbox .form-control {
   .col-xs-12 {
     width: 100%;
   }
+.cols {
+  flex: 1 1 20%;
+  box-sizing: border-box;
+  padding: 8px;
+}
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.cols {
+  flex: 1 1 10%;
+  box-sizing: border-box;
+  padding: 8px;
+}
+
+.colsc {
+  flex: 1 1 20%;
+  box-sizing: border-box;
+  
+}
+#pagination {
+  display: flex;
+  justify-content: right;
+  margin: 20px 0;
+}
+
+#pagination button {
+  padding: 10px 15px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#pagination button:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
 }
