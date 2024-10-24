@@ -159,11 +159,9 @@
                                         <th data-priority="6">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tableContente">
-
-                                </tbody>
+                                <tbody id="tableContente"> </tbody>
                             </table>
-                            {{-- {{ $list->links() }} --}}
+                            <div id="pagination" class="pagination-container"> </div>
                         </div>
 
                     </div>
@@ -190,6 +188,9 @@
                 Updates: "{{ route('MTIA', ':id') }}",
             }
             let serve;
+            let itemsPerPage = 4;
+            let currentPage = 1;
+            let totalItems = 0;
 
             function paramincident(format) {
                 var form = document.createElement('form');
@@ -374,7 +375,6 @@
             }
 
             async function recupListGestionIncident() {
-                console.log("Toutes les ressources de la page sont chargées, la fonction est exécutée.");
 
                 try {
                     let response = await fetch("{{ route('GIADTA') }}", {
@@ -394,8 +394,9 @@
                         data = await response.json();
                         // console.log(data.list);
                         serve = data.serv;
-                        console.log(serve);
+                        totalItems = data.list.length;
                         afficherDonnees(data.list);
+                        paginationListe(totalItems);
                     }
                 } catch (error) {
                     console.error("Erreur attrapée:", error);
@@ -406,12 +407,16 @@
                 const tbody = document.getElementById('tableContente');
                 tbody.innerHTML = '';
 
-                if (list.length === 0) {
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const currentListes = list.slice(start, end);
+
+                if (currentListes.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="9"><center>Pas d'incident enregistrés !!!</center></td></tr>`;
                     return;
                 }
-                console.log(list);
-                list.forEach((currentline, index, arry) => {
+
+                currentListes.forEach((currentline, index, arry) => {
                     const contenu = '<tr>' +
                         '<th><span class="co-name">' + currentline["DateEmission"] + '</span></th>' +
                         '<td>' + currentline["Module"] + '</td>' +
@@ -476,6 +481,35 @@
                         '</tr>';
                     tbody.innerHTML += contenu;
                 });
+            }
+
+            function paginationListe(totalItems) {
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                const paginationContainer = document.getElementById('pagination');
+
+                paginationContainer.innerHTML = '';
+
+                if (currentPage > 1) {
+                    const prevButton = document.createElement('button');
+                    prevButton.textContent = 'Précédent';
+                    prevButton.classList.add('btn', 'btn-secondary', 'mr-2');
+                    prevButton.onclick = () => {
+                        currentPage--;
+                        recupListGestionIncident();
+                    };
+                    paginationContainer.appendChild(prevButton);
+                }
+
+                if (currentPage < totalPages) {
+                    const nextButton = document.createElement('button');
+                    nextButton.textContent = 'Suivant';
+                    nextButton.classList.add('btn', 'btn-primary');
+                    nextButton.onclick = () => {
+                        currentPage++;
+                        recupListGestionIncident();
+                    };
+                    paginationContainer.appendChild(nextButton);
+                }
             }
 
             function getetat(id) {

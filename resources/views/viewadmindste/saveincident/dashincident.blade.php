@@ -133,7 +133,9 @@
                                 <tbody id="data-tbody">
                                 </tbody>
                             </table>
-                            {{-- {{ $list->links() }} --}}
+                            <div id="pagination" class="pagination-container">
+
+                            </div>
                         </div>
 
                     </div>
@@ -158,6 +160,10 @@
         }
         let Gliste;
         let searchPerformed = false;
+
+        let itemsPerPage = 10;
+        let currentPage = 1;
+        let totalItems = 0;
 
         function getid(id) {
             document.getElementById("anoid").value = id;
@@ -340,7 +346,6 @@
         }
 
         async function recupListIncident() {
-            console.log("Toutes les ressources de la page sont chargées, la fonction est exécutée.");
 
             try {
                 let response = await fetch("{{ route('GIDTA') }}", {
@@ -358,7 +363,9 @@
                     }
 
                     data = await response.json();
+                    totalItems = data.list.length;
                     afficherDonnees(data.list);
+                    paginationListe(totalItems);
                 }
             } catch (error) {
                 console.error("Erreur attrapée:", error);
@@ -369,12 +376,16 @@
             const tbody = document.getElementById('data-tbody');
             tbody.innerHTML = '';
 
-            if (list.length === 0) {
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const currentListes = list.slice(start, end);
+
+            if (currentListes.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="9"><center>Pas d'incident enregistrés !!!</center></td></tr>`;
                 return;
             }
 
-            list.forEach((currentline, index, arry) => {
+            currentListes.forEach((currentline, index, arry) => {
 
                 const contenu = '<tr>' +
                     '<th><span class="co-name">' + currentline["DateEmission"] + '</span></th>' +
@@ -421,6 +432,35 @@
                     '</tr>';
                 tbody.innerHTML += contenu;
             });
+        }
+
+        function paginationListe(totalItems) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const paginationContainer = document.getElementById('pagination');
+
+            paginationContainer.innerHTML = ''; 
+
+            if (currentPage > 1) {
+                const prevButton = document.createElement('button');
+                prevButton.textContent = 'Précédent';
+                prevButton.classList.add('btn', 'btn-secondary', 'mr-2'); 
+                prevButton.onclick = () => {
+                    currentPage--;
+                    recupListIncident();
+                };
+                paginationContainer.appendChild(prevButton);
+            }
+
+            if (currentPage < totalPages) {
+                const nextButton = document.createElement('button');
+                nextButton.textContent = 'Suivant';
+                nextButton.classList.add('btn', 'btn-primary'); 
+                nextButton.onclick = () => {
+                    currentPage++;
+                    recupListIncident();
+                };
+                paginationContainer.appendChild(nextButton);
+            }
         }
 
         function getdeclaind(event, format) {

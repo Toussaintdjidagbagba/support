@@ -11290,3 +11290,32 @@ html.ie11 .bs-searchbox .form-control {
   box-sizing: border-box;
   
 }
+#pagination {
+  display: flex;
+  justify-content: right;
+  margin: 20px 0;
+}
+
+#pagination button {
+  padding: 10px 15px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#pagination button:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
