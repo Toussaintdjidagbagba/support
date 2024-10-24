@@ -3,12 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fiche de Paie Conseiller Commercial</title>
+    <title></title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+
+        @media print {
+            .container {
+                page-break-before: always;
+                padding-top: 150px; /* Ajustez cette valeur selon vos besoins */
+            }
         }
 
         body {
@@ -25,7 +32,7 @@
             margin: 0 auto;
             background-color: #fff;
             padding: 20px;
-            margin-top: 45px;
+            margin-top: -80px;
             font-size: 12px;
             display: flex;
             flex-direction: column;
@@ -47,7 +54,6 @@
         }
 
         .header {
-            position: fixed;
             top: 0;
             left: 0;
             right: 0;
@@ -55,6 +61,7 @@
             background-color: #fff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             margin-top: 30px;
+            z-index: 100;
         }
 
         .header .logo, .footer .logo-footer {
@@ -181,6 +188,7 @@
             font-weight: 300;
         }
 
+
     </style>
 </head>
 <body>
@@ -263,6 +271,48 @@
                 </div>
             </div>
             
+            <br>
+            <table class="large">
+                <thead>
+                    <tr>
+                        <th>Avis Utilisateur </th>
+                        <th>Avis Technicien</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($list as $maint)
+                        <tr>
+                            <td style="height: 40px;">
+                                {{$maint->avisuser}}
+                            </td>
+                            <td style="height: 40px;">
+                                {{$maint->avisinf}}
+                            </td> 
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table><br>
+
+            <table class="large">
+                <thead>
+                    <tr>
+                        <th>Observation de l'utilisateur</th>
+                        <th>Observation du Technicien</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($list as $maint)
+                        <tr>
+                            <td style="height: 40px;">
+                                {{$maint->commentaireuser}}
+                            </td>
+                            <td style="height: 40px;">
+                                {{$maint->commentaireinf}}
+                            </td> 
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table><br>
 
             <table class="large">
                 <thead>
@@ -279,26 +329,6 @@
                             </td>
                             <td style="height: 40px;">
                                 {{ $inc->usersT}}
-                            </td> 
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table><br>
-            <table class="large">
-                <thead>
-                    <tr>
-                        <th>Valeur de l'emetteur</th>
-                        <th>Valeur du Technicien</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($list as $maint)
-                        <tr>
-                            <td style="height: 40px;">
-                                {{$maint->usersL}}
-                            </td>
-                            <td style="height: 40px;">
-                                {{$maint->usersT}}
                             </td> 
                         </tr>
                     @endforeach

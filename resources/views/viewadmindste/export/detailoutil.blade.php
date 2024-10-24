@@ -25,7 +25,7 @@
             margin: 0 auto;
             background-color: #fff;
             padding: 20px;
-            margin-top: 100px;
+            margin-top: 70px;
             font-size: 13px;
             display: flex;
             flex-direction: column;
@@ -158,12 +158,18 @@
     <div class="header">
         <div class="logo">
             <?php
-            $path = public_path($entete->logo);
-            $type = pathinfo($path, PATHINFO_EXTENSION);
-            $data = file_get_contents($path);
-            $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+            $path = public_path('documents/entete/' . $entete->logo);
+            if (file_exists($path)) {
+                $type = pathinfo($path, PATHINFO_EXTENSION);
+                $data = file_get_contents($path);
+                $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
             ?>
-            <img src="{{ $base64 }}" width="100" height="100">
+                <img src="{{ $base64 }}" width="100" height="100">
+            <?php
+            } else {
+                echo "Image non trouvée.";
+            }
+            ?>
         </div>
         <div class="title">{{ $entete->titre }}</div>
         <div class="info">
@@ -174,18 +180,21 @@
     <!-- Body -->
     <div class="container">
         <div class="body-content">
-            <h4>Détails des outils</h4>
-    
+            <h3>Détails des outils</h3><br>
+
             <div class="details-section">
-                <h5>Caractéristiques de {{ $outil->nameoutils}} :</h5><br>
+            
+                <h4>Caractéristiques de {{ $outil->nameoutils}} :</h4><br>
+               
                 <div class="details-grid">
-                    @foreach($details as $detail)
-                    <div>
-                        <strong>{{ $detail->libelle }}</strong>
-                        <p>{{ isset($carct[$detail->code]) ? $carct[$detail->code] : 'N/A' }}</p>
-                    </div>
-                @endforeach
-                    
+                    <table>
+                        @foreach($details as $detail)
+                            <tr>
+                                <td class="ser"><strong>{{ $detail->libelle }}</strong></td>
+                                <td style="width: 400px; height:2px;">{{ isset($carct[$detail->code]) ? $carct[$detail->code] : 'N/A' }}</td>
+                            </tr>
+                        @endforeach
+                    </table>
                 </div>
             </div>
 

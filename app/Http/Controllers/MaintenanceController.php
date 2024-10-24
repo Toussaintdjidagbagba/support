@@ -271,18 +271,58 @@ class MaintenanceController extends Controller
     {
         try {
 
-            //$list = Gestionmaintenance::where("id", $request->ideprev)->get(); 
+            $list = DB::table('gestionmaintenances as gm')
+            ->leftJoin('outils as o', 'o.id', '=', 'gm.outil')
+            ->leftJoin('maintenances as m', 'm.id', '=', 'gm.maintenance')
+            ->leftJoin('utilisateurs as t', 't.idUser', '=', 'm.user')
+            ->leftJoin('categorieoutils as co', 'co.id', '=', 'o.categorie')
+            ->leftJoin('utilisateurs as u', 'gm.action', '=', 'u.idUser')
+            ->leftJoin('services as s', 'm.service', '=', 's.id')
+            ->select(
+                'gm.id as gestion_id',
+                'm.periodedebut as Deb',
+                'm.periodefin as Fin',
+                'm.user',
+                'o.id as id_outil',
+                'o.otherjson as json',
+                'o.categorie as cat',
+                'co.libelle as co_libelle',
+                'gm.detailjson',
+                'gm.outil as gm_outil',
+                DB::raw('COALESCE(CONCAT(m.periodedebut, " au ", m.periodefin), "Aucune période") as periode'),
+                DB::raw('COALESCE(gm.commentaireuser, "Aucune Obs") as commentaireuser'),
+                DB::raw('COALESCE(gm.commentaireinf, "Aucune Obs") as commentaireinf'),
+                DB::raw('COALESCE(gm.avisuser, "Pas d\'avis") as avisuser'),
+                DB::raw('COALESCE(gm.avisinf, "Pas d\'avis") as avisinf'),
+                DB::raw('COALESCE(gm.etat, "") as etat'),
+                DB::raw('COALESCE(o.nameoutils, "") as nameoutils'),
+                DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersL'),
+                DB::raw('COALESCE(CONCAT(t.nom, " ", t.prenom), "En attente") as usersT'),
+            )
+            ->where("o.user", session("utilisateur")->idUser)
+            ->where("gm.id", $request->ideprev)
+            ->get();
+
+            // Récupérer le premier élément de la collection(outils)
+            $item = $list->first();
+            if ($item) {
+                $carct = json_decode($item->json, true); // On décode en tableau associatif
+                $details = ChampsCategorieOutil::where("categoutil", $item->cat)->get();
+                //dd($details);
+            } else {
+                dd('Aucun élément trouvé');
+            }  
             
-            $list = Gestionmaintenance::join('maintenances', 'gestionmaintenances.maintenance', '=', 'maintenances.id')
-                    ->join('utilisateurs', 'maintenances.user', '=', 'utilisateurs.idUser')
-                    ->where('gestionmaintenances.id', $request->ideprev)
-                    ->select(
-                        'gestionmaintenances.*', 
-                        'maintenances.*', 
-                        'utilisateurs.nom as user_nom', 
-                        'utilisateurs.prenom as user_prenom'
-                    )
-                    ->get();
+            // $list = Gestionmaintenance::join('maintenances', 'gestionmaintenances.maintenance', '=', 'maintenances.id')
+            //         ->join('utilisateurs', 'maintenances.user', '=', 'utilisateurs.idUser')
+            //         ->where('gestionmaintenances.id', $request->ideprev)
+            //         ->select(
+            //             'gestionmaintenances.*', 
+            //             'maintenances.*', 
+            //             'utilisateurs.nom as user_nom', 
+            //             'utilisateurs.prenom as user_prenom'
+            //         )
+            //         ->get();
 
             $entete = Entete::first(); 
             
@@ -296,7 +336,7 @@ class MaintenanceController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new MaintPrevExecExport($list,$entete);
+                    $pdfExporter = new MaintPrevExecExport($list,$entete,$carct,$details);
                     $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
@@ -304,7 +344,7 @@ class MaintenanceController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="MaintenanceExecutionPreventive_'. $dateExp .'.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new MaintPrevExecExport($list,$entete), 'MaintenanceExecutionPreventive_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new MaintPrevExecExport($list,$entete,$carct,$details), 'MaintenanceExecutionPreventive_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
@@ -597,12 +637,12 @@ class MaintenanceController extends Controller
                 'o.categorie as cat',
                 'co.libelle as co_libelle',
                 'gm.detailjson',
-                'gm.id as gestion_id',
                 'gm.outil as gm_outil',
                 DB::raw('COALESCE(CONCAT(m.periodedebut, " au ", m.periodefin), "Aucune période") as periode'),
                 DB::raw('COALESCE(gm.commentaireuser, "Aucune Obs") as commentaireuser'),
                 DB::raw('COALESCE(gm.commentaireinf, "Aucune Obs") as commentaireinf'),
                 DB::raw('COALESCE(gm.avisuser, "Pas d\'avis") as avisuser'),
+                DB::raw('COALESCE(gm.avisinf, "Pas d\'avis") as avisinf'),
                 DB::raw('COALESCE(gm.etat, "") as etat'),
                 DB::raw('COALESCE(o.nameoutils, "") as nameoutils'),
                 DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersL'),
@@ -861,12 +901,51 @@ class MaintenanceController extends Controller
     public function expmaintcur(Request $request)
     {
         try {
+            $list = DB::table('gestionmaintenance_curatives as gmc')
+            ->leftJoin('outils as o', 'o.id', '=', 'gmc.outil')
+            ->leftJoin('maintenance_curatives as mc', 'mc.id', '=', 'gmc.maintenance')
+            ->leftJoin('utilisateurs as t', 't.idUser', '=', 'mc.user')
+            ->leftJoin('categorieoutils as co', 'co.id', '=', 'o.categorie')
+            ->leftJoin('utilisateurs as u', 'gmc.action', '=', 'u.idUser')
+            ->select(
+                'gmc.id as gestion_id',
+                'mc.periodedebut as Deb',
+                'mc.periodefin as Fin',
+                'mc.user',
+                'o.id as id_outil',
+                'o.otherjson as json',
+                'o.categorie as cat',
+                'co.libelle as co_libelle',
+                'gmc.outil as gmc_outil',
+                DB::raw('COALESCE(CONCAT(mc.periodedebut, " au ", mc.periodefin), "Aucune période") as periode'),
+                DB::raw('COALESCE(gmc.commentaireuser, "Aucune Obs") as commentaireuser'),
+                DB::raw('COALESCE(gmc.commentaireinf, "Aucune Obs") as commentaireinf'),
+                DB::raw('COALESCE(gmc.avisuser, "Pas d\'avis") as avisuser'),
+                DB::raw('COALESCE(gmc.avisinf, "Pas d\'avis") as avisinf'),
+                DB::raw('COALESCE(gmc.etat, "") as etat'),
+                DB::raw('COALESCE(o.nameoutils, "") as nameoutils'),
+                DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersL'),
+                DB::raw('COALESCE(CONCAT(t.nom, " ", t.prenom), "En attente") as usersT'),
+            )
+            ->where("o.user", session("utilisateur")->idUser)
+            ->where("gmc.id", $request->idmcur)
+            ->get();
 
-            $list = GestionmaintenanceCurative::join("outils", "outils.id", "=", "gestionmaintenance_curatives.outil")
-                ->select('gestionmaintenance_curatives.*', 'outils.*', 'gestionmaintenance_curatives.id as gestion_id')
-                ->where("outils.user", session("utilisateur")->idUser)
-                ->where("gestionmaintenance_curatives.id", $request->idmcur)
-                ->get();
+            // Récupérer le premier élément de la collection(outils)
+            $item = $list->first();
+            if ($item) {
+                $carct = json_decode($item->json, true); // On décode en tableau associatif
+                $details = ChampsCategorieOutil::where("categoutil", $item->cat)->get();
+                //dd($details);
+            } else {
+                dd('Aucun élément trouvé');
+            }  
+
+            // $list = GestionmaintenanceCurative::join("outils", "outils.id", "=", "gestionmaintenance_curatives.outil")
+            //     ->select('gestionmaintenance_curatives.*', 'outils.*', 'gestionmaintenance_curatives.id as gestion_id')
+            //     ->where("outils.user", session("utilisateur")->idUser)
+            //     ->where("gestionmaintenance_curatives.id", $request->idmcur)
+            //     ->get();
 
             $entete = Entete::first(); 
 
@@ -880,7 +959,7 @@ class MaintenanceController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new MaintCurrativeExport($list,$entete);
+                    $pdfExporter = new MaintCurrativeExport($list,$entete,$carct,$details);
                     $pdfContent = $pdfExporter->generatePdf();
 
                     return response($pdfContent, 200)
@@ -888,7 +967,7 @@ class MaintenanceController extends Controller
                         ->header('Content-Disposition', 'attachment; filename="MaintenanceCurrative_'. $dateExp .'.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new MaintCurrativeExport($list,$entete), 'MaintenanceCurrative_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new MaintCurrativeExport($list,$entete,$carct,$details), 'MaintenanceCurrative_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);
