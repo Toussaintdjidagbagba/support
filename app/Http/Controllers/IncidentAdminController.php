@@ -95,9 +95,10 @@ class IncidentAdminController extends Controller
         $query->where(function ($q) use ($request) {
             
             if ($request->filled('date_emission')) {
-                $q->orWhere('i.DateEmission', 'like', '%' . htmlspecialchars(trim($request->date_emission)) . '%');
+                $date = htmlspecialchars(trim($request->date_emission));
+                $q->orWhereRaw("DATE_FORMAT(STR_TO_DATE(i.DateEmission, '%d-%m-%Y %H:%i:%s'), '%Y-%m-%d') = ?", [$date]);
             }
-
+            
             if ($request->filled('hierarchie')) {
                 $q->orWhere('h.libelle', 'like', '%' . htmlspecialchars(trim($request->hierarchie)) . '%');
             }
@@ -111,9 +112,10 @@ class IncidentAdminController extends Controller
             }
 
             if ($request->filled('date_resolution')) {
-                $q->orWhere('i.DateResolue', 'like', '%' . htmlspecialchars(trim($request->date_resolution)) . '%');
+                $date = htmlspecialchars(trim($request->date_resolution));
+                $q->orWhereRaw("DATE_FORMAT(STR_TO_DATE(i.DateResolue, '%d-%m-%Y %H:%i:%s'), '%Y-%m-%d') = ?", [$date]);
             }
-
+            
             if ($request->filled('affecter')) {
                 $q->orWhere(DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "")'), 'like', '%' . htmlspecialchars(trim($request->affecter)) . '%');
             }
@@ -341,7 +343,7 @@ class IncidentAdminController extends Controller
                     [
                         "etat" => $request->etat,
                         "statut" => 1,
-                        "DateResolue" => date("Y-m-d H:i:s"),
+                        "DateResolue" => date("d-m-Y H:i:s"),
                     ]
                 );
 

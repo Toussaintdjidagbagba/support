@@ -48,11 +48,12 @@ class IncidentController extends Controller
         )
             ->where("i.Emetteur", session("utilisateur")->idUser);
 
-            // Recherche
+        // Recherche
         $query->where(function ($q) use ($request) {
             
             if ($request->filled('date_emission')) {
-                $q->orWhere('i.DateEmission', 'like', '%' . htmlspecialchars(trim($request->date_emission)) . '%');
+                $date = htmlspecialchars(trim($request->date_emission));
+                $q->orWhereRaw("DATE_FORMAT(STR_TO_DATE(i.DateEmission, '%d-%m-%Y %H:%i:%s'), '%Y-%m-%d') = ?", [$date]);
             }
 
             if ($request->filled('hierarchie')) {
@@ -82,12 +83,10 @@ class IncidentController extends Controller
             
             $timestampEmission = strtotime($incident->created_at);
             $timestampLimite = $timestampEmission + $secondesDelai;
-            
-            $timestampNow = time();
-            
+            $timestampNow = strtotime(date('Y-m-d H:i:s'));
             $tempsRestant = $timestampLimite - $timestampNow;
+
             $etat = Incident::where('id', $incident->id)->first(); // Vérification de l'état actuel de l'incident
-            
             // Formatage du temps restant
             $tempsRestantFormate = "Non défini";
             if ($etat) {
@@ -95,10 +94,10 @@ class IncidentController extends Controller
                     $tempsRestantFormate = "Prise en compte";
                 } else {
                     if ($tempsRestant > 0) {
-                        $heuresRestantes = floor($tempsRestant / 3600);
+                        $heuresRestantes = floor($tempsRestant / 3600) - 1;
                         $minutesRestantes = floor(($tempsRestant % 3600) / 60);
                         $secondesRestantes = $tempsRestant % 60;
-                        $tempsRestantFormate = sprintf('%02d h', $heuresRestantes);
+                        $tempsRestantFormate =  sprintf('%02d h %02d m %02d s', $heuresRestantes, $minutesRestantes, $secondesRestantes);
                     } else {
                         $tempsRestantFormate = "Temps écoulé";
                     }
@@ -135,7 +134,6 @@ class IncidentController extends Controller
             if (!in_array("add_incident", session("auto_action"))) {
                 return view("vendor.error.649");
             } else {
-
                 $messages = [
                     'module.required' => 'Veuillez saisire le module.',
                     'cat.required' => 'La catégorie est requis.',

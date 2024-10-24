@@ -33,7 +33,7 @@
                                 <form role="form">
                                     <div id="alert" class="alert" style="display: none;"></div><br>
                                     <div class="row clearfix">
-                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="dateEmission">Date Emission :</label>
                                                 <div class="form-line">
@@ -42,13 +42,8 @@
                                                         class="form-control filter-input-width">
                                                 </div>
                                             </div>
-                                            <div class="input-group">
-                                                <label for="hierarchie">Hiérarchie :</label>
-                                                <div class="form-line">
-                                                    <input type="search" name="hierarchie" id="hierarchie"
-                                                        placeholder="Mot clé..." class="form-control filter-input-width">
-                                                </div>
-                                            </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="dateResolution">Date de résolution :</label>
                                                 <div class="form-line">
@@ -57,6 +52,17 @@
                                                         class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
+                                            <div class="input-group">
+                                                <label for="hierarchie">Hiérarchie :</label>
+                                                <div class="form-line">
+                                                    <input type="search" name="hierarchie" id="hierarchie"
+                                                        placeholder="Mot clé..." class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="affecter">Affecter :</label>
                                                 <div class="form-line">
@@ -65,8 +71,7 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="modules">Modules :</label>
                                                 <div class="form-line">
@@ -74,6 +79,8 @@
                                                         placeholder="Mot clé..." class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="emetteur">Émetteur :</label>
                                                 <div class="form-line">
@@ -81,6 +88,8 @@
                                                         placeholder="Mot clé..." class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="etat">État :</label>
                                                 <div class="form-line">
@@ -89,17 +98,19 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-12 text-center">
-                                            <button onclick="searchButton(event)"
-                                                class="btn btn-info btn-md">Rechercher</button>
-                                        </div>
                                     </div>
-                                    <div>
-                                        <button type="button" class="btn btn-danger" style="margin-left: 25px; margin-bottom: 0px;"
-                                            onclick="paramrech('pdf')">PDF</button>
-                                        <button type="button" class="btn btn-success"
-                                            style="margin-left: 25px; margin-bottom: 0px;"
-                                            onclick="paramrech('xlsx')">XLSX</button>
+                                    <div class="row clearfix">
+                                        <div class="justify-content-center">
+                                            <button type="button" class="btn btn-secondary"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                onclick="paramrech('pdf')">PDF Exporter</button>
+                                            <button type="button" class="btn btn-gris"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                onclick="paramrech('xlsx')">EXCEL Exporter</button>
+                                             <button onclick="searchButton(event)"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                class="btn btn-primary btn-md">Rechercher</button>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -149,7 +160,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tableContente">
-                                  
+
                                 </tbody>
                             </table>
                             {{-- {{ $list->links() }} --}}
@@ -172,7 +183,7 @@
             const sessionDelete = "{{ in_array('delete_incident', session('auto_action')) }}";
 
             let Gliste;
-            let searchPerformed = false; 
+            let searchPerformed = false;
 
             const router = {
                 Deletes: "{{ route('DIA', ':id') }}",
@@ -326,7 +337,7 @@
 
                 const params = new URLSearchParams({
                     date_emission: dateEmission,
-                    dateResolution: dateResolution,
+                     date_resolution: dateResolution,
                     hierarchie: hierarchie,
                     desc: desc,
                     modules: modules,
@@ -353,7 +364,7 @@
                         let list = data.list;
                         Gliste = data.list;
                         afficherDonnees(list);
-                        searchPerformed = true; 
+                        searchPerformed = true;
                     } else {
                         throw new Error("Erreur lors de la récupération des données: " + response.status);
                     }
@@ -400,71 +411,71 @@
                     return;
                 }
                 console.log(list);
-                    list.forEach((currentline, index, arry) => {
-                        const contenu = '<tr>' +
-                            '<th><span class="co-name">' + currentline["DateEmission"] + '</span></th>' +
-                            '<td>' + currentline["Module"] + '</td>' +
-                            '<td>' +
-                            '<span class="' +
-                            (currentline["hierarchie"] === 'Bloquant' ? 'text-danger' :
-                                currentline["hierarchie"] === 'Gênant' ? 'text-warning' :
-                                currentline["hierarchie"] === 'Confort' ? 'text-primary' : '') + '">' +
-                            (currentline["hierarchie"] || 'Aucune hiérarchie') +
-                            '</span>' +
-                            '</td>' +
-                            '<td>' + currentline["usersE"] + '</td>' +
-                            '<td class="d-flex justify-content-between align-items-center">' +
-                            '<span>' + currentline["etats"] +
-                            '</span>' +
-                            (sessionUpdateEtat ?
-                                '<button class="btn bg-deep-orange btn-circle btn-xs ml-2" data-target="#etatincident" data-color="deep-orange" data-toggle="modal" title="Etat" onClick="getetat(' +
-                                currentline["id"] + ')">' + '<i class="material-icons">edit</i>' +
-                                '</button>' : "") +
-                            '</td>' +
-                            '<td>' + currentline["DateResolue"] +
-                            '</td>' +
-                            '<td class="d-flex justify-content-between align-items-center">' +
-                            '<span>' + currentline["usersA"] + '</span>' +
-                            (sessionAffecIncie ?
-                                '<button class="btn bg-deep-orange waves-effect btn-circle btn-xs ml-2" data-target="#affecteincident" data-color="deep-orange" data-toggle="modal" onClick="getaffectation(' +
-                                currentline["id"] + ')" title="Affectation">' +
-                                '<i class="material-icons">send</i>' +
-                                '</button>' : "") +
-                            '</td>' +
-                            '<td class="d-flex justify-content-between align-items-center">' +
-                            (currentline["piece"] ?
-                                sessionViewDocIncie ?
-                                '<button type="button" onClick="javascript:window.open(\'' + currentline[
-                                    "piece"] +
-                                '\', \'\');" title="Visualiser" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
-                                '<i class="material-icons">visibility</i>' +
-                                '</button>' : "" :
-                                '') +
-                            (sessionPrintPdfIncie ?
-                                '<button onclick="getdeclaind(event,\'pdf\')" data-Id="' + currentline["id"] +
-                                '" type="button" title="PDF" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
-                                '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">' +
-                                '<path fill="currentColor" d="M8.267 14.68c-.184 0-.308.018-.372.036v1.178c.076.018.171.023.302.023c.479 0 .774-.242.774-.651c0-.366-.254-.586-.704-.586zm3.487.012c-.2 0-.33.018-.407.036v2.61c.077.018.201.018.313.018c.817.006 1.349-.444 1.349-1.396c.006-.83-.479-1.268-1.255-1.268z"/>' +
-                                '<path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM9.498 16.19c-.309.29-.765.42-1.296.42a2.23 2.23 0 0 1-.308-.018v1.426H7v-3.936A7.558 7.558 0 0 1 8.219 14c.557 0 .953.106 1.22.319c.254.202.426.533.426.923c-.001.392-.131.723-.367.948zm3.807 1.355c-.42.349-1.059.515-1.84.515c-.468 0-.799-.03-1.024-.06v-3.917A7.947 7.947 0 0 1 11.66 14c.757 0 1.249.136 1.633.426c.415.308.675.799.675 1.504c0 .763-.279 1.29-.663 1.615zM17 14.77h-1.532v.911H16.9v.734h-1.432v1.604h-.906V14.03H17v.74zM14 9h-1V4l5 5h-4z"/>' +
-                                '</svg>' +
-                                '</button>' : "") +
-                            (sessionUpdateIncie ?
-                                '<button type="button" title="Modifier" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
-                                '<a href="' + router.Updates.replace(':id', currentline["id"]) +
-                                '" style="color:white;"><i class="material-icons">system_update_alt</i></a>' +
-                                '</button>' : "") +
-                            (currentline["etats"] != null ?
-                                sessionDeleteIncie ?
-                                '<button type="button" title="Supprimer" style="color:white;" onclick="Delete(event, \'' +
-                                router.Deletes.replace(':id', currentline["id"]) +
-                                '\')" class="btn btn-danger btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
-                                '<i class="material-icons">delete_sweep</i>' +
-                                '</button>' : "" :
-                                "") +
-                            '</td>' +
-                            '</tr>';
-                        tbody.innerHTML += contenu;
-                    });
+                list.forEach((currentline, index, arry) => {
+                    const contenu = '<tr>' +
+                        '<th><span class="co-name">' + currentline["DateEmission"] + '</span></th>' +
+                        '<td>' + currentline["Module"] + '</td>' +
+                        '<td>' +
+                        '<span class="' +
+                        (currentline["hierarchie"] === 'Bloquant' ? 'text-danger' :
+                            currentline["hierarchie"] === 'Gênant' ? 'text-warning' :
+                            currentline["hierarchie"] === 'Confort' ? 'text-primary' : '') + '">' +
+                        (currentline["hierarchie"] || 'Aucune hiérarchie') +
+                        '</span>' +
+                        '</td>' +
+                        '<td>' + currentline["usersE"] + '</td>' +
+                        '<td class="d-flex justify-content-between align-items-center">' +
+                        '<span>' + currentline["etats"] +
+                        '</span>' +
+                        '</td>' +
+                        '<td>' + currentline["DateResolue"] +
+                        '</td>' +
+                        '<td class="d-flex justify-content-between align-items-center">' +
+                        '<span>' + currentline["usersA"] + '</span>' +
+                        '</td>' +
+                        '<td style="align-items: center; padding: 8px; justify-content: space-between;margin-left: 20px;">' +
+                        (sessionUpdateEtat ?
+                            '<button class="btn bg-deep-orange btn-circle btn-xs ml-2" data-target="#etatincident" data-color="deep-orange" data-toggle="modal" title="Modifier Etat" onClick="getetat(' +
+                            currentline["id"] + ')">' + '<i class="material-icons">edit</i>' +
+                            '</button>' : "") +
+                        (sessionAffecIncie ?
+                            '<button class="btn bg-deep-orange waves-effect btn-circle btn-xs ml-2" data-target="#affecteincident" data-color="deep-orange" data-toggle="modal" onClick="getaffectation(' +
+                            currentline["id"] + ')" title="Affectation">' +
+                            '<i class="material-icons">send</i>' +
+                            '</button>' : "") +
+                        (currentline["piece"] ?
+                            sessionViewDocIncie ?
+                            '<button type="button" onClick="javascript:window.open(\'' + currentline[
+                                "piece"] +
+                            '\', \'\');" title="Visualiser" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
+                            '<i class="material-icons">visibility</i>' +
+                            '</button>' : "" :
+                            '') +
+                        (sessionPrintPdfIncie ?
+                            '<button onclick="getdeclaind(event,\'pdf\')" data-Id="' + currentline["id"] +
+                            '" type="button" title="PDF" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
+                            '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">' +
+                            '<path fill="currentColor" d="M8.267 14.68c-.184 0-.308.018-.372.036v1.178c.076.018.171.023.302.023c.479 0 .774-.242.774-.651c0-.366-.254-.586-.704-.586zm3.487.012c-.2 0-.33.018-.407.036v2.61c.077.018.201.018.313.018c.817.006 1.349-.444 1.349-1.396c.006-.83-.479-1.268-1.255-1.268z"/>' +
+                            '<path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM9.498 16.19c-.309.29-.765.42-1.296.42a2.23 2.23 0 0 1-.308-.018v1.426H7v-3.936A7.558 7.558 0 0 1 8.219 14c.557 0 .953.106 1.22.319c.254.202.426.533.426.923c-.001.392-.131.723-.367.948zm3.807 1.355c-.42.349-1.059.515-1.84.515c-.468 0-.799-.03-1.024-.06v-3.917A7.947 7.947 0 0 1 11.66 14c.757 0 1.249.136 1.633.426c.415.308.675.799.675 1.504c0 .763-.279 1.29-.663 1.615zM17 14.77h-1.532v.911H16.9v.734h-1.432v1.604h-.906V14.03H17v.74zM14 9h-1V4l5 5h-4z"/>' +
+                            '</svg>' +
+                            '</button>' : "") +
+                        (sessionUpdateIncie ?
+                            '<button type="button" title="Modifier" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
+                            '<a href="' + router.Updates.replace(':id', currentline["id"]) +
+                            '" style="color:white;"><i class="material-icons">system_update_alt</i></a>' +
+                            '</button>' : "") +
+                        (currentline["etats"] != null ?
+                            sessionDeleteIncie ?
+                            '<button type="button" title="Supprimer" style="color:white;" onclick="Delete(event, \'' +
+                            router.Deletes.replace(':id', currentline["id"]) +
+                            '\')" class="btn btn-danger btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
+                            '<i class="material-icons">delete_sweep</i>' +
+                            '</button>' : "" :
+                            "") +
+                        '</td>' +
+                        '</tr>';
+                    tbody.innerHTML += contenu;
+                });
             }
 
             function getetat(id) {

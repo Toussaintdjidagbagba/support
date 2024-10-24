@@ -11201,6 +11201,7 @@ html.ie11 .bs-searchbox .form-control {
   background-color: #f44336 !important;
   color: white !important;
 }
+
 /* Accordion */
 
 .filter-toggle {
@@ -11266,4 +11267,26 @@ html.ie11 .bs-searchbox .form-control {
   .col-xs-12 {
     width: 100%;
   }
+.cols {
+  flex: 1 1 20%;
+  box-sizing: border-box;
+  padding: 8px;
+}
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.cols {
+  flex: 1 1 10%;
+  box-sizing: border-box;
+  padding: 8px;
+}
+
+.colsc {
+  flex: 1 1 20%;
+  box-sizing: border-box;
+  
 }

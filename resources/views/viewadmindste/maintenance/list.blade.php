@@ -33,7 +33,7 @@
                                 <form role="form">
                                     <div id="alert" class="alert" style="display: none;"></div><br>
                                     <div class="row clearfix">
-                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="periodedebut_r">Du :</label>
                                                 <div class="form-line">
@@ -42,6 +42,18 @@
                                                         class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
+                                            <div class="input-group">
+                                                <label for="periodefin_r"> au :</label>
+                                                <div class="form-line">
+                                                    <input type="date" name="periodefin_r" id="periodefin_r"
+                                                        placeholder="Date d'émission..."
+                                                        class="form-control filter-input-width">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="technicien_r">Technicien :</label>
                                                 <div class="form-line">
@@ -49,6 +61,8 @@
                                                         placeholder="Mot clé..." class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="service_r">Service :</label>
                                                 <div class="form-line">
@@ -58,15 +72,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-6 col-md-6 col-sm-12">
-                                            <div class="input-group">
-                                                <label for="periodefin_r"> au :</label>
-                                                <div class="form-line">
-                                                    <input type="date" name="periodefin_r" id="periodefin_r"
-                                                        placeholder="Date d'émission..."
-                                                        class="form-control filter-input-width">
-                                                </div>
-                                            </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="etat_r">Etat :</label>
                                                 <div class="form-line">
@@ -75,19 +81,19 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-12 text-center">
-                                            <button onclick="searchButton(event)"
-                                                class="btn btn-info btn-md">Rechercher</button>
-                                        </div>
                                     </div>
-                                    <br>
-                                    <div>
-                                        <button type="button" class="btn btn-danger"
-                                            style="margin-left: 25px; margin-bottom: 0px;"
-                                            onclick="paramrech('pdf')">PDF</button>
-                                        <button type="button" class="btn btn-success"
-                                            style="margin-left: 25px; margin-bottom: 0px;"
-                                            onclick="paramrech('xlsx')">XLSX</button>
+                                    <div class="row clearfix">
+                                        <div class="col-12 text-center">
+                                            <button type="button" class="btn btn-secondary"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                onclick="paramrech('pdf')">PDF Exporter</button>
+                                            <button type="button" class="btn btn-gris"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                onclick="paramrech('xlsx')">EXCEL Exporter</button>
+                                             <button onclick="searchButton(event)"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                class="btn btn-primary btn-md">Rechercher</button>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -562,17 +568,8 @@
                     '<td>' + currentline["usersL"] + '</td>' +
                     '<td class="d-flex justify-content-between align-items-center">' +
                     '<span>' + currentline["etat"] + '</span>' +
-                    (sessionEtatMaint ?
-                        '<button type="button" title="Etat" class="btn btn-danger btn-circle btn-xs margin-bottom-10 waves-effect waves-light" ' +
-                        'data-toggle="modal" data-target="#etatmaintenance" onclick="setetatmaintenance(' +
-                        currentline["id"] + ', \'' + currentline["etat"] + '\', \'' + currentline["commentaire"] +
-                        '\', \'' + currentline["periodedebut"] +
-                        ' au ' +
-                        currentline["periodefin"] + '\')">' +
-                        '<i class="material-icons">gps_fixed</i></button>' :
-                        '') +
                     '</td>' +
-                    '<td class="d-flex justify-content-between align-items-center">' +
+                    '<td style="align-items: center; padding: 8px; justify-content: space-between;margin-left: 20px;">' +
                     (sessionPdfMaint ?
                         '<button type="button" title="PDF" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light" ' +
                         'onclick="getmaintprev(event, \'pdf\')" data-Id="' + currentline["id"] + '">' +
@@ -581,6 +578,15 @@
                         '<path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM9.498 16.19c-.309.29-.765.42-1.296.42a2.23 2.23 0 0 1-.308-.018v1.426H7v-3.936A7.558 7.558 0 0 1 8.219 14c.557 0 .953.106 1.22.319c.254.202.426.533.426.923c-.001.392-.131.723-.367.948zm3.807 1.355c-.42.349-1.059.515-1.84.515c-.468 0-.799-.03-1.024-.06v-3.917A7.947 7.947 0 0 1 11.66 14c.757 0 1.249.136 1.633.426c.415.308.675.799.675 1.504c0 .763-.279 1.29-.663 1.615zM17 14.77h-1.532v.911H16.9v.734h-1.432v1.604h-.906V14.03H17v.74zM14 9h-1V4l5 5h-4z" />' +
                         '</svg>' +
                         '</button>' :
+                        '') +
+                    (sessionEtatMaint ?
+                        '<button type="button" title="Etat" class="btn btn-danger btn-circle btn-xs margin-bottom-10 waves-effect waves-light" ' +
+                        'data-toggle="modal" data-target="#etatmaintenance" onclick="setetatmaintenance(' +
+                        currentline["id"] + ', \'' + currentline["etat"] + '\', \'' + currentline["commentaire"] +
+                        '\', \'' + currentline["periodedebut"] +
+                        ' au ' +
+                        currentline["periodefin"] + '\')">' +
+                        '<i class="material-icons">gps_fixed</i></button>' :
                         '') +
                     (sessionPdfMaint ?
                         '<button type="button" title="EXCEL" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light" ' +

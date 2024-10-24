@@ -33,7 +33,7 @@
                                 <form role="form">
                                     <div id="alert" class="alert" style="display: none;"></div><br>
                                     <div class="row clearfix">
-                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="dateEmission">Date Emission :</label>
                                                 <div class="form-line">
@@ -42,6 +42,8 @@
                                                         class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="hierarchie">Hiérarchie :</label>
                                                 <div class="form-line">
@@ -49,6 +51,8 @@
                                                         placeholder="Mot clé..." class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="desc">Description :</label>
                                                 <div class="form-line">
@@ -58,7 +62,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="modules">Modules :</label>
                                                 <div class="form-line">
@@ -66,6 +70,8 @@
                                                         placeholder="Mot clé..." class="form-control filter-input-width">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="cols">
                                             <div class="input-group">
                                                 <label for="categorie">Catégorie :</label>
                                                 <div class="form-line">
@@ -74,19 +80,19 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-12 text-center">
-                                            <button onclick="searchButton(event)"
-                                                class="btn btn-info btn-md">Rechercher</button>
-                                        </div>
                                     </div>
-                                    <br>
-                                    <div>
-                                        <button type="button" class="btn btn-danger"
-                                            style="margin-left: 25px; margin-bottom: 0px;"
-                                            onclick="paramrech('pdf')">PDF</button>
-                                        <button type="button" class="btn btn-success"
-                                            style="margin-left: 25px; margin-bottom: 0px;"
-                                            onclick="paramrech('xlsx')">XLSX</button>
+                                    <div class="row clearfix">
+                                        <div class="justify-content-center">
+                                            <button type="button" class="btn btn-secondary"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                onclick="paramrech('pdf')">PDF Exporter</button>
+                                            <button type="button" class="btn btn-gris"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                onclick="paramrech('xlsx')">EXCEL Exporter</button>
+                                             <button onclick="searchButton(event)"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
+                                                class="btn btn-primary btn-md">Rechercher</button>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -144,7 +150,7 @@
             Updates: "{{ route('MTI', ':id') }}",
         }
         let Gliste;
-        let searchPerformed = false; 
+        let searchPerformed = false;
 
         function getid(id) {
             document.getElementById("anoid").value = id;
@@ -314,10 +320,10 @@
                     let data = await response.json();
                     let list = data.list;
                     console.log(list);
-                    
+
                     Gliste = data.list;
                     afficherDonnees(list);
-                    searchPerformed = true; 
+                    searchPerformed = true;
                 } else {
                     throw new Error("Erreur lors de la récupération des données: " + response.status);
                 }
@@ -391,18 +397,19 @@
                         ) :
                         '') +
                     '</td>' +
-                    '<td>' +
-                    (currentline["statut"] !== 1 ? (sessionUpdate ?
-                            '<button type="button" title="Modifier" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
-                            '<a href="' + router.Updates.replace(':id', currentline["id"]) +
-                            '" style="color:white;"><i class="material-icons">system_update_alt</i></a>' +
-                            '</button>' : ''
-                        ) + (sessionDelete ?
-                            '<button type="button" title="Supprimer" style="color:white;" onclick="Delete(event, \'' +
-                            router.Deletes.replace(':id', currentline["id"]) +
-                            '\')" class="btn btn-danger btn-circle btn-xs margin-bottom-10 waves-effect waves-light"><i class="material-icons">delete_sweep</i></button>' :
-                            '') :
-                        '') +
+                    '<td style="align-items: center; padding: 8px; justify-content: space-between;margin-left: 20px;">' +
+                    (((currentline["etat"] === "En attente") && (currentline["etat"] != "Incident résolu")) ?
+                        (currentline["statut"] !== 1 ? (sessionUpdate ?
+                                '<button type="button" title="Modifier" class="btn btn-primary btn-circle btn-xs margin-bottom-10 waves-effect waves-light">' +
+                                '<a href="' + router.Updates.replace(':id', currentline["id"]) +
+                                '" style="color:white;"><i class="material-icons">system_update_alt</i></a>' +
+                                '</button>' : ''
+                            ) + (sessionDelete ?
+                                '<button type="button" title="Supprimer" style="color:white;" onclick="Delete(event, \'' +
+                                router.Deletes.replace(':id', currentline["id"]) +
+                                '\')" class="btn btn-danger btn-circle btn-xs margin-bottom-10 waves-effect waves-light"><i class="material-icons">delete_sweep</i></button>' :
+                                '') :
+                            '') : '') +
                     '</td>' +
                     '</tr>';
                 tbody.innerHTML += contenu;
