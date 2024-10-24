@@ -133,7 +133,7 @@
                                                 style="margin-left: 25px; margin-bottom: 0px;"
                                                 onclick="paramrech('xlsx')">EXCEL Exporter</button>
                                             <button onclick="searchButton(event)"
-                                            style="margin-left: 25px; margin-bottom: 0px;"
+                                                style="margin-left: 25px; margin-bottom: 0px;"
                                                 class="btn btn-primary btn-md">Rechercher</button>
                                         </div>
                                     </div>
@@ -171,6 +171,9 @@
 
                                 </tbody>
                             </table>
+                            <div id="pagination" class="pagination-container">
+
+                            </div>
                         </div>
 
                     </div>
@@ -185,7 +188,11 @@
         const sessionDetailMaint = "{{ in_array('detail_maint_user', session('auto_action')) }}";
         const sessionPdfMaint = "{{ in_array('print_maint_pdf', session('auto_action')) }}";
         const sessionCommtMaint = "{{ in_array('comment_maint_user', session('auto_action')) }}";
+        
         let Gliste;
+        let itemsPerPage = 10;
+        let currentPage = 1;
+        let totalItems = 0;
         let searchPerformed = false;
 
         function setdetailmaintenance(event, periode, outil, action, avisinf) {
@@ -327,6 +334,8 @@
 
                     data = await response.json();
                     afficherDonnees(data.list);
+                    totalItems = data.list.length;
+                    paginationListe(totalItems);
                 }
             } catch (error) {
                 console.error("Erreur attrapée:", error);
@@ -337,12 +346,16 @@
             const tbody = document.getElementById('tbodyMC');
             tbody.innerHTML = '';
 
-            if (list.length === 0) {
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const currentListes = list.slice(start, end);
+
+            if (currentListes.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="9"><center>Pas de maintenance enregistrer!!!</center></td></tr>`;
                 return;
             }
 
-            list.forEach((currentline, index, arry) => {
+            currentListes.forEach((currentline, index, arry) => {
                 const contenu = '<tr>' +
                     '<th><span class="co-name">' + currentline["periode"] + '</span></th>' +
                     '<td>' + currentline["nameoutils"] + '</td>' +
@@ -385,6 +398,35 @@
                     '</tr>';
                 tbody.innerHTML += contenu;
             });
+        }
+
+        function paginationListe(totalItems) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const paginationContainer = document.getElementById('pagination');
+
+            paginationContainer.innerHTML = '';
+
+            if (currentPage > 1) {
+                const prevButton = document.createElement('button');
+                prevButton.textContent = 'Précédent';
+                prevButton.classList.add('btn', 'btn-secondary', 'mr-2');
+                prevButton.onclick = () => {
+                    currentPage--;
+                    recupListMC();
+                };
+                paginationContainer.appendChild(prevButton);
+            }
+
+            if (currentPage < totalPages) {
+                const nextButton = document.createElement('button');
+                nextButton.textContent = 'Suivant';
+                nextButton.classList.add('btn', 'btn-primary');
+                nextButton.onclick = () => {
+                    currentPage++;
+                    recupListMC();
+                };
+                paginationContainer.appendChild(nextButton);
+            }
         }
 
         async function searchButton(event) {
