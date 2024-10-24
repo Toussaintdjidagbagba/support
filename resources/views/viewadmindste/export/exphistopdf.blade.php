@@ -181,7 +181,7 @@
                         L'historique de {{ $outilName }}
                     </th>
                 </tr>
-            </table><br><br>
+            </table><br>
             <table>
                 <thead>
                     <tr>

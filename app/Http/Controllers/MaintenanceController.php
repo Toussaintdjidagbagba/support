@@ -30,6 +30,7 @@ use App\Exports\McurRechpdf;
 use App\Exports\MprevRech;
 use App\Exports\MprevRechpdf;
 use App\Models\ActionOutil;
+use App\Models\ChampsCategorieOutil;
 use App\Models\Entete;
 use App\Models\GestionmaintenanceCurative;
 use App\Models\MaintenanceCurative;
@@ -327,11 +328,15 @@ class MaintenanceController extends Controller
             $query = DB::table('gestionmaintenances as gm')
             ->leftJoin('outils as o', 'o.id', '=', 'gm.outil')
             ->leftJoin('maintenances as m', 'm.id', '=', 'gm.maintenance')
+            ->leftJoin('utilisateurs as t', 't.idUser', '=', 'm.user')
             ->leftJoin('categorieoutils as co', 'co.id', '=', 'o.categorie')
             ->leftJoin('utilisateurs as u', 'gm.action', '=', 'u.idUser')
             ->leftJoin('services as s', 'm.service', '=', 's.id')
             ->select(
                 'gm.id as gestion_id',
+                'm.periodedebut as Deb',
+                'm.periodefin as Fin',
+                'm.user',
                 'o.id as id_outil',
                 'co.libelle as co_libelle',
                 'gm.detailjson',
@@ -343,6 +348,7 @@ class MaintenanceController extends Controller
                 DB::raw('COALESCE(gm.etat, "") as etat'),
                 DB::raw('COALESCE(o.nameoutils, "") as nameoutils'),
                 DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersL'),
+                DB::raw('COALESCE(CONCAT(t.nom, " ", t.prenom), "En attente") as usersT'),
             )->where("o.user", session("utilisateur")->idUser);
 
             $query->where(function ($q) use ($request) {
@@ -568,15 +574,55 @@ class MaintenanceController extends Controller
     {
         try {
 
-            $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
-                ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
-                ->where("outils.user", session("utilisateur")->idUser)
-                ->where("gestionmaintenances.id", $request->idmprev)
-                ->get();
+            // $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
+            //     ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
+            //     ->where("outils.user", session("utilisateur")->idUser)
+            //     ->where("gestionmaintenances.id", $request->idmprev)
+            //     ->get();
 
+            $list = DB::table('gestionmaintenances as gm')
+            ->leftJoin('outils as o', 'o.id', '=', 'gm.outil')
+            ->leftJoin('maintenances as m', 'm.id', '=', 'gm.maintenance')
+            ->leftJoin('utilisateurs as t', 't.idUser', '=', 'm.user')
+            ->leftJoin('categorieoutils as co', 'co.id', '=', 'o.categorie')
+            ->leftJoin('utilisateurs as u', 'gm.action', '=', 'u.idUser')
+            ->leftJoin('services as s', 'm.service', '=', 's.id')
+            ->select(
+                'gm.id as gestion_id',
+                'm.periodedebut as Deb',
+                'm.periodefin as Fin',
+                'm.user',
+                'o.id as id_outil',
+                'o.otherjson as json',
+                'o.categorie as cat',
+                'co.libelle as co_libelle',
+                'gm.detailjson',
+                'gm.id as gestion_id',
+                'gm.outil as gm_outil',
+                DB::raw('COALESCE(CONCAT(m.periodedebut, " au ", m.periodefin), "Aucune période") as periode'),
+                DB::raw('COALESCE(gm.commentaireuser, "Aucune Obs") as commentaireuser'),
+                DB::raw('COALESCE(gm.commentaireinf, "Aucune Obs") as commentaireinf'),
+                DB::raw('COALESCE(gm.avisuser, "Pas d\'avis") as avisuser'),
+                DB::raw('COALESCE(gm.etat, "") as etat'),
+                DB::raw('COALESCE(o.nameoutils, "") as nameoutils'),
+                DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersL'),
+                DB::raw('COALESCE(CONCAT(t.nom, " ", t.prenom), "En attente") as usersT'),
+            )
+            ->where("o.user", session("utilisateur")->idUser)
+            ->where("gm.id", $request->idmprev)
+            ->get();
+
+            // Récupérer le premier élément de la collection(outils)
+            $item = $list->first();
+            if ($item) {
+                $carct = json_decode($item->json, true); // On décode en tableau associatif
+                $details = ChampsCategorieOutil::where("categoutil", $item->cat)->get();
+                //dd($details);
+            } else {
+                dd('Aucun élément trouvé');
+            }  
+            
             $entete = Entete::first(); 
-
-            //dd($list);       
 
             $format = $request->format;
 
@@ -586,15 +632,14 @@ class MaintenanceController extends Controller
             // Générer le fichier en fonction du format demandé
             switch ($format) {
                 case 'pdf':
-                    $pdfExporter = new MaintPreventiveExport($list,$entete);
+                    $pdfExporter = new MaintPreventiveExport($list,$entete,$carct,$details);
                     $pdfContent = $pdfExporter->generatePdf();
-
                     return response($pdfContent, 200)
                         ->header('Content-Type', 'application/pdf')
                         ->header('Content-Disposition', 'attachment; filename="MaintenancePreventive_'. $dateExp .'.pdf"');
                 case 'xlsx':
                 default:
-                    return Excel::download(new MaintPreventiveExport($list,$entete), 'MaintenancePreventive_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    return Excel::download(new MaintPreventiveExport($list,$entete,$carct,$details), 'MaintenancePreventive_'. $dateExp .'.xlsx', \Maatwebsite\Excel\Excel::XLSX);
             }
         } catch (\Exception $e) {
             return response()->json(["status" => 1, "message" => "Erreur lors du telechargement : " . $e->getMessage()], 400);

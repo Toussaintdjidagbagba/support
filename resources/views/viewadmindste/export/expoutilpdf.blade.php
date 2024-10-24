@@ -26,7 +26,7 @@
             background-color: #fff;
             padding: 10px;
             margin-top: 75px;
-            font-size: 13px;
+            font-size: 11px;
             display: flex;
             flex-direction: column;
             justify-content: center; 
@@ -198,7 +198,7 @@
                         Liste des outils
                     </th>
                 </tr>
-            </table><br><br>
+            </table><br>
             <table>
                 <thead>
                     <tr>

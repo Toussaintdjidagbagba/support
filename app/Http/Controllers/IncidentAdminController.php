@@ -50,7 +50,7 @@ class IncidentAdminController extends Controller
                     'i.etat',
                     'i.DateEmission',
                     'i.description',
-                'i.piece',
+                    'i.piece',
                     'h.libelle as hierarchie',
                 DB::raw('COALESCE(i.DateResolue, "Pas encore résolue") as DateResolue'),
                     DB::raw('COALESCE(c.libelle, "Aucune catégorie") as cat'),
@@ -516,6 +516,7 @@ class IncidentAdminController extends Controller
         try {
 
             $list = json_decode($request->input('Gliste'), true); 
+
 
             $entete = Entete::first(); 
 

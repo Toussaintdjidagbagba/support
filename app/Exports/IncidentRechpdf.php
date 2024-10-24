@@ -32,10 +32,12 @@ class IncidentRechpdf
                 'emetteur' => $incident['usersE'], 
                 'etat' => $incident['etats'],
                 'DateResolue' => $incident['DateResolue'], 
-                'affecter' => $incident['usersA'], 
+                'affecter' => $incident['usersA'],
+                'cat' => $incident['cat'], 
+                'desc' => $incident['description'],  
             ];
         });
-
+        
         $entete = $this->entete;
 
         $pdf = new Dompdf();

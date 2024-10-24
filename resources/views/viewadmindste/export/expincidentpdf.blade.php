@@ -221,15 +221,15 @@
                 <tbody>
                     @foreach ($list as $inc)
                         <tr>
-                            <td style="vertical-align:middle; text-align: left; width: 90px;"><b>{{ $inc['DateEmission']}}</b></td>
+                            <td style="vertical-align:middle; text-align: left; width: 85px;"><b>{{ $inc['DateEmission']}}</b></td>
                             <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['Module'] }}</td>
-                            <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['hierarchie'] ?? 'N/A' }}</td>
-                            <td style="vertical-align:middle; text-align: left; width: 120px;">{{ $inc['emetteur'] ?? 'N/A'}}</td>
-                            <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['etat'] ?? 'N/A'}}</td>
-                            <td style="vertical-align:middle; text-align: left; width: 90px;">{{ $inc['DateResolue']}}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 75px;">{{ $inc['hierarchie'] ?? 'N/A' }}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 105px;">{{ $inc['emetteur'] ?? 'N/A'}}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 75px;">{{ $inc['etat'] ?? 'N/A'}}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 83px;">{{ $inc['DateResolue']}}</td>
                             <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['cat']}}</td>
                             <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['desc']}}</td>
-                            <td style="vertical-align:middle; text-align: left; width: 90px;">{{ $inc['affecter']}}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['affecter']}}</td>
                         </tr>
                     @endforeach
                 </tbody>

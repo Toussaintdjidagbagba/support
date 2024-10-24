@@ -25,14 +25,15 @@
             margin: 0 auto;
             background-color: #fff;
             padding: 20px;
-            margin-top: 100px;
-            font-size: 13px;
+            margin-top: 45px;
+            font-size: 12px;
             display: flex;
             flex-direction: column;
             justify-content: center; 
             align-items: center; 
             flex-grow: 1;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            
         }
 
         /* Header styles */
@@ -67,11 +68,22 @@
             padding-bottom: 10px;
         }
 
-        .header .title, .footer .title-footer {
+        .footer .title-footer {
             font-size: 18px;
             font-weight: bold;
             flex: 1;
             text-align: center;
+        }
+
+        .title
+        {
+            position: relative;
+            bottom: 70px;
+            font-size: 21px;
+            font-weight: 300;
+            flex: 1;
+            text-align: center;
+            color: #272727;
         }
 
         .info{
@@ -83,7 +95,7 @@
             word-wrap: break-word;
             overflow-wrap: break-word;
             white-space: normal;
-            font-size: 12px;
+            font-size: 11px;
             text-align: {{ $entete->alignement_entete }};
         }
 
@@ -93,6 +105,7 @@
             margin-top: 120px; 
             margin-bottom: 100px; 
             padding: 20px;
+            
         }
 
         table {
@@ -149,6 +162,25 @@
             overflow-wrap: break-word;
             word-wrap: break-word;
         }
+        
+        .h2t
+        {
+            text-align: center;
+            padding-bottom: 30px;
+            font-size: 17px;
+        }
+
+        .col
+        {
+            border: none;
+            
+        }
+
+        .ser
+        {
+            font-weight: 300;
+        }
+
     </style>
 </head>
 <body>
@@ -170,7 +202,6 @@
             }
             ?>
         </div>
-
         <div class="title">{{ $entete->titre }}</div>
         <div class="info">
             {{ $entete->contenu_entete }}
@@ -180,55 +211,95 @@
     <!-- Body -->
     <div class="container">
         <div class="body-content">
-            <h2 class="title">Maintenance préventive</h2><br>
+        
+            <h2 class="h2t">Maintenance préventive</h2><br>
             <table>
                 @foreach ($list as $maint)
                     <tr>
-                        <td class="ser">Date d'exécution</td>
-                        <td>{{$maint->periodedebut}}</td>
-                        <td class="ser">Date Fin </td>
-                        <td>{{ $maint->periodefin}}</td>
+                        <td class="ser">Période début  :</td>
+                        <td>{{$maint->Deb}}</td>
+                        <td class="col" colspan="1">&nbsp;</td>
+                        <td style="width: 300px;" class="ser">Technicien :</td>
                     </tr>
-                    <tr>
-                        <td class="ser">Outil </td>
-                        <td>{{ App\Providers\InterfaceServiceProvider::getLibOutil($maint->outil) }}</td>
-                        <td class="ser">Avis </td>
-                        <td>{{ $maint->avisuser }}</td>
-                    </tr>
-                    <tr>
-                        <td class="ser">Technicien </td>
-                        <td colspan="3">{{ App\Providers\InterfaceServiceProvider::LibelleUser($maint->action) }}
-                        </td>
-                    </tr>
-                @endforeach
-            </table><br>
 
-            <table class="description-table">
+                    <tr>
+                        <td class="ser">Période fin :</td>
+                        <td>{{$maint->Fin}}</td>
+                        <td class="col" colspan="1">&nbsp;</td>
+                        <td style="width: 300px;" >{{$maint->usersT}}</td>
+                    </tr>
+                   
+                    <tr>
+                        <td class="ser">Outils :</td>
+                        <td>{{ $maint->nameoutils }}</td>
+                        <td class="col" colspan="1">&nbsp;</td>
+                        <td class="col" rowspan="2">&nbsp;</td>
+                    </tr>
+
+                    <tr>
+                        <td class="ser">Utilisateur :</td>
+                        <td>{{ $maint->usersL }}</td>
+                        <td class="col" colspan="1">&nbsp;</td>
+                    </tr>
+                    
+                @endforeach
+            </table>
+
+            <br>
+
+            <div class="details-section">
+                @foreach ($list as $maint)
+                    <h3>Caractéristiques de {{ $maint->nameoutils}} :</h3><br>
+                @endforeach
+                <div class="details-grid">
+                    <table>
+                        @foreach($details as $detail)
+                            <tr>
+                                <td class="ser"><strong>{{ $detail->libelle }}</strong></td>
+                                <td style="width: 400px; height:2px;">{{ isset($carct[$detail->code]) ? $carct[$detail->code] : 'N/A' }}</td>
+                            </tr>
+                        @endforeach
+                    </table>
+                </div>
+            </div>
+            
+
+            <table class="large">
                 <thead>
                     <tr>
-                        <th colspan="4">Observations Technicien</th>
+                        <th>Signature de l'emetteur</th>
+                        <th>Signature du Technicien</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($list as $maint)
+                    @foreach($list as $inc)
                         <tr>
-                            <td colspan="4" style="height: 40px; width: 50%;">
-                                {{ $maint->commentaireinf }}
+                            <td style="height: 40px;">
+                                {{$inc->usersL}} 
                             </td>
+                            <td style="height: 40px;">
+                                {{ $inc->usersT}}
+                            </td> 
                         </tr>
-
+                    @endforeach
+                </tbody>
+            </table><br>
+            <table class="large">
+                <thead>
+                    <tr>
+                        <th>Valeur de l'emetteur</th>
+                        <th>Valeur du Technicien</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($list as $maint)
                         <tr>
-                            <th colspan="2">Observations</th>
-                            <th colspan="2">Avis</th>
-                        </tr>
-
-                        <tr>
-                            <td colspan="2" style="height: 40px; width: 50%">
-                                {{ $maint->commentaireuser }}
+                            <td style="height: 40px;">
+                                {{$maint->usersL}}
                             </td>
-                            <td colspan="2" style="height: 40px; width: 50%">
-                                {{ $maint->avisuser }}
-                            </td>
+                            <td style="height: 40px;">
+                                {{$maint->usersT}}
+                            </td> 
                         </tr>
                     @endforeach
                 </tbody>
@@ -248,5 +319,6 @@
             {{ $entete->contenu_footer_col2}}
         </div>
     </div>
+
 </body>
 </html>
