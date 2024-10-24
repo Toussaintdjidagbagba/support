@@ -161,7 +161,7 @@
         let Gliste;
         let searchPerformed = false;
 
-        let itemsPerPage = 10;
+        let itemsPerPage = 4;
         let currentPage = 1;
         let totalItems = 0;
 
