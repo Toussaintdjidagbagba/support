@@ -281,26 +281,6 @@
                         </tr>
                     @endforeach
                 </tbody>
-            </table><br>
-            <table class="large">
-                <thead>
-                    <tr>
-                        <th>Valeur de l'emetteur</th>
-                        <th>Valeur du Technicien</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($list as $inc)
-                        <tr>
-                            <td style="height: 40px;">
-                                {{$inc->usersE}}
-                            </td>
-                            <td style="height: 40px;">
-                                {{ $inc->usersA }}
-                            </td> 
-                        </tr>
-                    @endforeach
-                </tbody>
             </table>
         </div>
     </div>

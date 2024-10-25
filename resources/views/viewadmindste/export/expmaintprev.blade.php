@@ -82,49 +82,50 @@
                     </div>
                 </div>
             </div>
-            <div class="body-content-plus">
-                <table class="">
-                    <thead>
+            
+
+            <table class="large">
+                <thead>
+                    <tr>
+                        <th>Signature de l'emetteur</th>
+                        <th>Signature du Technicien</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($list as $inc)
                         <tr>
-                            <th>Signature de l'emetteur</th>
-                            <th>Signature du Technicien</th>
+                            <td style="height: 40px;">
+                                {{$inc->usersL}} 
+                            </td>
+                            <td style="height: 40px;">
+                                {{ $inc->usersT}}
+                            </td> 
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($list as $inc)
-                            <tr>
-                                <td style="height: 40px;">
-                                    {{ $inc->usersL }}
-                                </td>
-                                <td style="height: 40px;">
-                                    {{ $inc->usersT }}
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table><br>
-                <table class="">
-                    <thead>
+                    @endforeach
+                </tbody>
+            </table><br>
+            <table class="large">
+                <thead>
+                    <tr>
+                        <th>Valeur de l'emetteur</th>
+                        <th>Valeur du Technicien</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($list as $maint)
                         <tr>
-                            <th>Valeur de l'emetteur</th>
-                            <th>Valeur du Technicien</th>
+                            <td style="height: 40px;">
+                                {{$maint->usersL}}
+                            </td>
+                            <td style="height: 40px;">
+                                {{$maint->usersT}}
+                            </td> 
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($list as $maint)
-                            <tr>
-                                <td style="height: 40px;">
-                                    {{ $maint->usersL }}
-                                </td>
-                                <td style="height: 40px;">
-                                    {{ $maint->usersT }}
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    </div>
 
         <!-- Footer -->
         <div class="footer">
