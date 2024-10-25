@@ -19,6 +19,7 @@ class OutilhistopdfExport
     public function generatePdf()
     {
         $data = $this->data;
+        //dd($data);
         $entete = $this->entete;
 
         $pdf = new Dompdf();

@@ -1,179 +1,230 @@
 <!DOCTYPE html>
 <html lang="fr">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fiche de Paie Conseiller Commercial</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <title>Document PDF</title>
+        <style>
+            .body {
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                margin: 0;
+                padding: 0;
+                justify-content: center;
+                flex-direction: column;
+                background-color: #fff;
+            }
 
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            background-color: #fff;
-        }
+            /* Header styles */
 
-        .container {
-            width: 85%;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 10px;
-            margin-top: 100px;
-            font-size: 13px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            flex-grow: 1;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+            .header,
+            .footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #fff;
+                width: 100%;
+            }
 
-        .header,
-        .footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background-color: #fff;
-            width: 100%;
-        }
+            .header {
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 70px;
+                background-color: #fff;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                z-index: 100;
+                border-bottom: 1px solid #000;
+                padding: 10px;
+            }
 
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 70px;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-top: 30px;
-        }
 
-        .header .logo,
-        .footer .logo-footer {
-            width: 100px;
-            justify-content: center;
-        }
+            .logo img {
+                max-width: 100px;
+                height: 100px;
+                margin-inline-start: 5px;
+                padding-left: 50px;
+                padding-bottom: 25px;
+                position: absolute;
+                top: -22px;
+                left: -25px;
+            }
 
-        .logo {
-            padding-left: 50px;
-            padding-bottom: 10px;
-        }
+            .title {
+                position: relative;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 21px;
+                font-weight: 300;
+                text-align: center;
+                color: #272727;
+                width: 100%;
+            }
 
-        .header .title,
-        .footer .title-footer {
-            font-size: 18px;
-            font-weight: bold;
-            flex: 1;
-            text-align: center;
-        }
+            .info {
+                position: absolute;
+                top: 0;
+                right: 20px;
+                max-width: 200px;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                white-space: normal;
+                font-size: 11px;
+                text-align: {{ $entete->alignement_entete }};
+            }
 
-        .info {
-            width: 100px;
-            position: relative;
-            left: 80%;
-            bottom: 50%;
-            max-width: 200px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal;
-            font-size: 12px;
-            text-align: {{ $entete->alignement_entete }};
-        }
+            /* Responsive */
 
-        .body-content {
-            width: 100%;
-            margin-top: 120px;
-            margin-bottom: 100px;
-            padding: 10px;
-        }
+            @media print {
+                .container {
+                    page-break-before: always;
+                    padding-top: 150px;
+                }
+            }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+            .details-section {
+                margin-bottom: 30px;
+            }
 
-        td,
-        th {
-            padding: 10px;
-            border: 1px solid #000;
-        }
+            /*  */
+            .container {
+                width: 85%;
+                flex-direction: column;
+                font-size: 12px;
+                justify-content: center;
+                align-items: center;
+                flex-grow: 1;
+                padding: 20px;
+                margin: 0 auto;
+                background-color: #fff;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
 
-        .large th,
-        .large td {
-            width: 40%;
-            text-align: left;
-        }
+            h2,
+            h3 {
+                color: #020202;
+            }
 
-        .footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background-color: white;
-            position: relative;
-            width: 100%;
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-            height: 80px;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            position: fixed;
-        }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
 
-        .footer-right {
-            width: 250px;
-            display: flex;
-            justify-content: right;
-            align-items: center;
-            font-size: 10.5px;
-            font-weight: bold;
-            padding-left: 870px;
-        }
+            th,
+            td {
+                border: 1px solid #000;
+                padding: 10px;
+                text-align: left;
+            }
 
-        .footer-text {
-            flex: 1;
-            font-size: 10px;
-            text-align: {{ $entete->alignement_footer }};
-            line-height: 1.4;
-            padding-left: 70px;
-            padding-right: 80px;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-        }
-        .j
-        {
+            th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+            }
 
-        }
-    </style>
-</head>
+            /* Amelioration */
 
-<body>
+            .details-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 10px;
+            }
 
-    <!-- Header -->
-    <div class="header">
-        <div class="title">{{ $entete->titre }}</div>
+            .h2t {
+                text-align: left;
+                font-size: 17px;
+                margin-top: 50px;
+            }
 
-        <div class="info">
-            {{ $entete->contenu_entete }}
-        </div>
-    </div>
+            .col {
+                border: none;
 
-    <!-- Body -->
-    <div class="container">
-        <div class="body-content">
+            }
+
+            .ser {
+                font-weight: 300;
+            }
+
+            /* Mise en page */
+
+            .large {
+                width: 100%;
+                margin-top: 8px;
+                border-spacing: 0;
+                page-break-inside: avoid;
+                padding-top: 30px;
+            }
+
+            .large td th {
+                width: 40%;
+                border: 1px solid #ccc;
+                padding: 5px;
+                text-align: left;
+            }
+
+            /* Footer */
+            .footer {
+                display: flex;
+                text-align: center;
+                justify-content: space-between;
+                font-size: 10px;
+                width: 100%;
+                padding: 10px;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background-color: white;
+                position: fixed;
+                border-top: 1px solid #000;
+            }
+
+            .footer-text {
+                font-size: 10px;
+                line-height: 1.5;
+                color: #474747;
+                text-align: {{ $entete->alignement_footer }};
+            }
+
+            .footer-right {
+                width: 250px;
+                float: right;
+                font-size: 10.5px;
+                font-weight: bold;
+                padding-left: 610px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <section class="container">
+            <!-- Header -->
+            <div class="header">
+                <?php
+                $path = public_path('documents/entete/' . $entete->logo);
+                if (file_exists($path)) {
+                    $type = pathinfo($path, PATHINFO_EXTENSION);
+                    $datas = file_get_contents($path);
+                    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($datas);
+                ?>
+                    <div class="logo">
+                        <img src="{{ $base64 }}">
+                    </div>
+                    <?php
+                } else {
+                    echo "Image non trouvée.";
+                }
+                ?>
+                <div class="title">{{ $entete->titre }}</div>
+                <div class="info"> {{ $entete->contenu_entete }} </div>
+            </div>
+
             @php
                 $outilName = $data->isNotEmpty() && isset($data->first()->out) ? $data->first()->out : 'Outil inconnu';
             @endphp
-
+            <br>
             <table>
                 <tr>
                     <th class="modal-title font-14" colspan="1"
@@ -182,48 +233,60 @@
                     </th>
                 </tr>
             </table><br>
-            <table>
-                <thead>
-                    <tr>
-                        <th
-                            style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">
-                            Date</th>
-                        <th
-                            style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">
-                            Traces</th>
-                        <th
-                            style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">
-                            Utilisateur</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($data as $hist)
-                        <tr>
-                            <td style="vertical-align:middle; text-align: left; width: 50px; height:30px;">
-                                <b>{{ $hist->created_at ?? '___' }}</b></td>
-                            <td style="vertical-align:middle; text-align: left; width: 120px; height:30px;">
-                                {{ $hist->libelle ?? '___' }}</td>
-                            <td style="vertical-align:middle; text-align: left; width: 30px; height:30px;">
-                                {{ $hist->nom . ' ' . $hist->prenom ?? '___' }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        <div class="footer-right">
-            Date d'exportation : {{ now()->format('d/m/Y') }}
-        </div><br>
-        <div class="footer-text">
-            {{ $entete->contenu_footer_col }}<br>
-        </div>
-        <div class="footer-text">
-            {{ $entete->contenu_footer_col2 }}
-        </div>
-    </div>
-</body>
+            @php
+                $shouldBreakPage = false;
+                $rowCount = isset($details) ? count($details) : 0; // Ajoutez une vérification ici
+                if ($rowCount > 8) {
+                    $shouldBreakPage = true;
+                }
+            @endphp
+            @if ($shouldBreakPage)
+                <div class="details-section">
+            @else
+                <div class="">
+            @endif
+            
+            <div class="details-grid">
+                <table>
+                    <thead>
+                        <tr>
+                            <th
+                                style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">
+                                Date</th>
+                            <th
+                                style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">
+                                Traces</th>
+                            <th
+                                style="vertical-align:middle; text-align: left; background-color: black; color: white; size: 16px; height: 30px;">
+                                Utilisateur</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($data as $hist)
+                            <tr>
+                                <td style="vertical-align:middle; text-align: left; width: 50px; height:30px;">
+                                    <b>{{ $hist->created_at ?? '___' }}</b></td>
+                                <td style="vertical-align:middle; text-align: left; width: 120px; height:30px;">
+                                    {{ $hist->libelle ?? '___' }}</td>
+                                <td style="vertical-align:middle; text-align: left; width: 30px; height:30px;">
+                                    {{ $hist->nom . ' ' . $hist->prenom ?? '___' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+
+            <div class="footer">
+                <div class="footer-right">Date d'exportation : {{ now()->format('d/m/Y') }}</div><br>
+                <div class="footer-text">{{ $entete->contenu_footer_col }}</div>
+                <div class="footer-text">{{ $entete->contenu_footer_col2 }}</div>
+            </div>
+        </section>
+    </body>
 
 </html>
+
+

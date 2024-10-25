@@ -92,6 +92,7 @@
             .container {
                 width: 85%;
                 flex-direction: column;
+                font-size: 12px;
                 justify-content: center;
                 align-items: center;
                 flex-grow: 1;
@@ -202,20 +203,20 @@
             <!-- Header -->
             <div class="header">
                 <?php
-            $path = public_path('documents/entete/' . $entete->logo);
-            if (file_exists($path)) {
-                $type = pathinfo($path, PATHINFO_EXTENSION);
-                $data = file_get_contents($path);
-                $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-            ?>
-                <div class="logo">
-                    <img src="{{ $base64 }}">
-                </div>
-                <?php
-            } else {
-                echo "Image non trouvée.";
-            }
-            ?>
+                $path = public_path('documents/entete/' . $entete->logo);
+                if (file_exists($path)) {
+                    $type = pathinfo($path, PATHINFO_EXTENSION);
+                    $data = file_get_contents($path);
+                    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                ?>
+                    <div class="logo">
+                        <img src="{{ $base64 }}">
+                    </div>
+                    <?php
+                } else {
+                    echo "Image non trouvée.";
+                }
+                ?>
                 <div class="title">{{ $entete->titre }}</div>
                 <div class="info"> {{ $entete->contenu_entete }} </div>
             </div>
@@ -226,14 +227,14 @@
                         <td class="ser">Période début :</td>
                         <td>{{ $maint->Deb }}</td>
                         <td class="col" colspan="1">&nbsp;</td>
-                        <td style="width: 300px;" class="ser">Technicien :</td>
+                        <td style="width: 250px;" class="ser">Technicien :</td>
                     </tr>
 
                     <tr>
                         <td class="ser">Période fin :</td>
                         <td>{{ $maint->Fin }}</td>
                         <td class="col" colspan="1">&nbsp;</td>
-                        <td style="width: 300px;">{{ $maint->usersT }}</td>
+                        <td style="width: 250px;">{{ $maint->usersT }}</td>
                     </tr>
 
                     <tr>
@@ -250,6 +251,7 @@
                     </tr>
                 @endforeach
             </table>
+            <br>
             @php
                 $shouldBreakPage = false;
                 $rowCount = count($details);
@@ -270,7 +272,7 @@
                     @foreach ($details as $detail)
                         <tr>
                             <td class="ser"><strong>{{ $detail->libelle }}</strong></td>
-                            <td>{{ isset($carct[$detail->code]) ? $carct[$detail->code] : 'N/A' }}</td>
+                            <td style="width: 400px;">{{ isset($carct[$detail->code]) ? $carct[$detail->code] : 'N/A' }}</td>
                         </tr>
                     @endforeach
                 </table>
@@ -280,22 +282,54 @@
             <table class="large">
                 <thead>
                     <tr>
+                        <th>Avis Utilisateur</th>
+                        <th>Avis du Technicien</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($list as $maint)
+                        <tr>
+                            <td>{{ $maint->avisuser }}</td>
+                            <td>{{ $maint->avisinf }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <table class="large">
+                <thead>
+                    <tr>
+                        <th>Observation de l'utilisateur</th>
+                        <th>Observation du Technicien</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($list as $maint)
+                        <tr>
+                            <td>{{ $maint->commentaireuser }}</td>
+                            <td>{{ $maint->commentaireinf }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <table class="large">
+                <thead>
+                    <tr>
                         <th>Signature de l'émetteur</th>
                         <th>Signature du Technicien</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($list as $inc)
+                    @foreach ($list as $maint)
                         <tr>
-                            <td>{{ $inc->usersL }}</td>
-                            <td>{{ $inc->usersT }}</td>
+                            <td>{{ $maint->usersL }}</td>
+                            <td>{{ $maint->usersT }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
 
             <div class="footer">
-                <div class="footer-right">Date d'exportation : {{ now()->format('d/m/Y') }}</div>
+                <div class="footer-right">Date d'exportation : {{ now()->format('d/m/Y') }}</div><br>
                 <div class="footer-text">{{ $entete->contenu_footer_col }}</div>
                 <div class="footer-text">{{ $entete->contenu_footer_col2 }}</div>
             </div>

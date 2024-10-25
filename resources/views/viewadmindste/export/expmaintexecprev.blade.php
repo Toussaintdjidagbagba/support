@@ -93,6 +93,7 @@
             .container {
                 width: 85%;
                 flex-direction: column;
+                font-size: 12px;
                 justify-content: center;
                 align-items: center;
                 flex-grow: 1;
@@ -203,20 +204,21 @@
             <!-- Header -->
             <div class="header">
                 <?php
-            $path = public_path('documents/entete/' . $entete->logo);
-            if (file_exists($path)) {
-                $type = pathinfo($path, PATHINFO_EXTENSION);
-                $data = file_get_contents($path);
-                $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-            ?>
-                <div class="logo">
-                    <img src="{{ $base64 }}">
-                </div>
-                <?php
-            } else {
-                echo "Image non trouvée.";
-            }
-            ?>
+                $path = public_path('documents/entete/' . $entete->logo);
+                if (file_exists($path)) {
+                    $type = pathinfo($path, PATHINFO_EXTENSION);
+                    $data = file_get_contents($path);
+                    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                    
+                ?>
+                    <div class="logo">
+                        <img src="{{ $base64 }}">
+                    </div>
+                    <?php
+                } else {
+                    echo "Image non trouvée.";
+                }
+                ?>
                 <div class="title">{{ $entete->titre }}</div>
                 <div class="info"> {{ $entete->contenu_entete }} </div>
             </div>
@@ -251,6 +253,7 @@
                     </tr>
                 @endforeach
             </table>
+            <br>
             @php
                 $shouldBreakPage = false;
                 $rowCount = count($details);
@@ -281,25 +284,40 @@
             <table class="large">
                 <thead>
                     <tr>
-                        <th>Signature de l'émetteur</th>
-                        <th>Signature du Technicien</th>
+                        <th>Avis Utilisateur</th>
+                        <th>Avis du Technicien</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($list as $inc)
+                    @foreach ($list as $maint)
                         <tr>
-                            <td>{{ $inc->usersL }}</td>
-                            <td>{{ $inc->usersT }}</td>
+                            <td>{{ $maint->avisuser }}</td>
+                            <td>{{ $maint->avisinf }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-
             <table class="large">
                 <thead>
                     <tr>
-                        <th>Valeur de l'émetteur</th>
-                        <th>Valeur du Technicien</th>
+                        <th>Observation de l'utilisateur</th>
+                        <th>Observation du Technicien</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($list as $maint)
+                        <tr>
+                            <td>{{ $maint->commentaireuser }}</td>
+                            <td>{{ $maint->commentaireinf }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <table class="large">
+                <thead>
+                    <tr>
+                        <th>Signature de l'émetteur</th>
+                        <th>Signature du Technicien</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -313,7 +331,7 @@
             </table>
 
             <div class="footer">
-                <div class="footer-right">Date d'exportation : {{ now()->format('d/m/Y') }}</div>
+                <div class="footer-right">Date d'exportation : {{ now()->format('d/m/Y') }}</div><br>
                 <div class="footer-text">{{ $entete->contenu_footer_col }}</div>
                 <div class="footer-text">{{ $entete->contenu_footer_col2 }}</div>
             </div>

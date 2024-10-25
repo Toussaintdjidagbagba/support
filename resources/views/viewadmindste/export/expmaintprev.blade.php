@@ -94,6 +94,7 @@
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
+                font-size: 12px;
                 flex-grow: 1;
                 padding: 20px;
                 margin: 0 auto;
@@ -250,6 +251,7 @@
                     </tr>
                 @endforeach
             </table>
+            <br>
             @php
                 $shouldBreakPage = false;
                 $rowCount = count($details);
@@ -280,25 +282,40 @@
             <table class="large">
                 <thead>
                     <tr>
-                        <th>Signature de l'émetteur</th>
-                        <th>Signature du Technicien</th>
+                        <th>Avis Utilisateur</th>
+                        <th>Avis du Technicien</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($list as $inc)
+                    @foreach ($list as $maint)
                         <tr>
-                            <td>{{ $inc->usersL }}</td>
-                            <td>{{ $inc->usersT }}</td>
+                            <td>{{ $maint->avisuser }}</td>
+                            <td>{{ $maint->avisinf }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-
             <table class="large">
                 <thead>
                     <tr>
-                        <th>Valeur de l'émetteur</th>
-                        <th>Valeur du Technicien</th>
+                        <th>Observation de l'utilisateur</th>
+                        <th>Observation du Technicien</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($list as $maint)
+                        <tr>
+                            <td>{{ $maint->commentaireuser }}</td>
+                            <td>{{ $maint->commentaireinf }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <table class="large">
+                <thead>
+                    <tr>
+                        <th>Signature de l'émetteur</th>
+                        <th>Signature du Technicien</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -312,7 +329,7 @@
             </table>
 
             <div class="footer">
-                <div class="footer-right">Date d'exportation : {{ now()->format('d/m/Y') }}</div>
+                <div class="footer-right">Date d'exportation : {{ now()->format('d/m/Y') }}</div><br>
                 <div class="footer-text">{{ $entete->contenu_footer_col }}</div>
                 <div class="footer-text">{{ $entete->contenu_footer_col2 }}</div>
             </div>

@@ -313,17 +313,6 @@ class MaintenanceController extends Controller
                 dd('Aucun élément trouvé');
             }  
             
-            // $list = Gestionmaintenance::join('maintenances', 'gestionmaintenances.maintenance', '=', 'maintenances.id')
-            //         ->join('utilisateurs', 'maintenances.user', '=', 'utilisateurs.idUser')
-            //         ->where('gestionmaintenances.id', $request->ideprev)
-            //         ->select(
-            //             'gestionmaintenances.*', 
-            //             'maintenances.*', 
-            //             'utilisateurs.nom as user_nom', 
-            //             'utilisateurs.prenom as user_prenom'
-            //         )
-            //         ->get();
-
             $entete = Entete::first(); 
             
             //dd($list);       
@@ -613,12 +602,6 @@ class MaintenanceController extends Controller
     public function expmaintpre(Request $request)
     {
         try {
-
-            // $list = Gestionmaintenance::join("outils", "outils.id", "=", "gestionmaintenances.outil")
-            //     ->select('gestionmaintenances.*', 'outils.*', 'gestionmaintenances.id as gestion_id')
-            //     ->where("outils.user", session("utilisateur")->idUser)
-            //     ->where("gestionmaintenances.id", $request->idmprev)
-            //     ->get();
 
             $list = DB::table('gestionmaintenances as gm')
             ->leftJoin('outils as o', 'o.id', '=', 'gm.outil')
@@ -940,12 +923,6 @@ class MaintenanceController extends Controller
             } else {
                 dd('Aucun élément trouvé');
             }  
-
-            // $list = GestionmaintenanceCurative::join("outils", "outils.id", "=", "gestionmaintenance_curatives.outil")
-            //     ->select('gestionmaintenance_curatives.*', 'outils.*', 'gestionmaintenance_curatives.id as gestion_id')
-            //     ->where("outils.user", session("utilisateur")->idUser)
-            //     ->where("gestionmaintenance_curatives.id", $request->idmcur)
-            //     ->get();
 
             $entete = Entete::first(); 
 
