@@ -189,26 +189,24 @@
 <body>
 
     <!-- Header -->
-    <div class="header">
-        <div class="logo">
-            <?php
+   <div class="header">
+        <?php
             $path = public_path('documents/entete/' . $entete->logo);
             if (file_exists($path)) {
                 $type = pathinfo($path, PATHINFO_EXTENSION);
                 $data = file_get_contents($path);
                 $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
             ?>
-                <img src="{{ $base64 }}" width="100" height="100">
-            <?php
+        <div class="logo">
+            <img src="{{ $base64 }}">
+        </div>
+        <?php
             } else {
                 echo "Image non trouvée.";
             }
             ?>
-        </div>
         <div class="title">{{ $entete->titre }}</div>
-        <div class="info">
-            {{ $entete->contenu_entete }}
-        </div>
+        <div class="info"> {{ $entete->contenu_entete }} </div>
     </div>
 
     <!-- Body -->
