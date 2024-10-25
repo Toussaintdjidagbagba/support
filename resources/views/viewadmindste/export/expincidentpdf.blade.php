@@ -224,7 +224,7 @@
                             <td style="vertical-align:middle; text-align: left; width: 85px;"><b>{{ $inc['DateEmission']}}</b></td>
                             <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['Module'] }}</td>
                             <td style="vertical-align:middle; text-align: left; width: 75px;">{{ $inc['hierarchie'] ?? 'N/A' }}</td>
-                            <td style="vertical-align:middle; text-align: left; width: 105px;">{{ $inc['emetteur'] ?? 'N/A'}}</td>
+                            <td style="vertical-align:middle; text-align: left; width: 110px;">{{ $inc['emetteur'] ?? 'N/A'}}</td>
                             <td style="vertical-align:middle; text-align: left; width: 75px;">{{ $inc['etat'] ?? 'N/A'}}</td>
                             <td style="vertical-align:middle; text-align: left; width: 83px;">{{ $inc['DateResolue']}}</td>
                             <td style="vertical-align:middle; text-align: left; width: 80px;">{{ $inc['cat']}}</td>
