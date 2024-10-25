@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
- <style>
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Document PDF</title>
+        <style>
             .body {
                 font-family: Arial, sans-serif;
                 font-size: 12px;
@@ -85,7 +85,6 @@
             }
 
             .details-section {
-                page-break-after: always;
                 margin-bottom: 30px;
             }
 
@@ -131,12 +130,12 @@
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
                 gap: 10px;
-                page-break-inside: avoid;
             }
 
             .h2t {
                 text-align: left;
                 font-size: 17px;
+                margin-top: 50px;
             }
 
             .col {
@@ -196,51 +195,47 @@
                 padding-left: 610px;
             }
         </style>
-</head>
-<body>
+    </head>
 
-    <!-- Header -->
-   <div class="header">
-        <?php
+    <body>
+        <section class="container">
+            <!-- Header -->
+            <div class="header">
+                <?php
             $path = public_path('documents/entete/' . $entete->logo);
             if (file_exists($path)) {
                 $type = pathinfo($path, PATHINFO_EXTENSION);
                 $data = file_get_contents($path);
                 $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
             ?>
-        <div class="logo">
-            <img src="{{ $base64 }}">
-        </div>
-        <?php
+                <div class="logo">
+                    <img src="{{ $base64 }}">
+                </div>
+                <?php
             } else {
                 echo "Image non trouvée.";
             }
             ?>
-        <div class="title">{{ $entete->titre }}</div>
-        <div class="info"> {{ $entete->contenu_entete }} </div>
-    </div>
-
-    <!-- Body -->
-    <div class="container">
-        <div class="body-content">
-        
-            <h2 class="h2t">Maintenance currative</h2><br>
+                <div class="title">{{ $entete->titre }}</div>
+                <div class="info"> {{ $entete->contenu_entete }} </div>
+            </div>
+            <h2 class="h2t">Maintenance currative</h2>
             <table>
                 @foreach ($list as $maint)
                     <tr>
-                        <td class="ser">Période début  :</td>
-                        <td>{{$maint->Deb}}</td>
+                        <td class="ser">Période début :</td>
+                        <td>{{ $maint->Deb }}</td>
                         <td class="col" colspan="1">&nbsp;</td>
                         <td style="width: 300px;" class="ser">Technicien :</td>
                     </tr>
 
                     <tr>
                         <td class="ser">Période fin :</td>
-                        <td>{{$maint->Fin}}</td>
+                        <td>{{ $maint->Fin }}</td>
                         <td class="col" colspan="1">&nbsp;</td>
-                        <td style="width: 300px;" >{{$maint->usersT}}</td>
+                        <td style="width: 300px;">{{ $maint->usersT }}</td>
                     </tr>
-                   
+
                     <tr>
                         <td class="ser">Outils :</td>
                         <td>{{ $maint->nameoutils }}</td>
@@ -253,106 +248,58 @@
                         <td>{{ $maint->usersL }}</td>
                         <td class="col" colspan="1">&nbsp;</td>
                     </tr>
-                    
                 @endforeach
             </table>
-
-            <br>
-
-            <div class="details-section">
-                @foreach ($list as $maint)
-                    <h3>Caractéristiques de {{ $maint->nameoutils}} :</h3><br>
-                @endforeach
-                <div class="details-grid">
-                    <table>
-                        @foreach($details as $detail)
-                            <tr>
-                                <td class="ser"><strong>{{ $detail->libelle }}</strong></td>
-                                <td style="width: 400px; height:2px;">{{ isset($carct[$detail->code]) ? $carct[$detail->code] : 'N/A' }}</td>
-                            </tr>
-                        @endforeach
-                    </table>
-                </div>
+            @php
+                $shouldBreakPage = false;
+                $rowCount = count($details);
+                if ($rowCount > 8) {
+                    $shouldBreakPage = true;
+                }
+            @endphp
+            @if ($shouldBreakPage)
+                <div class="details-section">
+            @else
+                <div class="">
+            @endif
+            @foreach ($list as $maint)
+                <h3>Caractéristiques de {{ $maint->nameoutils }} :</h3>
+            @endforeach
+            <div class="details-grid">
+                <table>
+                    @foreach ($details as $detail)
+                        <tr>
+                            <td class="ser"><strong>{{ $detail->libelle }}</strong></td>
+                            <td>{{ isset($carct[$detail->code]) ? $carct[$detail->code] : 'N/A' }}</td>
+                        </tr>
+                    @endforeach
+                </table>
             </div>
-            
-            <br>
-            <table class="large">
-                <thead>
-                    <tr>
-                        <th>Avis Utilisateur </th>
-                        <th>Avis Technicien</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($list as $maint)
-                        <tr>
-                            <td style="height: 40px;">
-                                {{$maint->avisuser}}
-                            </td>
-                            <td style="height: 40px;">
-                                {{$maint->avisinf}}
-                            </td> 
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table><br>
+            </div>
 
             <table class="large">
                 <thead>
                     <tr>
-                        <th>Observation de l'utilisateur</th>
-                        <th>Observation du Technicien</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($list as $maint)
-                        <tr>
-                            <td style="height: 40px;">
-                                {{$maint->commentaireuser}}
-                            </td>
-                            <td style="height: 40px;">
-                                {{$maint->commentaireinf}}
-                            </td> 
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table><br>
-
-            <table class="large">
-                <thead>
-                    <tr>
-                        <th>Signature de l'emetteur</th>
+                        <th>Signature de l'émetteur</th>
                         <th>Signature du Technicien</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($list as $inc)
+                    @foreach ($list as $inc)
                         <tr>
-                            <td style="height: 40px;">
-                                {{$inc->usersL}} 
-                            </td>
-                            <td style="height: 40px;">
-                                {{ $inc->usersT}}
-                            </td> 
+                            <td>{{ $inc->usersL }}</td>
+                            <td>{{ $inc->usersT }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-        </div>
-    </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        <div class="footer-right">
-            Date d'exportation : {{ now()->format('d/m/Y') }}
-        </div><br>
-        <div class="footer-text">
-            {{ $entete->contenu_footer_col}}<br>
-        </div>
-        <div class="footer-text">
-            {{ $entete->contenu_footer_col2}}
-        </div>
-    </div>
+            <div class="footer">
+                <div class="footer-right">Date d'exportation : {{ now()->format('d/m/Y') }}</div>
+                <div class="footer-text">{{ $entete->contenu_footer_col }}</div>
+                <div class="footer-text">{{ $entete->contenu_footer_col2 }}</div>
+            </div>
+        </section>
+    </body>
 
-</body>
 </html>
