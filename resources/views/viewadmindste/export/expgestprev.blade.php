@@ -1,238 +1,287 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fiche de Paie Conseiller Commercial</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
 
-        body {
-            font-family: Arial, sans-serif;
-            /* height: 100vh; */
-            display: flex;
-            flex-direction: column;
-            justify-content: center; 
-            background-color: #fff;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <title>Document PDF</title>
+        <style>
+            .body {
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                margin: 0;
+                padding: 0;
+                justify-content: center;
+                flex-direction: column;
+                background-color: #fff;
+            }
 
-        .container {
-            width: 85%;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            margin-top: 100px;
-            font-size: 13px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center; 
-            align-items: center; 
-            flex-grow: 1;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
-        }
+            /* Header styles */
 
-        /* Header styles */
-        .header, .footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background-color: #fff;
-            width: 100%;
-        }
+            .header,
+            .footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #fff;
+                width: 100%;
+            }
 
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 70px;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-top: 30px;
-        }
+            .header {
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 70px;
+                background-color: #fff;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                z-index: 100;
+                border-bottom: 1px solid #000;
+                padding: 10px;
+            }
 
-        .header .logo, .footer .logo-footer {
-            width: 100px;
-            justify-content: center;
-        }
 
-        .logo
-        {
-            padding-left: 50px;
-            padding-bottom: 10px;
-        }
+            .logo img {
+                max-width: 100px;
+                height: 100px;
+                margin-inline-start: 5px;
+                padding-left: 50px;
+                padding-bottom: 25px;
+                position: absolute;
+                top: -22px;
+                left: -25px;
+            }
 
-        .header .title, .footer .title-footer {
-            font-size: 18px;
-            font-weight: bold;
-            flex: 1;
-            text-align: center;
-        }
+            .title {
+                position: relative;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 21px;
+                font-weight: 300;
+                text-align: center;
+                color: #272727;
+                width: 100%;
+            }
 
-        .info{
-            width: 100px;
-            position: relative;
-            left: 80%;
-            bottom: 165%;
-            max-width: 200px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal;
-            font-size: 12px;
-            text-align: {{ $entete->alignement_entete }};
-        }
+            .info {
+                position: absolute;
+                top: 0;
+                right: 20px;
+                max-width: 200px;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                white-space: normal;
+                font-size: 11px;
+                text-align: {{ $entete->alignement_entete }};
+            }
 
-        /* Body section */
-        .body-content {
-            width: 100%;
-            margin-top: 120px; 
-            margin-bottom: 100px; 
-            padding: 20px;
-        }
+            /* Responsive */
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+            @media print {
+                .container {
+                    page-break-before: always;
+                    padding-top: 150px;
+                }
+            }
 
-        td, th {
-            padding: 10px;
-            border: 1px solid #000;
-        }
+            .details-section {
+                margin-bottom: 30px;
+            }
 
-        .large th, .large td {
-            width: 40%;
-            text-align: left;
-        }
+            /*  */
+            .container {
+                width: 85%;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                font-size: 12px;
+                flex-grow: 1;
+                padding: 20px;
+                margin: 0 auto;
+                background-color: #fff;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
 
-        /* Footer styles */
-        .footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background-color: white;
-            position: relative;
-            width: 100%;
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-            height: 80px;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            position: fixed;
-        }
+            h2,
+            h3 {
+                color: #020202;
+            }
 
-        .footer-right 
-        {
-            width: 250px;
-            display: flex;
-            justify-content: right;
-            align-items: center;
-            font-size: 10.5px;
-            font-weight: bold;
-            padding-left: 610px;
-        }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
 
-        .footer-text {
-            flex: 1;
-            text-align: {{ $entete->alignement_footer }};
-            font-size: 10px;
-            line-height: 1.4;
-            padding-left: 70px;
-            padding-right: 80px;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-        }
-        .j{}
-    </style>
-</head>
-<body>
+            th,
+            td {
+                border: 1px solid #000;
+                padding: 10px;
+                text-align: left;
+            }
 
-    <!-- Header -->
-    <div class="header">
-        <div class="logo">
-            <?php
+            th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+            }
+
+            /* Amelioration */
+
+            .details-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 10px;
+            }
+
+            .h2t {
+                text-align: left;
+                font-size: 17px;
+                margin-top: 50px;
+            }
+
+            .col {
+                border: none;
+
+            }
+
+            .ser {
+                font-weight: 300;
+            }
+
+            /* Mise en page */
+
+            .large {
+                width: 100%;
+                margin-top: 8px;
+                border-spacing: 0;
+                page-break-inside: avoid;
+                padding-top: 30px;
+            }
+
+            .large td th {
+                width: 40%;
+                border: 1px solid #ccc;
+                padding: 5px;
+                text-align: left;
+            }
+
+            /* Footer */
+            .footer {
+                display: flex;
+                text-align: center;
+                justify-content: space-between;
+                font-size: 10px;
+                width: 100%;
+                padding: 10px;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background-color: white;
+                position: fixed;
+                border-top: 1px solid #000;
+            }
+
+            .footer-text {
+                font-size: 10px;
+                line-height: 1.5;
+                color: #474747;
+                text-align: {{ $entete->alignement_footer }};
+            }
+
+            .footer-right {
+                width: 250px;
+                float: right;
+                font-size: 10.5px;
+                font-weight: bold;
+                padding-left: 610px;
+            }
+
+            .esp{
+                padding-top: 70px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <section class="container">
+            <!-- Header -->
+            <div class="header">
+                <?php
             $path = public_path('documents/entete/' . $entete->logo);
             if (file_exists($path)) {
                 $type = pathinfo($path, PATHINFO_EXTENSION);
                 $data = file_get_contents($path);
                 $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
             ?>
-                <img src="{{ $base64 }}" width="100" height="100">
-            <?php
+                <div class="logo">
+                    <img src="{{ $base64 }}">
+                </div>
+                <?php
             } else {
                 echo "Image non trouvée.";
             }
             ?>
-        </div>
-
-        <div class="title">{{ $entete->titre }}</div>
-        <div class="info">
-            {{ $entete->contenu_entete }}
-        </div>
-    </div>
-
-    <!-- Body -->
-    <div class="container">
-        <div class="body-content">
-        
-            <h2 class="title">Gestion Maintenance préventive</h2><br>
+                <div class="title">{{ $entete->titre }}</div>
+                <div class="info"> {{ $entete->contenu_entete }} </div>
+            </div>
+            <h2 class="h2t">Gestion Maintenance préventive</h2>
             <table>
                 @foreach($list as $maint)
                     <tr>
                         <td class="ser">Periode Début </td>
-                        <td>{{$maint->periodedebut}}</td>
+                        <td>{{$maint->Deb}}</td>
                         <td class="ser">Période Fin </td>
-                        <td>{{ $maint->periodefin}}</td>
+                        <td>{{ $maint->Fin}}</td>
                     </tr>
                     <tr>
                         <td class="ser">Technicien </td>
-                        <td colspan="3">{{App\Providers\InterfaceServiceProvider::LibelleUser($maint->user)}}</td>
+                        <td colspan="3">{{ $maint->usersT }}</td>
                     </tr>
                     <tr>
                         <td class="ser">Utilisateur </td>
-                        <td colspan="3">{{App\Providers\InterfaceServiceProvider::getUserOutil($maint->outil)}}</td>
+                        <td colspan="3">{{ $maint->usersL }}</td>
                     </tr>
                 @endforeach
-            </table><br>
 
-            <table class="description-table">
+            </table>
+         
+            <table class="large">
                 <thead>
                     <tr>
-                        <th colspan="2">Commentaire</th>
+                        <th style="text-align: center;">Commentaire</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($list as $maint)
+                    @foreach ($list as $maint)
                         <tr>
-                            <td colspan="2" style="height: 40px;">
-                                {{ $maint->commentaire}}
-                            </td>
+                            <td>{{ $maint->commentaire}}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <table class="large">
+                <thead>
+                    <tr>
+                        <th>Signature de l'émetteur</th>
+                        <th>Signature du Technicien</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($list as $maint)
+                        <tr>
+                            <td class="esp">{{ $maint->usersL }}</td>
+                            <td class="esp">{{ $maint->usersT }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
 
-        </div>
-    </div>
+            <div class="footer">
+                <div class="footer-right">Date d'exportation : {{ now()->format('d/m/Y') }}</div><br>
+                <div class="footer-text">{{ $entete->contenu_footer_col }}</div>
+                <div class="footer-text">{{ $entete->contenu_footer_col2 }}</div>
+            </div>
+        </section>
+    </body>
 
-    <!-- Footer -->
-    <div class="footer">
-        <div class="footer-right">
-            Date d'exportation : {{ now()->format('d/m/Y') }}
-        </div><br>
-        <div class="footer-text">
-            {{ $entete->contenu_footer_col}}<br>
-        </div>
-        <div class="footer-text">
-            {{ $entete->contenu_footer_col2}}
-        </div>
-    </div>
-</body>
 </html>

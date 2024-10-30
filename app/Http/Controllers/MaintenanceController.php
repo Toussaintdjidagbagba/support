@@ -614,6 +614,7 @@ class MaintenanceController extends Controller
                 'gm.id as gestion_id',
                 'm.periodedebut as Deb',
                 'm.periodefin as Fin',
+                'm.commentaire',
                 'm.user',
                 'o.id as id_outil',
                 'o.otherjson as json',
@@ -642,7 +643,7 @@ class MaintenanceController extends Controller
                 $details = ChampsCategorieOutil::where("categoutil", $item->cat)->get();
                 //dd($details);
             } else {
-                dd('Aucun élément trouvé');
+                //dd('Aucun élément trouvé');
             }  
             
             $entete = Entete::first(); 
@@ -894,6 +895,10 @@ class MaintenanceController extends Controller
                 'gmc.id as gestion_id',
                 'mc.periodedebut as Deb',
                 'mc.periodefin as Fin',
+                'mc.diagnostique',
+                'mc.cause',
+                'mc.resultat',
+                'mc.commentaire',
                 'mc.user',
                 'o.id as id_outil',
                 'o.otherjson as json',
@@ -1298,7 +1303,23 @@ class MaintenanceController extends Controller
     {
         try {
 
-            $list = Maintenance::where('id', $request->idgestprev)->get();
+            $list = DB::table('maintenances as m')
+            ->leftJoin('utilisateurs as t', 't.idUser', '=', 'm.user')
+            ->leftJoin('utilisateurs as u', 'm.action', '=', 'u.idUser')
+            ->leftJoin('services as s', 'm.service', '=', 's.id')
+            ->select(
+                'm.periodedebut as Deb',
+                'm.periodefin as Fin',
+                'm.*',
+                DB::raw('COALESCE(CONCAT(m.periodedebut, " au ", m.periodefin), "Aucune période") as periode'),
+                DB::raw('COALESCE(CONCAT(u.nom, " ", u.prenom), "En attente") as usersL'),
+                DB::raw('COALESCE(CONCAT(t.nom, " ", t.prenom), "En attente") as usersT'),
+            )
+            ->where("m.id", $request->idgestprev)
+            ->get();
+            dd($list);
+           
+            //$list = Maintenance::where('id', $request->idgestprev)->get();
 
             $entete = Entete::first(); 
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -140,6 +141,12 @@
             margin-top: 50px;
         }
 
+        .h2tp {
+            text-align: center;
+            font-size: 17px;
+            margin-top: 40px;
+        }
+
         .col {
             border: none;
 
@@ -196,19 +203,24 @@
             font-weight: bold;
             padding-left: 610px;
         }
-        .break
-        {
+
+        .break {
             text-align: center;
             padding-top: 150px;
         }
+
+        .esp {
+            padding-top: 70px;
+        }
     </style>
 
-   
+
 </head>
+
 <body>
 
     <!-- Header -->
-   <div class="header">
+    <div class="header">
         <?php
             $path = public_path('documents/entete/' . $entete->logo);
             if (file_exists($path)) {
@@ -231,49 +243,49 @@
     <!-- Body -->
     <div class="container">
         <div class="body-content">
-        
+
             <h2 class="h2t">Fiche d'incident déclaré</h2>
             <h2 class="h2t">Fiche d'incident déclaré</h2><br>
             <table>
-                @foreach($list as $inc)
+                @foreach ($list as $inc)
                     <tr>
                         <td class="ser">Date Emission :</td>
-                        <td>{{$inc->DateEmission}}</td>
+                        <td>{{ $inc->DateEmission }}</td>
                         <td class="ser">Etat d'Evolution :</td>
-                        <td >{{ $inc->etats }} </td>
+                        <td>{{ $inc->etats }} </td>
                     </tr>
-                   
+
                     <tr>
                         <td class="ser">Module :</td>
                         <td>{{ $inc->Module }}</td>
                         <td class="ser">Date de résolution :</td>
-                        <td>{{ $inc->DateResolue}}</td>
+                        <td>{{ $inc->DateResolue }}</td>
                     </tr>
-                    
+
                     <tr>
                         <td class="ser">Hiérachisation : </td>
-                        <td>{{ $inc->hierarchie}}</td>
+                        <td>{{ $inc->hierarchie }}</td>
                         <td rowspan="3" class="ser">Solution : </td>
-                        <td rowspan="3">{{ $inc->resolue}}</td>
+                        <td rowspan="3">{{ $inc->resolue }}</td>
                     </tr>
-                    
+
                     <tr>
                         <td class="ser">Categorie :</td>
-                        <td>{{ $inc->cat}}</td>
-                        
+                        <td>{{ $inc->cat }}</td>
+
                     </tr>
-                    
+
                     <tr>
-                        <td class="ser">Description  :</td>
-                        <td style="height: 40px; " > {{ $inc->description }}</td>
-                        
+                        <td class="ser">Description :</td>
+                        <td style="height: 40px; "> {{ $inc->description }}</td>
+
                     </tr>
-                    
+
                     <tr>
                         <td class="ser">Emetteur :</td>
-                        <td>{{$inc->usersE}}</td>
+                        <td>{{ $inc->usersE }}</td>
                         <td class="ser">Technicien :</td>
-                        <td>{{ $inc->usersA}}</td>
+                        <td>{{ $inc->usersA }}</td>
                     </tr>
                 @endforeach
             </table>
@@ -288,14 +300,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($list as $inc)
+                    @foreach ($list as $inc)
                         <tr>
-                            <td style="height: 40px;">
-                                {{$inc->usersE}} 
+                            <td class="esp">
+                                {{ $inc->usersE }}
                             </td>
-                            <td style="height: 40px;">
+                            <td class="esp">
                                 {{ $inc->usersA }}
-                            </td> 
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -309,10 +321,10 @@
             Date d'exportation : {{ now()->format('d/m/Y') }}
         </div><br>
         <div class="footer-text">
-            {{ $entete->contenu_footer_col}}<br>
+            {{ $entete->contenu_footer_col }}<br>
         </div>
         <div class="footer-text">
-            {{ $entete->contenu_footer_col2}}
+            {{ $entete->contenu_footer_col2 }}
         </div>
     </div>
 
@@ -320,10 +332,10 @@
     <div style="page-break-before: always;"></div> <!-- Forcer la nouvelle page dans le PDF -->
 
     <div class="break">
-        <h2 class="h2t">Preuve d'incident</h2>
+        <h2 class="h2tp">Preuve d'incident</h2>
         <br>
         <div class="incident-image">
-            @foreach($list as $item)
+            @foreach ($list as $item)
                 <?php
                 $path = public_path($item->piece);
             
@@ -332,7 +344,7 @@
                     $data = file_get_contents($path);
                     $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
                 ?>
-                    <img src="{{ $base64 }}" alt="Image de l'incident" width="600" height="500">
+                <img src="{{ $base64 }}" alt="Image de l'incident" width="600" height="500">
                 <?php
                 } else {
                     echo "Image non trouvée.";
@@ -342,6 +354,7 @@
 
         </div>
     </div>
-    
+
 </body>
+
 </html>
